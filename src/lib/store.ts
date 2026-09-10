@@ -58,16 +58,29 @@ function setState(next: DemoState, save = true) {
   emit();
 }
 
+let hydrated = false;
+
 export function hydrateFromStorage() {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || hydrated) return;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
-    const parsed = JSON.parse(raw) as DemoState;
-    if (parsed?.requests?.length) setState(parsed, false);
+    if (raw) {
+      const parsed = JSON.parse(raw) as DemoState;
+      if (parsed?.requests?.length) state = parsed;
+    }
   } catch {
     /* ignore corrupted demo data */
   }
+  hydrated = true;
+  emit();
+}
+
+export function useHydrated(): boolean {
+  return useSyncExternalStore(
+    subscribe,
+    () => hydrated,
+    () => false,
+  );
 }
 
 export function resetDemoData() {
