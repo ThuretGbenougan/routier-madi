@@ -100,7 +100,7 @@ function JobDetail() {
                 actor,
                 role: "CONTRACTOR",
                 comment: "Démarrage de l'intervention sur site.",
-                photoLabels: beforePhoto ? { before: beforePhoto } : undefined,
+                ...(beforePhoto ? { photoLabels: { before: beforePhoto } } : {}),
               });
               setBeforePhoto(null);
               toast.success("Intervention démarrée");
@@ -156,8 +156,8 @@ function JobDetail() {
                 role: "CONTRACTOR",
                 comment: comment.trim(),
                 photoLabels: {
-                  before: beforePhoto ?? undefined,
-                  after: afterPhoto ?? undefined,
+                  ...(beforePhoto ? { before: beforePhoto } : {}),
+                  ...(afterPhoto ? { after: afterPhoto } : {}),
                 },
               });
               setComment("");

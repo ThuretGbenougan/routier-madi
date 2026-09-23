@@ -39,6 +39,14 @@ export const Route = createFileRoute("/report")({
 
 const districts = ["Centre", "Nord", "Sud", "Est", "Ouest"];
 
+type FormErrors = {
+  problemType?: string;
+  address?: string;
+  district?: string;
+  description?: string;
+  email?: string;
+};
+
 function ReportPage() {
   const navigate = useNavigate();
   const [problemType, setProblemType] = useState<ProblemType | "">("");
@@ -48,12 +56,12 @@ function ReportPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
 
   function validate() {
-    const next: Record<string, string> = {};
+    const next: FormErrors = {};
     if (!problemType) next.problemType = "Sélectionnez un type de problème.";
     if (address.trim().length < 5) next.address = "Indiquez une adresse précise.";
     if (!district) next.district = "Sélectionnez un quartier.";

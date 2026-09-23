@@ -32,7 +32,7 @@ export interface HistoryEntry {
   at: string;
   actor: string;
   role: "CITIZEN" | Role;
-  comment?: string;
+  comment?: string | undefined;
 }
 
 export interface Note {
@@ -52,23 +52,25 @@ export interface RepairRequest {
   description: string;
   lat: number;
   lng: number;
-  citizenName?: string;
-  citizenEmail?: string;
+  citizenName?: string | undefined;
+  citizenEmail?: string | undefined;
   status: RequestStatus;
   contractorId: string | null;
   createdAt: string;
   updatedAt: string;
-  closedAt?: string;
+  closedAt?: string | undefined;
   photos: Photo[];
   history: HistoryEntry[];
   dispatcherNotes: Note[];
   contractorNotes: Note[];
-  controlResult?: {
-    at: string;
-    actor: string;
-    passed: boolean;
-    comment: string;
-  };
+  controlResult?:
+    | {
+        at: string;
+        actor: string;
+        passed: boolean;
+        comment: string;
+      }
+    | undefined;
 }
 
 export interface Contractor {
@@ -86,7 +88,7 @@ export interface User {
   password: string;
   name: string;
   role: Role;
-  contractorId?: string;
+  contractorId?: string | undefined;
 }
 
 export interface Session {
@@ -94,5 +96,5 @@ export interface Session {
   name: string;
   email: string;
   role: Role;
-  contractorId?: string;
+  contractorId?: string | undefined;
 }
