@@ -110,7 +110,7 @@ export function ContractorShell({
             )}
           >
             <item.icon className="size-5" aria-hidden />
-            {item.label}
+            {t(item.key)}
           </Link>
         ))}
       </nav>
