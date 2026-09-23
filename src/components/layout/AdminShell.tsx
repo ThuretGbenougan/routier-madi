@@ -12,19 +12,21 @@ import { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DemoResetButton } from "@/components/DemoResetButton";
-import { appName, cityName } from "@/i18n/fr";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { logout, useDemoState, useHydrated } from "@/lib/store";
 
 const nav = [
-  { to: "/admin/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
-  { to: "/admin/requests", label: "Demandes", icon: ClipboardList },
-  { to: "/admin/contractors", label: "Entreprises", icon: Users },
-  { to: "/admin/reports", label: "Rapports", icon: BarChart3 },
+  { to: "/admin/dashboard", key: "shell.nav.dashboard", icon: LayoutDashboard },
+  { to: "/admin/requests", key: "shell.nav.requests", icon: ClipboardList },
+  { to: "/admin/contractors", key: "shell.nav.contractors", icon: Users },
+  { to: "/admin/reports", key: "shell.nav.reports", icon: BarChart3 },
 ] as const;
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { t } = useI18n();
   return (
     <nav className="space-y-1">
       {nav.map((item) => {
@@ -42,7 +44,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             )}
           >
             <item.icon className="size-4.5" aria-hidden />
-            {item.label}
+            {t(item.key)}
           </Link>
         );
       })}
@@ -62,6 +64,7 @@ export function AdminShell({
   children: ReactNode;
 }) {
   const { session } = useDemoState();
+  const { t } = useI18n();
   const hydrated = useHydrated();
   const navigate = useNavigate();
 
@@ -74,7 +77,7 @@ export function AdminShell({
   if (!session || session.role !== "ADMIN") {
     return (
       <div className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
-        Vérification de la session…
+        {t("shell.session.checking")}
       </div>
     );
   }
@@ -86,8 +89,8 @@ export function AdminShell({
           <TrafficCone className="size-5" aria-hidden />
         </span>
         <span className="leading-tight">
-          <span className="block text-sm font-semibold">{appName}</span>
-          <span className="block text-xs text-sidebar-foreground/65">{cityName}</span>
+          <span className="block text-sm font-semibold">{t("app.name")}</span>
+          <span className="block text-xs text-sidebar-foreground/65">{t("app.city")}</span>
         </span>
       </Link>
       <NavLinks />
@@ -106,7 +109,7 @@ export function AdminShell({
           }}
         >
           <LogOut className="size-4" aria-hidden />
-          Se déconnecter
+          {t("action.logout")}
         </Button>
       </div>
     </div>
@@ -125,11 +128,11 @@ export function AdminShell({
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="lg:hidden">
                   <Menu className="size-5" aria-hidden />
-                  <span className="sr-only">Ouvrir le menu</span>
+                  <span className="sr-only">{t("shell.menu.open")}</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-64 border-0 p-0">
-                <SheetTitle className="sr-only">Navigation administration</SheetTitle>
+                <SheetTitle className="sr-only">{t("shell.nav.admin")}</SheetTitle>
                 {sidebar}
               </SheetContent>
             </Sheet>
@@ -141,6 +144,7 @@ export function AdminShell({
             </div>
             <div className="flex items-center gap-2">
               {actions}
+              <LanguageSwitch />
               <DemoResetButton className="hidden sm:inline-flex" />
             </div>
           </div>
