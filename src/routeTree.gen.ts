@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReportRouteImport } from './routes/report'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as ContractorLoginRouteImport } from './routes/contractor.login'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as TrackReferenceRouteImport } from './routes/track.$reference'
 
@@ -22,6 +24,16 @@ const IndexRoute = IndexRouteImport.update({
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorLoginRoute = ContractorLoginRouteImport.update({
+  id: '/contractor/login',
+  path: '/contractor/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrackIndexRoute = TrackIndexRouteImport.update({
@@ -38,12 +50,16 @@ const TrackReferenceRoute = TrackReferenceRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track': typeof TrackIndexRoute
 }
@@ -51,20 +67,43 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/login': typeof AdminLoginRoute
+  '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/report' | '/track/$reference' | '/track/'
+  fullPaths:
+    | '/'
+    | '/report'
+    | '/admin/login'
+    | '/contractor/login'
+    | '/track/$reference'
+    | '/track/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/report' | '/track/$reference' | '/track'
-  id: '__root__' | '/' | '/report' | '/track/$reference' | '/track/'
+  to:
+    | '/'
+    | '/report'
+    | '/admin/login'
+    | '/contractor/login'
+    | '/track/$reference'
+    | '/track'
+  id:
+    | '__root__'
+    | '/'
+    | '/report'
+    | '/admin/login'
+    | '/contractor/login'
+    | '/track/$reference'
+    | '/track/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ReportRoute: typeof ReportRoute
+  AdminLoginRoute: typeof AdminLoginRoute
+  ContractorLoginRoute: typeof ContractorLoginRoute
   TrackReferenceRoute: typeof TrackReferenceRoute
   TrackIndexRoute: typeof TrackIndexRoute
 }
@@ -83,6 +122,20 @@ declare module '@tanstack/react-router' {
       path: '/report'
       fullPath: '/report'
       preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractor/login': {
+      id: '/contractor/login'
+      path: '/contractor/login'
+      fullPath: '/contractor/login'
+      preLoaderRoute: typeof ContractorLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/track/': {
@@ -105,6 +158,8 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ReportRoute: ReportRoute,
+  AdminLoginRoute: AdminLoginRoute,
+  ContractorLoginRoute: ContractorLoginRoute,
   TrackReferenceRoute: TrackReferenceRoute,
   TrackIndexRoute: TrackIndexRoute,
 }
