@@ -1,5 +1,6 @@
 import { Check, Circle } from "lucide-react";
-import { statusLabels, statusOrder, roleLabels } from "@/i18n/fr";
+import { statusOrder } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { HistoryEntry, RequestStatus } from "@/types";
@@ -11,10 +12,12 @@ export function LifecycleTimeline({
   status: RequestStatus;
   history: HistoryEntry[];
 }) {
+  const { t, lang, statusLabel } = useI18n();
+
   if (status === "REJECTED") {
     return (
       <p className="rounded-lg border border-destructive/25 bg-destructive/5 p-3 text-sm text-destructive">
-        Cette demande a été rejetée par le service voirie.
+        {t("timeline.rejected")}
       </p>
     );
   }
@@ -51,10 +54,12 @@ export function LifecycleTimeline({
                   done ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                {statusLabels[s]}
+                {statusLabel(s)}
               </p>
               {entry && (
-                <p className="text-[11px] text-muted-foreground">{formatDateTime(entry.at)}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  {formatDateTime(entry.at, lang)}
+                </p>
               )}
             </div>
           </li>
@@ -65,20 +70,23 @@ export function LifecycleTimeline({
 }
 
 export function HistoryList({ history }: { history: HistoryEntry[] }) {
+  const { t, lang, statusLabel, roleLabel } = useI18n();
+
+  if (history.length === 0) {
+    return <p className="text-sm text-muted-foreground">{t("timeline.empty")}</p>;
+  }
+
   return (
     <ol className="space-y-4">
       {[...history].reverse().map((h) => (
         <li key={h.id} className="relative pl-6">
-          <Circle
-            className="absolute top-1 left-0 size-3 fill-primary text-primary"
-            aria-hidden
-          />
+          <Circle className="absolute top-1 left-0 size-3 fill-primary text-primary" aria-hidden />
           <div className="flex flex-wrap items-baseline gap-x-2">
-            <span className="text-sm font-medium">{statusLabels[h.status]}</span>
-            <span className="text-xs text-muted-foreground">{formatDateTime(h.at)}</span>
+            <span className="text-sm font-medium">{statusLabel(h.status)}</span>
+            <span className="text-xs text-muted-foreground">{formatDateTime(h.at, lang)}</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            {h.actor} · {roleLabels[h.role]}
+            {h.actor} · {roleLabel(h.role)}
           </p>
           {h.comment && <p className="mt-1 text-sm">{h.comment}</p>}
         </li>
