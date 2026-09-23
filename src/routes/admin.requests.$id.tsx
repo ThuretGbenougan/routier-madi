@@ -40,7 +40,7 @@ function RequestDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const { requests, contractors, session } = useDemoState();
-  const { t, lang, problemLabel } = useI18n();
+  const { t, lang, problemLabel, text } = useI18n();
   const request = requests.find((r) => r.id === id);
   const [selectedContractor, setSelectedContractor] = useState("");
   const [note, setNote] = useState("");
