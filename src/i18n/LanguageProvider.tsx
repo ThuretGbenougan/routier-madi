@@ -12,6 +12,7 @@ interface LanguageContextValue {
   statusLabel: (status: RequestStatus) => string;
   problemLabel: (problem: ProblemType) => string;
   roleLabel: (role: Role | "CITIZEN") => string;
+  text: (value: string) => string;
 }
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -42,6 +43,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       statusLabel: (status) => t(`status.${status}` as TranslationKey),
       problemLabel: (problem) => t(`problem.${problem}` as TranslationKey),
       roleLabel: (role) => t(`role.${role}` as TranslationKey),
+      text: (value) => (value.startsWith("seed.") ? t(value as TranslationKey) : value),
     };
   }, [lang, setLang]);
 

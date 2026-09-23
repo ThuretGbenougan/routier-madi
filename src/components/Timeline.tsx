@@ -70,7 +70,7 @@ export function LifecycleTimeline({
 }
 
 export function HistoryList({ history }: { history: HistoryEntry[] }) {
-  const { t, lang, statusLabel, roleLabel } = useI18n();
+  const { t, lang, statusLabel, roleLabel, text } = useI18n();
 
   if (history.length === 0) {
     return <p className="text-sm text-muted-foreground">{t("timeline.empty")}</p>;
@@ -88,7 +88,7 @@ export function HistoryList({ history }: { history: HistoryEntry[] }) {
           <p className="text-xs text-muted-foreground">
             {h.actor} · {roleLabel(h.role)}
           </p>
-          {h.comment && <p className="mt-1 text-sm">{h.comment}</p>}
+          {h.comment && <p className="mt-1 text-sm">{text(h.comment)}</p>}
         </li>
       ))}
     </ol>

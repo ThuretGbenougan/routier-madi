@@ -314,7 +314,7 @@ function RequestDetail() {
                   ? t("admin.detail.controlPassed")
                   : t("admin.detail.controlFailed")}
               </p>
-              <p className="mt-1 text-muted-foreground">{request.controlResult.comment}</p>
+              <p className="mt-1 text-muted-foreground">{text(request.controlResult.comment)}</p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {request.controlResult.actor} · {formatDateTime(request.controlResult.at, lang)}
               </p>
