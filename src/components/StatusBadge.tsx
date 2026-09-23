@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { statusLabels } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import type { RequestStatus } from "@/types";
 
 const styles: Record<RequestStatus, string> = {
@@ -22,6 +22,8 @@ export function StatusBadge({
   className?: string;
   size?: "sm" | "lg";
 }) {
+  const { statusLabel } = useI18n();
+
   return (
     <span
       className={cn(
@@ -32,7 +34,7 @@ export function StatusBadge({
       )}
     >
       <span className="size-1.5 rounded-full bg-current" aria-hidden />
-      {statusLabels[status]}
+      {statusLabel(status)}
     </span>
   );
 }
