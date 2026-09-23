@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ContractorShell } from "@/components/layout/ContractorShell";
 import { StatusBadge } from "@/components/StatusBadge";
-import { problemLabels } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate } from "@/lib/format";
 import { useDemoState } from "@/lib/store";
 
@@ -22,6 +22,7 @@ export const Route = createFileRoute("/contractor/history")({
 
 function HistoryPage() {
   const { requests, session } = useDemoState();
+  const { t, problemLabel, lang } = useI18n();
   const done = requests
     .filter(
       (r) =>
@@ -32,12 +33,15 @@ function HistoryPage() {
 
   return (
     <ContractorShell
-      title="Historique"
-      description={`${done.length} intervention${done.length > 1 ? "s" : ""} réalisée${done.length > 1 ? "s" : ""}`}
+      title={t("contractor.history.title")}
+      description={t("contractor.history.description", {
+        count: done.length,
+        plural: done.length > 1 ? "s" : "",
+      })}
     >
       {done.length === 0 ? (
         <div className="surface-card p-10 text-center text-sm text-muted-foreground">
-          Aucune intervention terminée pour le moment.
+          {t("contractor.history.empty")}
         </div>
       ) : (
         <ul className="space-y-3">
@@ -54,7 +58,10 @@ function HistoryPage() {
                 </div>
                 <p className="mt-1 truncate text-sm text-muted-foreground">{r.address}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {problemLabels[r.problemType]} · terminée le {formatDate(r.updatedAt)}
+                  {t("contractor.history.completedOn", {
+                    problem: problemLabel(r.problemType),
+                    date: formatDate(r.updatedAt, lang),
+                  })}
                 </p>
               </Link>
             </li>

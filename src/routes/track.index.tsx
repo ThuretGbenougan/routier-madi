@@ -5,6 +5,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/track/")({
   head: () => ({
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/track/")({
 });
 
 function TrackPage() {
+  const { t } = useI18n();
   const navigate = useNavigate();
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
@@ -34,7 +36,7 @@ function TrackPage() {
     e.preventDefault();
     const reference = value.trim().toUpperCase();
     if (!/^RR-\d{4}-\d{4}$/.test(reference)) {
-      setError("Le numéro de suivi doit être au format RR-2026-0001.");
+      setError(t("track.search.error"));
       return;
     }
     setError("");
@@ -44,19 +46,17 @@ function TrackPage() {
   return (
     <PublicLayout>
       <div className="mx-auto w-full max-w-xl px-4 py-12">
-        <h1 className="text-2xl font-semibold tracking-tight">Suivre une demande</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Saisissez le numéro de suivi communiqué lors du dépôt de votre signalement.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("track.search.title")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("track.search.subtitle")}</p>
 
         <form onSubmit={onSubmit} noValidate className="surface-card mt-6 space-y-4 p-5">
           <div className="space-y-1.5">
-            <Label htmlFor="reference">Numéro de suivi</Label>
+            <Label htmlFor="reference">{t("track.search.label")}</Label>
             <Input
               id="reference"
               value={value}
               onChange={(e) => setValue(e.target.value)}
-              placeholder="RR-2026-0001"
+              placeholder={t("track.search.placeholder")}
               className="uppercase"
               autoComplete="off"
             />
@@ -64,14 +64,11 @@ function TrackPage() {
           </div>
           <Button type="submit" className="w-full">
             <Search className="size-4" aria-hidden />
-            Rechercher
+            {t("track.search.submit")}
           </Button>
         </form>
 
-        <p className="mt-4 text-xs text-muted-foreground">
-          Exemple de démonstration : RR-2026-0010 (intervention en cours) ou RR-2026-0001
-          (demande clôturée).
-        </p>
+        <p className="mt-4 text-xs text-muted-foreground">{t("track.search.example")}</p>
       </div>
     </PublicLayout>
   );

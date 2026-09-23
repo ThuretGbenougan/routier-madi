@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { appName, cityName } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { login, useDemoState, useHydrated } from "@/lib/store";
 
 export const Route = createFileRoute("/contractor/login")({
@@ -27,6 +27,7 @@ function ContractorLogin() {
   const navigate = useNavigate();
   const { session } = useDemoState();
   const hydrated = useHydrated();
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -39,11 +40,11 @@ function ContractorLogin() {
     e.preventDefault();
     const result = login(email, password, "CONTRACTOR");
     if (!result) {
-      setError("Identifiants incorrects. Utilisez le compte de démonstration proposé.");
+      setError(t("contractor.login.error"));
       return;
     }
     setError("");
-    toast.success(`Bienvenue ${result.name}`);
+    toast.success(t("contractor.login.welcome", { name: result.name }));
     navigate({ to: "/contractor/jobs" });
   }
 
@@ -54,20 +55,20 @@ function ContractorLogin() {
           to="/"
           className="mb-6 block text-center text-sm text-muted-foreground hover:text-foreground"
         >
-          ← Retour au portail citoyen
+          {t("contractor.login.back")}
         </Link>
         <div className="surface-card p-6">
           <span className="flex size-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <Wrench className="size-6" aria-hidden />
           </span>
-          <h1 className="mt-4 text-xl font-semibold">Espace entreprise</h1>
+          <h1 className="mt-4 text-xl font-semibold">{t("contractor.login.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            {appName} · {cityName}
+            {t("app.name")} · {t("app.city")}
           </p>
 
           <form onSubmit={onSubmit} noValidate className="mt-6 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="email">Adresse électronique</Label>
+              <Label htmlFor="email">{t("contractor.login.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -78,7 +79,7 @@ function ContractorLogin() {
               />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="password">Mot de passe</Label>
+              <Label htmlFor="password">{t("contractor.login.password")}</Label>
               <Input
                 id="password"
                 type="password"
@@ -93,13 +94,13 @@ function ContractorLogin() {
               </p>
             )}
             <Button type="submit" className="w-full">
-              Se connecter
+              {t("contractor.login.submit")}
             </Button>
           </form>
 
           <div className="mt-5 rounded-lg border border-dashed border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">Accès de démonstration</p>
-            <p className="mt-1">contractor@city.demo · demo123</p>
+            <p className="font-medium text-foreground">{t("contractor.login.demoTitle")}</p>
+            <p className="mt-1">{t("contractor.login.demoCreds")}</p>
             <Button
               type="button"
               variant="outline"
@@ -110,14 +111,14 @@ function ContractorLogin() {
                 setPassword("demo123");
               }}
             >
-              Remplir automatiquement
+              {t("contractor.login.demoFill")}
             </Button>
           </div>
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
-            Vous êtes agent de la ville ?{" "}
+            {t("contractor.login.adminPrompt")}{" "}
             <Link to="/admin/login" className="text-primary hover:underline">
-              Espace administration
+              {t("contractor.login.adminLink")}
             </Link>
           </p>
         </div>

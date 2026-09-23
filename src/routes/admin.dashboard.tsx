@@ -10,7 +10,8 @@ import {
 import { AdminShell } from "@/components/layout/AdminShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { statusLabels, statusOrder, problemLabels } from "@/i18n/fr";
+import { statusOrder } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDuration } from "@/lib/format";
 import { averageProcessingDays, countByStatus } from "@/lib/stats";
 import { useDemoState } from "@/lib/store";
@@ -32,19 +33,20 @@ export const Route = createFileRoute("/admin/dashboard")({
 
 function Dashboard() {
   const { requests, contractors } = useDemoState();
+  const { t, lang, statusLabel, problemLabel } = useI18n();
   const counts = countByStatus(requests);
   const avg = averageProcessingDays(requests);
 
   const kpis = [
-    { label: "Total des demandes", value: requests.length, icon: ClipboardList },
-    { label: "Nouvelles à vérifier", value: counts.CREATED, icon: Inbox },
+    { label: t("admin.dashboard.kpi.total"), value: requests.length, icon: ClipboardList },
+    { label: t("admin.dashboard.kpi.new"), value: counts.CREATED, icon: Inbox },
     {
-      label: "En cours de traitement",
+      label: t("admin.dashboard.kpi.processing"),
       value: counts.ASSIGNED + counts.IN_PROGRESS,
       icon: Clock,
     },
-    { label: "En attente de contrôle", value: counts.COMPLETED, icon: ShieldCheck },
-    { label: "Demandes clôturées", value: counts.CLOSED, icon: FileCheck2 },
+    { label: t("admin.dashboard.kpi.awaitingControl"), value: counts.COMPLETED, icon: ShieldCheck },
+    { label: t("admin.dashboard.kpi.closed"), value: counts.CLOSED, icon: FileCheck2 },
   ];
 
   const recent = [...requests]
@@ -57,11 +59,11 @@ function Dashboard() {
 
   return (
     <AdminShell
-      title="Tableau de bord"
-      description="Suivi global des demandes de réparation de voirie"
+      title={t("admin.dashboard.title")}
+      description={t("admin.dashboard.description")}
       actions={
         <Button asChild size="sm">
-          <Link to="/admin/requests">Voir les demandes</Link>
+          <Link to="/admin/requests">{t("admin.dashboard.viewRequests")}</Link>
         </Button>
       }
     >
@@ -79,7 +81,7 @@ function Dashboard() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <div className="surface-card p-5 lg:col-span-2">
-          <h2 className="text-sm font-semibold">Répartition par statut</h2>
+          <h2 className="text-sm font-semibold">{t("admin.dashboard.byStatus")}</h2>
           <ul className="mt-4 space-y-2.5">
             {statusOrder.map((s) => {
               const value = counts[s];
@@ -87,7 +89,7 @@ function Dashboard() {
               return (
                 <li key={s} className="flex items-center gap-3">
                   <span className="w-36 shrink-0 text-xs text-muted-foreground">
-                    {statusLabels[s]}
+                    {statusLabel(s)}
                   </span>
                   <span className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                     <span
@@ -105,20 +107,20 @@ function Dashboard() {
         <div className="surface-card p-5">
           <div className="flex items-center gap-2">
             <Timer className="size-4 text-muted-foreground" aria-hidden />
-            <h2 className="text-sm font-semibold">Délai moyen de traitement</h2>
+            <h2 className="text-sm font-semibold">{t("admin.dashboard.avgDuration")}</h2>
           </div>
-          <p className="mt-3 text-3xl font-semibold">{formatDuration(avg)}</p>
+          <p className="mt-3 text-3xl font-semibold">{formatDuration(avg, lang)}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Calculé sur les {counts.CLOSED} demandes clôturées.
+            {t("admin.dashboard.avgDurationNote", { count: counts.CLOSED })}
           </p>
           <div className="mt-5 border-t border-border pt-4">
-            <h3 className="text-sm font-semibold">Entreprises mobilisées</h3>
+            <h3 className="text-sm font-semibold">{t("admin.dashboard.contractorsMobilized")}</h3>
             <p className="mt-1 text-2xl font-semibold">{contractors.length}</p>
             <Link
               to="/admin/contractors"
               className="mt-2 inline-block text-xs text-primary hover:underline"
             >
-              Consulter les entreprises
+              {t("admin.dashboard.viewContractors")}
             </Link>
           </div>
         </div>
@@ -126,10 +128,10 @@ function Dashboard() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <section className="surface-card p-5">
-          <h2 className="text-sm font-semibold">Actions prioritaires</h2>
+          <h2 className="text-sm font-semibold">{t("admin.dashboard.priorityActions")}</h2>
           {toProcess.length === 0 ? (
             <p className="mt-3 text-sm text-muted-foreground">
-              Aucune demande n'attend une action du service.
+              {t("admin.dashboard.noPending")}
             </p>
           ) : (
             <ul className="mt-3 divide-y divide-border">
@@ -153,7 +155,7 @@ function Dashboard() {
         </section>
 
         <section className="surface-card p-5">
-          <h2 className="text-sm font-semibold">Dernières mises à jour</h2>
+          <h2 className="text-sm font-semibold">{t("admin.dashboard.recentUpdates")}</h2>
           <ul className="mt-3 divide-y divide-border">
             {recent.map((r) => (
               <li key={r.id} className="flex items-center justify-between gap-3 py-3">
@@ -166,7 +168,7 @@ function Dashboard() {
                     {r.reference}
                   </Link>
                   <p className="truncate text-xs text-muted-foreground">
-                    {problemLabels[r.problemType]} · {formatDate(r.updatedAt)}
+                    {problemLabel(r.problemType)} · {formatDate(r.updatedAt, lang)}
                   </p>
                 </div>
                 <StatusBadge status={r.status} />
