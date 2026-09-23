@@ -14,11 +14,14 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as AdminContractorsRouteImport } from './routes/admin.contractors'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as ContractorHistoryRouteImport } from './routes/contractor.history'
 import { Route as ContractorLoginRouteImport } from './routes/contractor.login'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as TrackReferenceRouteImport } from './routes/track.$reference'
 import { Route as AdminRequestsIndexRouteImport } from './routes/admin.requests.index'
 import { Route as AdminRequestsIdRouteImport } from './routes/admin.requests.$id'
+import { Route as ContractorJobsIndexRouteImport } from './routes/contractor.jobs.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -43,6 +46,16 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorHistoryRoute = ContractorHistoryRouteImport.update({
+  id: '/contractor/history',
+  path: '/contractor/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorLoginRoute = ContractorLoginRouteImport.update({
@@ -70,6 +83,11 @@ const AdminRequestsIdRoute = AdminRequestsIdRouteImport.update({
   path: '/admin/requests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContractorJobsIndexRoute = ContractorJobsIndexRouteImport.update({
+  id: '/contractor/jobs/',
+  path: '/contractor/jobs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -77,11 +95,14 @@ export interface FileRoutesByFullPath {
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
+  '/contractor/jobs/': typeof ContractorJobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -89,11 +110,14 @@ export interface FileRoutesByTo {
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
+  '/contractor/jobs': typeof ContractorJobsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -102,11 +126,14 @@ export interface FileRoutesById {
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/reports': typeof AdminReportsRoute
+  '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
+  '/contractor/jobs/': typeof ContractorJobsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,11 +143,14 @@ export interface FileRouteTypes {
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/reports'
+    | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
     | '/track/'
     | '/admin/requests/$id'
     | '/admin/requests/'
+    | '/contractor/jobs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -128,11 +158,14 @@ export interface FileRouteTypes {
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/reports'
+    | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
     | '/track'
     | '/admin/requests/$id'
     | '/admin/requests'
+    | '/contractor/jobs'
   id:
     | '__root__'
     | '/'
@@ -140,11 +173,14 @@ export interface FileRouteTypes {
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
+    | '/admin/reports'
+    | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
     | '/track/'
     | '/admin/requests/$id'
     | '/admin/requests/'
+    | '/contractor/jobs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -153,11 +189,14 @@ export interface RootRouteChildren {
   AdminContractorsRoute: typeof AdminContractorsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminReportsRoute: typeof AdminReportsRoute
+  ContractorHistoryRoute: typeof ContractorHistoryRoute
   ContractorLoginRoute: typeof ContractorLoginRoute
   TrackReferenceRoute: typeof TrackReferenceRoute
   TrackIndexRoute: typeof TrackIndexRoute
   AdminRequestsIdRoute: typeof AdminRequestsIdRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
+  ContractorJobsIndexRoute: typeof ContractorJobsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -197,6 +236,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractor/history': {
+      id: '/contractor/history'
+      path: '/contractor/history'
+      fullPath: '/contractor/history'
+      preLoaderRoute: typeof ContractorHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contractor/login': {
       id: '/contractor/login'
       path: '/contractor/login'
@@ -232,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRequestsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contractor/jobs/': {
+      id: '/contractor/jobs/'
+      path: '/contractor/jobs'
+      fullPath: '/contractor/jobs/'
+      preLoaderRoute: typeof ContractorJobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -241,11 +301,14 @@ const rootRouteChildren: RootRouteChildren = {
   AdminContractorsRoute: AdminContractorsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminReportsRoute: AdminReportsRoute,
+  ContractorHistoryRoute: ContractorHistoryRoute,
   ContractorLoginRoute: ContractorLoginRoute,
   TrackReferenceRoute: TrackReferenceRoute,
   TrackIndexRoute: TrackIndexRoute,
   AdminRequestsIdRoute: AdminRequestsIdRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
+  ContractorJobsIndexRoute: ContractorJobsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
