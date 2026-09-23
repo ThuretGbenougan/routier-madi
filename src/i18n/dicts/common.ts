@@ -1,0 +1,126 @@
+export const common = {
+  fr: {
+    "app.name": "Voirie Connect",
+    "app.city": "Ville de Valmont",
+    "app.tagline": "Plateforme municipale de gestion des demandes de voirie",
+
+    "lang.label": "Langue",
+    "lang.fr": "Français",
+    "lang.ru": "Русский",
+
+    "status.CREATED": "Créée",
+    "status.VERIFIED": "Vérifiée",
+    "status.ASSIGNED": "Attribuée",
+    "status.IN_PROGRESS": "En cours",
+    "status.COMPLETED": "Travaux terminés",
+    "status.CONTROLLED": "Contrôlée",
+    "status.CLOSED": "Clôturée",
+    "status.REJECTED": "Rejetée",
+
+    "problem.POTHOLE": "Nid-de-poule",
+    "problem.PAVEMENT": "Chaussée dégradée",
+    "problem.CRACK": "Fissure de voirie",
+    "problem.SIDEWALK": "Trottoir endommagé",
+    "problem.DRAINAGE": "Problème d'écoulement",
+    "problem.MARKING": "Marquage au sol",
+    "problem.OTHER": "Autre",
+
+    "role.CITIZEN": "Citoyen",
+    "role.ADMIN": "Service voirie",
+    "role.CONTRACTOR": "Entreprise",
+
+    "action.report": "Signaler un problème",
+    "action.track": "Suivre une demande",
+    "action.back": "Retour",
+    "action.open": "Ouvrir",
+    "action.cancel": "Annuler",
+    "action.save": "Enregistrer",
+    "action.login": "Se connecter",
+    "action.logout": "Se déconnecter",
+    "action.reset": "Réinitialiser la démo",
+    "action.add": "Ajouter",
+    "action.remove": "Retirer",
+    "action.simulate": "Simuler",
+
+    "reset.title": "Réinitialiser les données de démonstration ?",
+    "reset.description":
+      "Toutes les modifications effectuées pendant la démonstration seront effacées et les données initiales restaurées.",
+    "reset.confirm": "Réinitialiser",
+    "reset.done": "Données de démonstration réinitialisées",
+
+    "photo.citizen": "Photo citoyen",
+    "photo.before": "Photo avant travaux",
+    "photo.after": "Photo après travaux",
+    "photo.none": "Aucune photo transmise.",
+
+    "timeline.title": "Cycle de vie",
+    "timeline.history": "Historique du traitement",
+    "timeline.empty": "Aucun événement enregistré.",
+
+    "duration.days": "{count} j",
+    "duration.hours": "{count} h",
+    "duration.lessThanHour": "moins d'une heure",
+  },
+  ru: {
+    "app.name": "Voirie Connect",
+    "app.city": "Город Вальмон",
+    "app.tagline": "Муниципальная платформа управления заявками на ремонт дорог",
+
+    "lang.label": "Язык",
+    "lang.fr": "Français",
+    "lang.ru": "Русский",
+
+    "status.CREATED": "Создана",
+    "status.VERIFIED": "Проверена",
+    "status.ASSIGNED": "Назначена",
+    "status.IN_PROGRESS": "В работе",
+    "status.COMPLETED": "Работы завершены",
+    "status.CONTROLLED": "Проконтролирована",
+    "status.CLOSED": "Закрыта",
+    "status.REJECTED": "Отклонена",
+
+    "problem.POTHOLE": "Яма на дороге",
+    "problem.PAVEMENT": "Разрушенное покрытие",
+    "problem.CRACK": "Трещина дорожного полотна",
+    "problem.SIDEWALK": "Повреждённый тротуар",
+    "problem.DRAINAGE": "Проблема водоотвода",
+    "problem.MARKING": "Дорожная разметка",
+    "problem.OTHER": "Другое",
+
+    "role.CITIZEN": "Житель",
+    "role.ADMIN": "Дорожная служба",
+    "role.CONTRACTOR": "Подрядчик",
+
+    "action.report": "Сообщить о проблеме",
+    "action.track": "Отследить заявку",
+    "action.back": "Назад",
+    "action.open": "Открыть",
+    "action.cancel": "Отмена",
+    "action.save": "Сохранить",
+    "action.login": "Войти",
+    "action.logout": "Выйти",
+    "action.reset": "Сбросить демоданные",
+    "action.add": "Добавить",
+    "action.remove": "Удалить",
+    "action.simulate": "Смоделировать",
+
+    "reset.title": "Сбросить демонстрационные данные?",
+    "reset.description":
+      "Все изменения, сделанные во время демонстрации, будут удалены, а исходные данные восстановлены.",
+    "reset.confirm": "Сбросить",
+    "reset.done": "Демонстрационные данные сброшены",
+
+    "photo.citizen": "Фото жителя",
+    "photo.before": "Фото до работ",
+    "photo.after": "Фото после работ",
+    "photo.none": "Фотографии не приложены.",
+
+    "timeline.title": "Жизненный цикл",
+    "timeline.history": "История обработки",
+    "timeline.empty": "Событий пока нет.",
+
+    "duration.days": "{count} дн.",
+    "duration.hours": "{count} ч",
+    "duration.lessThanHour": "менее часа",
+  },
+} as const;
