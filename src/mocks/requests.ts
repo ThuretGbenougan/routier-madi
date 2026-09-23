@@ -346,7 +346,7 @@ function buildHistory(seed: Seed, contractorName: string): HistoryEntry[] {
   };
 
   for (let i = 1; i <= index; i++) {
-    const status = statusOrder[i];
+    const status = statusOrder[i]!;
     const role = roles[status]!;
     entries.push({
       id: `h-${seed.ref}-${i}`,

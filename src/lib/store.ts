@@ -144,8 +144,8 @@ export interface NewRequestInput {
   address: string;
   district: string;
   description: string;
-  citizenName?: string;
-  citizenEmail?: string;
+  citizenName?: string | undefined;
+  citizenEmail?: string | undefined;
   photoNames: string[];
 }
 
@@ -206,12 +206,12 @@ export function findByReference(reference: string): RepairRequest | undefined {
 /* ---------------- workflow ---------------- */
 
 export interface TransitionOptions {
-  comment?: string;
+  comment?: string | undefined;
   actor: string;
   role: Role;
-  contractorId?: string | null;
-  controlPassed?: boolean;
-  photoLabels?: { before?: string; after?: string };
+  contractorId?: string | null | undefined;
+  controlPassed?: boolean | undefined;
+  photoLabels?: { before?: string | undefined; after?: string | undefined } | undefined;
 }
 
 export function transitionRequest(
