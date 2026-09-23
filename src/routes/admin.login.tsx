@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { login, useDemoState, useHydrated } from "@/lib/store";
 
@@ -51,6 +52,9 @@ function AdminLogin() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
       <div className="w-full max-w-md">
+        <div className="mb-4 flex justify-center">
+          <LanguageSwitch />
+        </div>
         <Link
           to="/"
           className="mb-6 block text-center text-sm text-muted-foreground hover:text-foreground"
