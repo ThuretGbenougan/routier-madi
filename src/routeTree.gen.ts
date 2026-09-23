@@ -11,12 +11,14 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReportRouteImport } from './routes/report'
+import { Route as AdminContractorsRouteImport } from './routes/admin.contractors'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as ContractorLoginRouteImport } from './routes/contractor.login'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as TrackReferenceRouteImport } from './routes/track.$reference'
 import { Route as AdminRequestsIndexRouteImport } from './routes/admin.requests.index'
+import { Route as AdminRequestsIdRouteImport } from './routes/admin.requests.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -26,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminContractorsRoute = AdminContractorsRouteImport.update({
+  id: '/admin/contractors',
+  path: '/admin/contractors',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
@@ -58,36 +65,47 @@ const AdminRequestsIndexRoute = AdminRequestsIndexRouteImport.update({
   path: '/admin/requests/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRequestsIdRoute = AdminRequestsIdRouteImport.update({
+  id: '/admin/requests/$id',
+  path: '/admin/requests/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
+  '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track': typeof TrackIndexRoute
+  '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/report': typeof ReportRoute
+  '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
   '/track/': typeof TrackIndexRoute
+  '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
 }
 export interface FileRouteTypes {
@@ -95,42 +113,50 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/report'
+    | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/contractor/login'
     | '/track/$reference'
     | '/track/'
+    | '/admin/requests/$id'
     | '/admin/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/report'
+    | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/contractor/login'
     | '/track/$reference'
     | '/track'
+    | '/admin/requests/$id'
     | '/admin/requests'
   id:
     | '__root__'
     | '/'
     | '/report'
+    | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/contractor/login'
     | '/track/$reference'
     | '/track/'
+    | '/admin/requests/$id'
     | '/admin/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ReportRoute: typeof ReportRoute
+  AdminContractorsRoute: typeof AdminContractorsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   ContractorLoginRoute: typeof ContractorLoginRoute
   TrackReferenceRoute: typeof TrackReferenceRoute
   TrackIndexRoute: typeof TrackIndexRoute
+  AdminRequestsIdRoute: typeof AdminRequestsIdRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
 }
 
@@ -148,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/report'
       fullPath: '/report'
       preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/contractors': {
+      id: '/admin/contractors'
+      path: '/admin/contractors'
+      fullPath: '/admin/contractors'
+      preLoaderRoute: typeof AdminContractorsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/dashboard': {
@@ -192,17 +225,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRequestsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/requests/$id': {
+      id: '/admin/requests/$id'
+      path: '/admin/requests/$id'
+      fullPath: '/admin/requests/$id'
+      preLoaderRoute: typeof AdminRequestsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ReportRoute: ReportRoute,
+  AdminContractorsRoute: AdminContractorsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   ContractorLoginRoute: ContractorLoginRoute,
   TrackReferenceRoute: TrackReferenceRoute,
   TrackIndexRoute: TrackIndexRoute,
+  AdminRequestsIdRoute: AdminRequestsIdRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
 }
 export const routeTree = rootRouteImport
