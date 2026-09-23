@@ -362,9 +362,10 @@ function buildHistory(seed: Seed, contractorName: string): HistoryEntry[] {
 
 export function buildRequests(contractorNames: Record<string, string>): RepairRequest[] {
   return seeds.map((seed) => {
-    const contractorName = seed.contractorId ? contractorNames[seed.contractorId] : "—";
+    const contractorName =
+      (seed.contractorId ? contractorNames[seed.contractorId] : undefined) ?? "—";
     const history = buildHistory(seed, contractorName);
-    const last = history[history.length - 1];
+    const last = history[history.length - 1]!;
     const photos = makePhotos(seed);
     const done = ["COMPLETED", "CONTROLLED", "CLOSED"].includes(seed.status);
 
