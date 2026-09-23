@@ -1,5 +1,5 @@
 import type { HistoryEntry, Photo, ProblemType, RepairRequest, RequestStatus } from "@/types";
-import { statusLabels, statusOrder } from "@/i18n/fr";
+import { statusOrder } from "@/i18n/fr";
 
 type Seed = {
   ref: number;
@@ -311,7 +311,7 @@ function buildHistory(seed: Seed, contractorName: string): HistoryEntry[] {
       at: iso(seed.daysAgo),
       actor: seed.citizenName ?? "Citoyen anonyme",
       role: "CITIZEN",
-      comment: "Demande déposée via le portail citoyen.",
+      comment: "seed.created",
     },
   ];
 
@@ -322,19 +322,19 @@ function buildHistory(seed: Seed, contractorName: string): HistoryEntry[] {
       at: iso(seed.daysAgo - 1),
       actor: actors.ADMIN,
       role: "ADMIN",
-      comment: "Demande rejetée : informations insuffisantes pour localiser le désordre.",
+      comment: "seed.rejected",
     });
     return entries;
   }
 
   const index = statusOrder.indexOf(seed.status);
   const comments: Partial<Record<RequestStatus, string>> = {
-    VERIFIED: "Signalement vérifié sur le terrain par le service voirie.",
-    ASSIGNED: `Intervention confiée à ${contractorName}.`,
-    IN_PROGRESS: "Démarrage de l'intervention sur site.",
-    COMPLETED: "Travaux terminés, photos de fin de chantier transmises.",
-    CONTROLLED: "Contrôle qualité réalisé : intervention conforme.",
-    CLOSED: "Demande clôturée et citoyen informé.",
+    VERIFIED: "seed.VERIFIED",
+    ASSIGNED: "seed.ASSIGNED",
+    IN_PROGRESS: "seed.IN_PROGRESS",
+    COMPLETED: "seed.COMPLETED",
+    CONTROLLED: "seed.CONTROLLED",
+    CLOSED: "seed.CLOSED",
   };
   const roles: Partial<Record<RequestStatus, "ADMIN" | "CONTRACTOR">> = {
     VERIFIED: "ADMIN",
@@ -432,7 +432,7 @@ export function buildRequests(contractorNames: Record<string, string>): RepairRe
             at: last.at,
             actor: actors.ADMIN,
             passed: true,
-            comment: `Intervention conforme au cahier des charges (${statusLabels[seed.status]}).`,
+            comment: "seed.controlOk",
           }
         : undefined,
     } satisfies RepairRequest;

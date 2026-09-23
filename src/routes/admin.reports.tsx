@@ -15,7 +15,8 @@ import {
 } from "recharts";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Button } from "@/components/ui/button";
-import { statusLabels, statusOrder } from "@/i18n/fr";
+import { statusOrder } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDuration } from "@/lib/format";
 import { averageProcessingDays, byContractor, countByStatus, createdOverTime } from "@/lib/stats";
 import { useDemoState } from "@/lib/store";
@@ -46,8 +47,9 @@ const palette = [
 
 function ReportsPage() {
   const { requests, contractors } = useDemoState();
+  const { t, lang, statusLabel } = useI18n();
   const counts = countByStatus(requests);
-  const statusData = statusOrder.map((s) => ({ name: statusLabels[s], value: counts[s] }));
+  const statusData = statusOrder.map((s) => ({ name: statusLabel(s), value: counts[s] }));
   const contractorData = byContractor(requests, contractors).map((r) => ({
     name: r.contractor.name,
     total: r.total,
@@ -59,33 +61,33 @@ function ReportsPage() {
 
   return (
     <AdminShell
-      title="Rapports"
-      description="Synthèse de l'activité du service voirie"
+      title={t("admin.reports.title")}
+      description={t("admin.reports.description")}
       actions={
         <Button
           size="sm"
           onClick={() =>
-            toast.success("Rapport exporté", {
-              description: "Export simulé pour la démonstration.",
+            toast.success(t("admin.reports.exportToast"), {
+              description: t("admin.reports.exportDescription"),
             })
           }
         >
           <Download className="size-4" aria-hidden />
-          Exporter le rapport
+          {t("admin.reports.export")}
         </Button>
       }
     >
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="surface-card p-4">
-          <p className="text-xs text-muted-foreground">Demandes traitées</p>
+          <p className="text-xs text-muted-foreground">{t("admin.reports.processed")}</p>
           <p className="mt-1 text-2xl font-semibold">{completed}</p>
         </div>
         <div className="surface-card p-4">
-          <p className="text-xs text-muted-foreground">Délai moyen de traitement</p>
-          <p className="mt-1 text-2xl font-semibold">{formatDuration(avg)}</p>
+          <p className="text-xs text-muted-foreground">{t("admin.reports.avgDuration")}</p>
+          <p className="mt-1 text-2xl font-semibold">{formatDuration(avg, lang)}</p>
         </div>
         <div className="surface-card p-4">
-          <p className="text-xs text-muted-foreground">Taux de clôture</p>
+          <p className="text-xs text-muted-foreground">{t("admin.reports.closureRate")}</p>
           <p className="mt-1 text-2xl font-semibold">
             {requests.length ? Math.round((counts.CLOSED / requests.length) * 100) : 0} %
           </p>
@@ -93,7 +95,7 @@ function ReportsPage() {
       </div>
 
       <section className="surface-card mt-4 p-5">
-        <h2 className="text-sm font-semibold">Demandes par statut</h2>
+        <h2 className="text-sm font-semibold">{t("admin.reports.byStatus")}</h2>
         <div className="mt-4 h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={statusData} margin={{ left: -20 }}>
@@ -118,7 +120,7 @@ function ReportsPage() {
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="value" name="Demandes" radius={[4, 4, 0, 0]}>
+              <Bar dataKey="value" name={t("admin.reports.seriesRequests")} radius={[4, 4, 0, 0]}>
                 {statusData.map((_, i) => (
                   <Cell key={i} fill={palette[i % palette.length]} />
                 ))}
@@ -130,7 +132,7 @@ function ReportsPage() {
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <section className="surface-card p-5">
-          <h2 className="text-sm font-semibold">Demandes par entreprise</h2>
+          <h2 className="text-sm font-semibold">{t("admin.reports.byContractor")}</h2>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={contractorData} layout="vertical" margin={{ left: 40 }}>
@@ -154,15 +156,15 @@ function ReportsPage() {
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="total" name="Attribuées" fill="var(--color-chart-1)" radius={4} />
-                <Bar dataKey="done" name="Réalisées" fill="var(--color-chart-2)" radius={4} />
+                <Bar dataKey="total" name={t("admin.reports.seriesAssigned")} fill="var(--color-chart-1)" radius={4} />
+                <Bar dataKey="done" name={t("admin.reports.seriesDone")} fill="var(--color-chart-2)" radius={4} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </section>
 
         <section className="surface-card p-5">
-          <h2 className="text-sm font-semibold">Signalements déposés dans le temps</h2>
+          <h2 className="text-sm font-semibold">{t("admin.reports.overTime")}</h2>
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeData} margin={{ left: -20 }}>
@@ -186,7 +188,7 @@ function ReportsPage() {
                 <Line
                   type="monotone"
                   dataKey="value"
-                  name="Signalements"
+                  name={t("admin.reports.seriesReports")}
                   stroke="var(--color-chart-1)"
                   strokeWidth={2}
                   dot={{ r: 3 }}

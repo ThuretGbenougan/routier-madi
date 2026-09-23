@@ -1,11 +1,6 @@
 import { Camera, ImageOff } from "lucide-react";
+import { useI18n } from "@/i18n/LanguageProvider";
 import type { Photo } from "@/types";
-
-const kindLabels = {
-  citizen: "Photo citoyen",
-  before: "Avant travaux",
-  after: "Après travaux",
-} as const;
 
 function hue(seed: string) {
   let h = 0;
@@ -14,7 +9,15 @@ function hue(seed: string) {
 }
 
 export function PhotoTile({ photo }: { photo: Photo }) {
+  const { t } = useI18n();
   const h = hue(photo.seed);
+  const kindLabel =
+    photo.kind === "citizen"
+      ? t("photo.citizen")
+      : photo.kind === "before"
+        ? t("photo.before")
+        : t("photo.after");
+
   return (
     <figure className="overflow-hidden rounded-lg border border-border bg-muted">
       <div
@@ -27,18 +30,20 @@ export function PhotoTile({ photo }: { photo: Photo }) {
       </div>
       <figcaption className="px-2.5 py-2 text-xs text-muted-foreground">
         <span className="block font-medium text-foreground">{photo.label}</span>
-        {kindLabels[photo.kind]}
+        {kindLabel}
       </figcaption>
     </figure>
   );
 }
 
 export function PhotoGrid({ photos, empty }: { photos: Photo[]; empty?: string }) {
+  const { t } = useI18n();
+
   if (photos.length === 0) {
     return (
       <p className="flex items-center gap-2 text-sm text-muted-foreground">
         <ImageOff className="size-4" aria-hidden />
-        {empty ?? "Aucune photo disponible."}
+        {empty ?? t("photo.none")}
       </p>
     );
   }

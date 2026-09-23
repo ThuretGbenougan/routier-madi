@@ -9,7 +9,7 @@ import { PhotoGrid } from "@/components/PhotoTile";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { problemLabels } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { transitionRequest, useDemoState } from "@/lib/store";
 
@@ -31,6 +31,7 @@ export const Route = createFileRoute("/contractor/jobs/$id")({
 function JobDetail() {
   const { id } = Route.useParams();
   const { requests, session } = useDemoState();
+  const { t, problemLabel, lang } = useI18n();
   const request = requests.find((r) => r.id === id);
   const [comment, setComment] = useState("");
   const [beforePhoto, setBeforePhoto] = useState<string | null>(null);
@@ -38,29 +39,29 @@ function JobDetail() {
 
   if (!request) {
     return (
-      <ContractorShell title="Intervention introuvable">
+      <ContractorShell title={t("contractor.job.notFoundTitle")}>
         <div className="surface-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">Cette intervention n'existe plus.</p>
+          <p className="text-sm text-muted-foreground">{t("contractor.job.notFoundDescription")}</p>
           <Button asChild className="mt-4">
-            <Link to="/contractor/jobs">Retour aux interventions</Link>
+            <Link to="/contractor/jobs">{t("contractor.job.backToJobs")}</Link>
           </Button>
         </div>
       </ContractorShell>
     );
   }
 
-  const actor = session?.name ?? "Équipe terrain";
+  const actor = session?.name ?? t("contractor.job.defaultActor");
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
 
   return (
-    <ContractorShell title={request.reference} description={problemLabels[request.problemType]}>
+    <ContractorShell title={request.reference} description={problemLabel(request.problemType)}>
       <Link
         to="/contractor/jobs"
         className="mb-3 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" aria-hidden />
-        Retour aux interventions
+        {t("contractor.job.back")}
       </Link>
 
       <header className="surface-card p-5">
@@ -69,10 +70,10 @@ function JobDetail() {
             <h2 className="text-lg font-semibold">{request.reference}</h2>
             <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="size-4" aria-hidden />
-              {request.address} — quartier {request.district}
+              {request.address} — {t("contractor.job.district", { district: request.district })}
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Signalé le {formatDate(request.createdAt)}
+              {t("contractor.job.reportedOn", { date: formatDate(request.createdAt, lang) })}
             </p>
           </div>
           <StatusBadge status={request.status} size="lg" />
@@ -81,7 +82,7 @@ function JobDetail() {
       </header>
 
       <section className="surface-card mt-4 p-5">
-        <h3 className="text-sm font-semibold">Avancement</h3>
+        <h3 className="text-sm font-semibold">{t("contractor.job.progressTitle")}</h3>
         <div className="mt-4">
           <LifecycleTimeline status={request.status} history={request.history} />
         </div>
@@ -89,9 +90,9 @@ function JobDetail() {
 
       {request.status === "ASSIGNED" && (
         <section className="surface-card mt-4 p-5">
-          <h3 className="text-sm font-semibold">Démarrer l'intervention</h3>
+          <h3 className="text-sm font-semibold">{t("contractor.job.startTitle")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Confirmez l'arrivée sur site pour passer le chantier en cours.
+            {t("contractor.job.startDescription")}
           </p>
           <Button
             className="mt-4 w-full sm:w-auto"
@@ -99,22 +100,22 @@ function JobDetail() {
               transitionRequest(request.id, "IN_PROGRESS", {
                 actor,
                 role: "CONTRACTOR",
-                comment: "Démarrage de l'intervention sur site.",
+                comment: t("contractor.job.startComment"),
                 ...(beforePhoto ? { photoLabels: { before: beforePhoto } } : {}),
               });
               setBeforePhoto(null);
-              toast.success("Intervention démarrée");
+              toast.success(t("contractor.job.startedToast"));
             }}
           >
             <PlayCircle className="size-4" aria-hidden />
-            Démarrer l'intervention
+            {t("contractor.job.startCta")}
           </Button>
           <div className="mt-4">
             <PhotoUpload
-              label="Photo avant travaux (facultatif)"
+              label={t("contractor.job.beforePhotoLabel")}
               value={beforePhoto}
               onChange={setBeforePhoto}
-              simulateName="avant-travaux.jpg"
+              simulateName={t("contractor.job.beforePhotoSimulateName")}
             />
           </div>
         </section>
@@ -122,29 +123,29 @@ function JobDetail() {
 
       {request.status === "IN_PROGRESS" && (
         <section className="surface-card mt-4 space-y-4 p-5">
-          <h3 className="text-sm font-semibold">Clôturer les travaux</h3>
+          <h3 className="text-sm font-semibold">{t("contractor.job.closeTitle")}</h3>
           <div className="space-y-1.5">
-            <Label htmlFor="comment">Compte rendu des travaux</Label>
+            <Label htmlFor="comment">{t("contractor.job.reportLabel")}</Label>
             <Textarea
               id="comment"
               rows={4}
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="Nature des travaux réalisés, matériaux, durée, remise en circulation…"
+              placeholder={t("contractor.job.reportPlaceholder")}
             />
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <PhotoUpload
-              label="Photo avant travaux"
+              label={t("contractor.job.beforePhotoLabelPlain")}
               value={beforePhoto}
               onChange={setBeforePhoto}
-              simulateName="avant-travaux.jpg"
+              simulateName={t("contractor.job.beforePhotoSimulateName")}
             />
             <PhotoUpload
-              label="Photo après travaux"
+              label={t("contractor.job.afterPhotoLabelPlain")}
               value={afterPhoto}
               onChange={setAfterPhoto}
-              simulateName="apres-travaux.jpg"
+              simulateName={t("contractor.job.afterPhotoSimulateName")}
             />
           </div>
           <Button
@@ -163,53 +164,53 @@ function JobDetail() {
               setComment("");
               setBeforePhoto(null);
               setAfterPhoto(null);
-              toast.success("Travaux déclarés terminés");
+              toast.success(t("contractor.job.completedToast"));
             }}
           >
             <CheckCircle2 className="size-4" aria-hidden />
-            Marquer comme terminé
+            {t("contractor.job.completeCta")}
           </Button>
           <p className="text-xs text-muted-foreground">
-            Le service voirie procédera ensuite au contrôle qualité.
+            {t("contractor.job.completeHint")}
           </p>
         </section>
       )}
 
       {["COMPLETED", "CONTROLLED", "CLOSED"].includes(request.status) && (
         <section className="surface-card mt-4 p-5">
-          <h3 className="text-sm font-semibold">Intervention terminée</h3>
+          <h3 className="text-sm font-semibold">{t("contractor.job.doneTitle")}</h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            Aucune action supplémentaire n'est attendue de votre part.
+            {t("contractor.job.doneDescription")}
           </p>
         </section>
       )}
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <section className="surface-card p-5">
-          <h3 className="text-sm font-semibold">Photos du citoyen</h3>
+          <h3 className="text-sm font-semibold">{t("contractor.job.citizenPhotosTitle")}</h3>
           <div className="mt-3">
-            <PhotoGrid photos={citizenPhotos} empty="Aucune photo transmise." />
+            <PhotoGrid photos={citizenPhotos} empty={t("contractor.job.citizenPhotosEmpty")} />
           </div>
         </section>
         <section className="surface-card p-5">
-          <h3 className="text-sm font-semibold">Photos de chantier</h3>
+          <h3 className="text-sm font-semibold">{t("contractor.job.workPhotosTitle")}</h3>
           <div className="mt-3">
-            <PhotoGrid photos={workPhotos} empty="Aucune photo de chantier." />
+            <PhotoGrid photos={workPhotos} empty={t("contractor.job.workPhotosEmpty")} />
           </div>
         </section>
       </div>
 
       <section className="surface-card mt-4 p-5">
-        <h3 className="text-sm font-semibold">Comptes rendus</h3>
+        <h3 className="text-sm font-semibold">{t("contractor.job.notesTitle")}</h3>
         <ul className="mt-3 space-y-3">
           {request.contractorNotes.length === 0 && (
-            <li className="text-sm text-muted-foreground">Aucun compte rendu enregistré.</li>
+            <li className="text-sm text-muted-foreground">{t("contractor.job.notesEmpty")}</li>
           )}
           {request.contractorNotes.map((n) => (
             <li key={n.id} className="rounded-lg border border-border p-3 text-sm">
               <p>{n.text}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {n.actor} · {formatDateTime(n.at)}
+                {n.actor} · {formatDateTime(n.at, lang)}
               </p>
             </li>
           ))}
@@ -217,7 +218,7 @@ function JobDetail() {
       </section>
 
       <section className="surface-card mt-4 p-5">
-        <h3 className="text-sm font-semibold">Historique</h3>
+        <h3 className="text-sm font-semibold">{t("contractor.job.historyTitle")}</h3>
         <div className="mt-4">
           <HistoryList history={request.history} />
         </div>
@@ -237,6 +238,7 @@ function PhotoUpload({
   onChange: (value: string | null) => void;
   simulateName: string;
 }) {
+  const { t } = useI18n();
   return (
     <div className="space-y-2">
       <Label>{label}</Label>
@@ -244,14 +246,14 @@ function PhotoUpload({
         <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
           <span className="truncate">{value}</span>
           <Button variant="ghost" size="sm" onClick={() => onChange(null)}>
-            Retirer
+            {t("contractor.job.photoRemove")}
           </Button>
         </div>
       ) : (
         <div className="flex flex-wrap gap-2">
           <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-dashed border-input px-3 py-2 text-sm text-muted-foreground hover:bg-muted">
             <ImagePlus className="size-4" aria-hidden />
-            Ajouter
+            {t("contractor.job.photoAdd")}
             <input
               type="file"
               accept="image/*"
@@ -264,7 +266,7 @@ function PhotoUpload({
             />
           </label>
           <Button variant="outline" size="sm" onClick={() => onChange(simulateName)}>
-            Simuler
+            {t("contractor.job.photoSimulate")}
           </Button>
         </div>
       )}

@@ -1,36 +1,42 @@
 import { Link } from "@tanstack/react-router";
 import { TrafficCone } from "lucide-react";
 import type { ReactNode } from "react";
-import { appName, cityName } from "@/i18n/fr";
+import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { useI18n } from "@/i18n/LanguageProvider";
 
 export function PublicLayout({ children }: { children: ReactNode }) {
+  const { t } = useI18n();
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between px-4">
+        <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-3 px-4">
           <Link to="/" className="flex items-center gap-2.5">
             <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <TrafficCone className="size-5" aria-hidden />
             </span>
             <span className="leading-tight">
-              <span className="block text-sm font-semibold">{appName}</span>
-              <span className="block text-xs text-muted-foreground">{cityName}</span>
+              <span className="block text-sm font-semibold">{t("app.name")}</span>
+              <span className="block text-xs text-muted-foreground">{t("app.city")}</span>
             </span>
           </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <Link
-              to="/report"
-              className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              Signaler
-            </Link>
-            <Link
-              to="/track"
-              className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-            >
-              Suivre
-            </Link>
-          </nav>
+          <div className="flex items-center gap-2">
+            <nav className="hidden items-center gap-1 text-sm sm:flex">
+              <Link
+                to="/report"
+                className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                {t("public.nav.report")}
+              </Link>
+              <Link
+                to="/track"
+                className="rounded-md px-3 py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              >
+                {t("public.nav.track")}
+              </Link>
+            </nav>
+            <LanguageSwitch />
+          </div>
         </div>
       </header>
 
@@ -39,24 +45,24 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto grid w-full max-w-5xl gap-6 px-4 py-8 text-sm sm:grid-cols-3">
           <div>
-            <p className="font-semibold">{appName}</p>
+            <p className="font-semibold">{t("app.name")}</p>
             <p className="mt-1 text-muted-foreground">
-              Service de la voirie · {cityName}
+              {t("public.footer.service")} · {t("app.city")}
             </p>
           </div>
           <div className="text-muted-foreground">
-            <p className="font-medium text-foreground">Aide et contact</p>
-            <p className="mt-1">Accueil voirie : 01 45 00 12 12</p>
+            <p className="font-medium text-foreground">{t("public.footer.helpTitle")}</p>
+            <p className="mt-1">{t("public.footer.phone")}</p>
             <p>voirie@valmont.fr</p>
-            <p>Du lundi au vendredi, 8h30 – 17h30</p>
+            <p>{t("public.footer.hours")}</p>
           </div>
           <div className="text-muted-foreground">
-            <p className="font-medium text-foreground">Accès professionnels</p>
+            <p className="font-medium text-foreground">{t("public.footer.proTitle")}</p>
             <Link to="/admin/login" className="mt-1 block hover:text-foreground">
-              Espace administration
+              {t("public.footer.adminSpace")}
             </Link>
             <Link to="/contractor/login" className="block hover:text-foreground">
-              Espace entreprise
+              {t("public.footer.contractorSpace")}
             </Link>
           </div>
         </div>

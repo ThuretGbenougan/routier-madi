@@ -12,34 +12,34 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { resetDemoData } from "@/lib/store";
 
 export function DemoResetButton({ className }: { className?: string }) {
+  const { t } = useI18n();
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="outline" size="sm" className={className}>
           <RotateCcw className="size-4" aria-hidden />
-          Réinitialiser la démo
+          {t("action.reset")}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Réinitialiser les données de démonstration ?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Toutes les demandes créées et les changements de statut effectués pendant la
-            démonstration seront effacés et remplacés par le jeu de données initial.
-          </AlertDialogDescription>
+          <AlertDialogTitle>{t("reset.title")}</AlertDialogTitle>
+          <AlertDialogDescription>{t("reset.description")}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Annuler</AlertDialogCancel>
+          <AlertDialogCancel>{t("action.cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={() => {
               resetDemoData();
-              toast.success("Données de démonstration réinitialisées");
+              toast.success(t("reset.done"));
             }}
           >
-            Réinitialiser
+            {t("reset.confirm")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/StatusBadge";
 import { HistoryList, LifecycleTimeline } from "@/components/Timeline";
 import { PhotoGrid } from "@/components/PhotoTile";
-import { problemLabels } from "@/i18n/fr";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { useDemoState, useHydrated } from "@/lib/store";
+import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/track/$reference")({
   head: ({ params }) => ({
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/track/$reference")({
 });
 
 function TrackDetail() {
+  const { t, lang, problemLabel } = useI18n();
   const { reference } = Route.useParams();
   const { requests, contractors } = useDemoState();
   const hydrated = useHydrated();
@@ -41,14 +42,13 @@ function TrackDetail() {
             <SearchX className="size-7" aria-hidden />
           </span>
           <h1 className="mt-4 text-xl font-semibold">
-            {hydrated ? "Aucune demande trouvée" : "Recherche en cours…"}
+            {hydrated ? t("track.detail.notFound.title") : t("track.detail.searching")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Le numéro <span className="font-medium">{reference}</span> ne correspond à aucun
-            signalement enregistré. Vérifiez la saisie.
+            {t("track.detail.notFound.text", { reference })}
           </p>
           <Button asChild className="mt-6">
-            <Link to="/track">Nouvelle recherche</Link>
+            <Link to="/track">{t("track.detail.notFound.retry")}</Link>
           </Button>
         </div>
       </PublicLayout>
@@ -67,13 +67,13 @@ function TrackDetail() {
           className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden />
-          Retour à la recherche
+          {t("track.detail.back")}
         </Link>
 
         <header className="surface-card mt-4 p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xs text-muted-foreground">Numéro de suivi</p>
+              <p className="text-xs text-muted-foreground">{t("track.detail.reference")}</p>
               <h1 className="text-xl font-semibold tracking-wide">{request.reference}</h1>
             </div>
             <StatusBadge status={request.status} size="lg" />
@@ -82,55 +82,58 @@ function TrackDetail() {
             <div className="flex items-start gap-2">
               <MapPin className="mt-0.5 size-4 text-muted-foreground" aria-hidden />
               <div>
-                <dt className="text-xs text-muted-foreground">Localisation</dt>
+                <dt className="text-xs text-muted-foreground">{t("track.detail.location")}</dt>
                 <dd>
-                  {request.address} — quartier {request.district}
+                  {t("track.detail.locationValue", {
+                    address: request.address,
+                    district: request.district,
+                  })}
                 </dd>
               </div>
             </div>
             <div className="flex items-start gap-2">
               <CalendarDays className="mt-0.5 size-4 text-muted-foreground" aria-hidden />
               <div>
-                <dt className="text-xs text-muted-foreground">Déposée le</dt>
-                <dd>{formatDate(request.createdAt)}</dd>
+                <dt className="text-xs text-muted-foreground">{t("track.detail.filedOn")}</dt>
+                <dd>{formatDate(request.createdAt, lang)}</dd>
               </div>
             </div>
           </dl>
         </header>
 
         <section className="surface-card mt-4 p-5">
-          <h2 className="text-sm font-semibold">Avancement</h2>
+          <h2 className="text-sm font-semibold">{t("track.detail.progress")}</h2>
           <div className="mt-4">
             <LifecycleTimeline status={request.status} history={request.history} />
           </div>
           <p className="mt-4 text-xs text-muted-foreground">
-            Dernière mise à jour : {formatDateTime(request.updatedAt)}
+            {t("track.detail.lastUpdate", { date: formatDateTime(request.updatedAt, lang) })}
           </p>
         </section>
 
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <section className="surface-card p-5">
-            <h2 className="text-sm font-semibold">Le signalement</h2>
-            <p className="mt-3 text-xs text-muted-foreground">Type de problème</p>
-            <p className="text-sm">{problemLabels[request.problemType]}</p>
-            <p className="mt-3 text-xs text-muted-foreground">Description</p>
+            <h2 className="text-sm font-semibold">{t("track.detail.request")}</h2>
+            <p className="mt-3 text-xs text-muted-foreground">{t("track.detail.problemType")}</p>
+            <p className="text-sm">{problemLabel(request.problemType)}</p>
+            <p className="mt-3 text-xs text-muted-foreground">{t("track.detail.description")}</p>
             <p className="text-sm">{request.description}</p>
             {contractor && (
               <>
-                <p className="mt-3 text-xs text-muted-foreground">Entreprise en charge</p>
+                <p className="mt-3 text-xs text-muted-foreground">{t("track.detail.contractor")}</p>
                 <p className="text-sm">{contractor.name}</p>
               </>
             )}
           </section>
 
           <section className="surface-card p-5">
-            <h2 className="text-sm font-semibold">Photos</h2>
+            <h2 className="text-sm font-semibold">{t("track.detail.photos")}</h2>
             <div className="mt-3">
-              <PhotoGrid photos={citizenPhotos} empty="Aucune photo transmise." />
+              <PhotoGrid photos={citizenPhotos} empty={t("photo.none")} />
             </div>
             {workPhotos.length > 0 && (
               <>
-                <h3 className="mt-4 text-sm font-semibold">Travaux réalisés</h3>
+                <h3 className="mt-4 text-sm font-semibold">{t("track.detail.workPhotos")}</h3>
                 <div className="mt-3">
                   <PhotoGrid photos={workPhotos} />
                 </div>
@@ -140,7 +143,7 @@ function TrackDetail() {
         </div>
 
         <section className="surface-card mt-4 p-5">
-          <h2 className="text-sm font-semibold">Historique du traitement</h2>
+          <h2 className="text-sm font-semibold">{t("track.detail.history")}</h2>
           <div className="mt-4">
             <HistoryList history={request.history} />
           </div>

@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mail, Phone, User } from "lucide-react";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { byContractor } from "@/lib/stats";
 import { useDemoState } from "@/lib/store";
 
@@ -22,12 +23,13 @@ export const Route = createFileRoute("/admin/contractors")({
 
 function ContractorsPage() {
   const { requests, contractors } = useDemoState();
+  const { t } = useI18n();
   const rows = byContractor(requests, contractors);
 
   return (
     <AdminShell
-      title="Entreprises partenaires"
-      description="Charge de travail et coordonnées des entreprises attributaires"
+      title={t("admin.contractors.title")}
+      description={t("admin.contractors.description")}
     >
       <div className="grid gap-4 md:grid-cols-2">
         {rows.map(({ contractor, total, active, done }) => (
@@ -37,15 +39,15 @@ function ContractorsPage() {
 
             <dl className="mt-4 grid grid-cols-3 gap-3 text-center">
               <div className="rounded-lg border border-border bg-muted/40 p-3">
-                <dt className="text-xs text-muted-foreground">Total</dt>
+                <dt className="text-xs text-muted-foreground">{t("admin.contractors.total")}</dt>
                 <dd className="text-lg font-semibold">{total}</dd>
               </div>
               <div className="rounded-lg border border-border bg-muted/40 p-3">
-                <dt className="text-xs text-muted-foreground">En cours</dt>
+                <dt className="text-xs text-muted-foreground">{t("admin.contractors.active")}</dt>
                 <dd className="text-lg font-semibold">{active}</dd>
               </div>
               <div className="rounded-lg border border-border bg-muted/40 p-3">
-                <dt className="text-xs text-muted-foreground">Réalisées</dt>
+                <dt className="text-xs text-muted-foreground">{t("admin.contractors.done")}</dt>
                 <dd className="text-lg font-semibold">{done}</dd>
               </div>
             </dl>
@@ -66,7 +68,7 @@ function ContractorsPage() {
             </ul>
 
             <Button asChild variant="outline" size="sm" className="mt-4">
-              <Link to="/admin/requests">Voir ses demandes</Link>
+              <Link to="/admin/requests">{t("admin.contractors.viewRequests")}</Link>
             </Button>
           </article>
         ))}

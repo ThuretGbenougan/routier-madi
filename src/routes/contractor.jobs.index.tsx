@@ -3,7 +3,7 @@ import { ChevronRight, MapPin } from "lucide-react";
 import { ContractorShell } from "@/components/layout/ContractorShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
-import { problemLabels } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate } from "@/lib/format";
 import { useDemoState } from "@/lib/store";
 
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/contractor/jobs/")({
 
 function JobsPage() {
   const { requests, session } = useDemoState();
+  const { t, problemLabel, lang } = useI18n();
   const jobs = requests
     .filter(
       (r) =>
@@ -34,17 +35,20 @@ function JobsPage() {
 
   return (
     <ContractorShell
-      title="Mes interventions"
-      description={`${jobs.length} chantier${jobs.length > 1 ? "s" : ""} à traiter`}
+      title={t("contractor.jobs.title")}
+      description={t("contractor.jobs.description", {
+        count: jobs.length,
+        plural: jobs.length > 1 ? "s" : "",
+      })}
     >
       {jobs.length === 0 ? (
         <div className="surface-card p-10 text-center">
-          <p className="text-sm font-medium">Aucune intervention en attente</p>
+          <p className="text-sm font-medium">{t("contractor.jobs.empty.title")}</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Les nouvelles attributions du service voirie apparaîtront ici.
+            {t("contractor.jobs.empty.description")}
           </p>
           <Button asChild variant="outline" size="sm" className="mt-4">
-            <Link to="/contractor/history">Voir l'historique</Link>
+            <Link to="/contractor/history">{t("contractor.jobs.empty.historyCta")}</Link>
           </Button>
         </div>
       ) : (
@@ -66,7 +70,10 @@ function JobsPage() {
                     {job.address}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {problemLabels[job.problemType]} · signalé le {formatDate(job.createdAt)}
+                    {t("contractor.jobs.reportedOn", {
+                      problem: problemLabel(job.problemType),
+                      date: formatDate(job.createdAt, lang),
+                    })}
                   </p>
                 </div>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />

@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { problemLabels, statusLabels } from "@/i18n/fr";
+import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate } from "@/lib/format";
 import { useDemoState } from "@/lib/store";
 import type { RequestStatus } from "@/types";
@@ -54,6 +54,7 @@ const allStatuses: RequestStatus[] = [
 
 function RequestsList() {
   const { requests, contractors } = useDemoState();
+  const { t, lang, statusLabel, problemLabel } = useI18n();
   const [status, setStatus] = useState<string>("ALL");
   const [contractorId, setContractorId] = useState<string>("ALL");
   const [query, setQuery] = useState("");
@@ -88,17 +89,20 @@ function RequestsList() {
 
   return (
     <AdminShell
-      title="Demandes"
-      description={`${filtered.length} demande${filtered.length > 1 ? "s" : ""} affichée${filtered.length > 1 ? "s" : ""} sur ${requests.length}`}
+      title={t("admin.requests.title")}
+      description={t("admin.requests.description", {
+        filtered: filtered.length,
+        total: requests.length,
+      })}
     >
       <section className="surface-card p-4">
         <div className="flex items-center gap-2 text-sm font-medium">
           <SlidersHorizontal className="size-4" aria-hidden />
-          Filtres
+          {t("admin.requests.filters")}
         </div>
         <div className="mt-3 grid gap-3 md:grid-cols-4">
           <div className="space-y-1.5 md:col-span-2">
-            <Label htmlFor="search">Recherche</Label>
+            <Label htmlFor="search">{t("admin.requests.search")}</Label>
             <div className="relative">
               <Search
                 className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
@@ -107,37 +111,37 @@ function RequestsList() {
               <Input
                 id="search"
                 className="pl-9"
-                placeholder="Référence, adresse ou description"
+                placeholder={t("admin.requests.searchPlaceholder")}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="status">Statut</Label>
+            <Label htmlFor="status">{t("admin.requests.status")}</Label>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger id="status" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Tous les statuts</SelectItem>
+                <SelectItem value="ALL">{t("admin.requests.allStatuses")}</SelectItem>
                 {allStatuses.map((s) => (
                   <SelectItem key={s} value={s}>
-                    {statusLabels[s]}
+                    {statusLabel(s)}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="contractor">Entreprise</Label>
+            <Label htmlFor="contractor">{t("admin.requests.contractor")}</Label>
             <Select value={contractorId} onValueChange={setContractorId}>
               <SelectTrigger id="contractor" className="w-full">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">Toutes les entreprises</SelectItem>
-                <SelectItem value="NONE">Non attribuée</SelectItem>
+                <SelectItem value="ALL">{t("admin.requests.allContractors")}</SelectItem>
+                <SelectItem value="NONE">{t("admin.requests.noContractor")}</SelectItem>
                 {contractors.map((c) => (
                   <SelectItem key={c.id} value={c.id}>
                     {c.name}
@@ -148,7 +152,7 @@ function RequestsList() {
           </div>
         </div>
         <Button variant="ghost" size="sm" className="mt-3" onClick={reset}>
-          Réinitialiser les filtres
+          {t("admin.requests.resetFilters")}
         </Button>
       </section>
 
@@ -157,14 +161,14 @@ function RequestsList() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Référence</TableHead>
-                <TableHead>Adresse</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Statut</TableHead>
-                <TableHead>Entreprise</TableHead>
-                <TableHead>Création</TableHead>
-                <TableHead>Mise à jour</TableHead>
-                <TableHead className="text-right">Action</TableHead>
+                <TableHead>{t("admin.requests.col.reference")}</TableHead>
+                <TableHead>{t("admin.requests.col.address")}</TableHead>
+                <TableHead>{t("admin.requests.col.type")}</TableHead>
+                <TableHead>{t("admin.requests.col.status")}</TableHead>
+                <TableHead>{t("admin.requests.col.contractor")}</TableHead>
+                <TableHead>{t("admin.requests.col.created")}</TableHead>
+                <TableHead>{t("admin.requests.col.updated")}</TableHead>
+                <TableHead className="text-right">{t("admin.requests.col.action")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -172,7 +176,7 @@ function RequestsList() {
                 <TableRow key={r.id}>
                   <TableCell className="font-medium">{r.reference}</TableCell>
                   <TableCell className="max-w-56 truncate">{r.address}</TableCell>
-                  <TableCell>{problemLabels[r.problemType]}</TableCell>
+                  <TableCell>{problemLabel(r.problemType)}</TableCell>
                   <TableCell>
                     <StatusBadge status={r.status} />
                   </TableCell>
@@ -180,15 +184,15 @@ function RequestsList() {
                     {contractors.find((c) => c.id === r.contractorId)?.name ?? "—"}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDate(r.createdAt)}
+                    {formatDate(r.createdAt, lang)}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {formatDate(r.updatedAt)}
+                    {formatDate(r.updatedAt, lang)}
                   </TableCell>
                   <TableCell className="text-right">
                     <Button asChild variant="outline" size="sm">
                       <Link to="/admin/requests/$id" params={{ id: r.id }}>
-                        Ouvrir
+                        {t("admin.requests.open")}
                       </Link>
                     </Button>
                   </TableCell>
@@ -209,11 +213,11 @@ function RequestsList() {
                 <StatusBadge status={r.status} />
               </div>
               <p className="mt-2 text-xs text-muted-foreground">
-                {problemLabels[r.problemType]} · {formatDate(r.createdAt)}
+                {problemLabel(r.problemType)} · {formatDate(r.createdAt, lang)}
               </p>
               <Button asChild variant="outline" size="sm" className="mt-3 w-full">
                 <Link to="/admin/requests/$id" params={{ id: r.id }}>
-                  Ouvrir la demande
+                  {t("admin.requests.openRequest")}
                 </Link>
               </Button>
             </li>
@@ -222,12 +226,12 @@ function RequestsList() {
 
         {filtered.length === 0 && (
           <div className="p-10 text-center">
-            <p className="text-sm font-medium">Aucune demande ne correspond aux filtres</p>
+            <p className="text-sm font-medium">{t("admin.requests.emptyTitle")}</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Modifiez la recherche ou réinitialisez les filtres.
+              {t("admin.requests.emptyDescription")}
             </p>
             <Button variant="outline" size="sm" className="mt-4" onClick={reset}>
-              Réinitialiser les filtres
+              {t("admin.requests.resetFilters")}
             </Button>
           </div>
         )}

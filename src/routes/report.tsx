@@ -14,9 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { problemLabels } from "@/i18n/fr";
 import { createRequest } from "@/lib/store";
 import type { ProblemType } from "@/types";
+import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/report")({
   head: () => ({
@@ -48,6 +48,7 @@ type FormErrors = {
 };
 
 function ReportPage() {
+  const { t, problemLabel } = useI18n();
   const navigate = useNavigate();
   const [problemType, setProblemType] = useState<ProblemType | "">("");
   const [address, setAddress] = useState("");
@@ -60,15 +61,24 @@ function ReportPage() {
   const [submitting, setSubmitting] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
 
+  const problemTypes: ProblemType[] = [
+    "POTHOLE",
+    "PAVEMENT",
+    "CRACK",
+    "SIDEWALK",
+    "DRAINAGE",
+    "MARKING",
+    "OTHER",
+  ];
+
   function validate() {
     const next: FormErrors = {};
-    if (!problemType) next.problemType = "Sélectionnez un type de problème.";
-    if (address.trim().length < 5) next.address = "Indiquez une adresse précise.";
-    if (!district) next.district = "Sélectionnez un quartier.";
-    if (description.trim().length < 15)
-      next.description = "Décrivez le problème en quelques mots (15 caractères minimum).";
+    if (!problemType) next.problemType = t("report.error.problemType");
+    if (address.trim().length < 5) next.address = t("report.error.address");
+    if (!district) next.district = t("report.error.district");
+    if (description.trim().length < 15) next.description = t("report.error.description");
     if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))
-      next.email = "Adresse électronique invalide.";
+      next.email = t("report.error.email");
     setErrors(next);
     return Object.keys(next).length === 0;
   }
@@ -89,7 +99,7 @@ function ReportPage() {
       });
       setSubmitting(false);
       setReference(created.reference);
-      toast.success("Signalement enregistré", { description: created.reference });
+      toast.success(t("report.toast.success"), { description: created.reference });
     }, 500);
   }
 
@@ -101,11 +111,8 @@ function ReportPage() {
             <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-success/12 text-success">
               <CheckCircle2 className="size-7" aria-hidden />
             </span>
-            <h1 className="mt-4 text-xl font-semibold">Signalement enregistré</h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Conservez ce numéro de suivi, il vous permet de consulter l'avancement de votre
-              demande à tout moment.
-            </p>
+            <h1 className="mt-4 text-xl font-semibold">{t("report.success.title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("report.success.text")}</p>
             <p className="mt-5 rounded-lg border border-dashed border-primary/40 bg-primary/5 py-4 text-2xl font-semibold tracking-wider text-primary">
               {reference}
             </p>
@@ -115,10 +122,10 @@ function ReportPage() {
                   navigate({ to: "/track/$reference", params: { reference } })
                 }
               >
-                Suivre ma demande
+                {t("report.success.track")}
               </Button>
               <Button variant="outline" asChild>
-                <Link to="/">Retour à l'accueil</Link>
+                <Link to="/">{t("report.success.home")}</Link>
               </Button>
             </div>
           </div>
@@ -130,29 +137,26 @@ function ReportPage() {
   return (
     <PublicLayout>
       <div className="mx-auto w-full max-w-2xl px-4 py-8 sm:py-12">
-        <h1 className="text-2xl font-semibold tracking-tight">Signaler un problème de voirie</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Les champs marqués d'un astérisque sont obligatoires. Vos coordonnées restent
-          facultatives.
-        </p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("report.title")}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t("report.subtitle")}</p>
 
         <form onSubmit={onSubmit} noValidate className="mt-6 space-y-6">
           <section className="surface-card space-y-4 p-5">
-            <h2 className="text-sm font-semibold">Le problème</h2>
+            <h2 className="text-sm font-semibold">{t("report.section.problem")}</h2>
 
             <div className="space-y-1.5">
-              <Label htmlFor="problemType">Type de problème *</Label>
+              <Label htmlFor="problemType">{t("report.field.problemType")}</Label>
               <Select
                 value={problemType}
                 onValueChange={(v) => setProblemType(v as ProblemType)}
               >
                 <SelectTrigger id="problemType" className="w-full">
-                  <SelectValue placeholder="Sélectionnez un type" />
+                  <SelectValue placeholder={t("report.field.problemType.placeholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(problemLabels).map(([value, label]) => (
+                  {problemTypes.map((value) => (
                     <SelectItem key={value} value={value}>
-                      {label}
+                      {problemLabel(value)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -164,20 +168,20 @@ function ReportPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="address">Adresse ou localisation *</Label>
+                <Label htmlFor="address">{t("report.field.address")}</Label>
                 <Input
                   id="address"
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
-                  placeholder="12 rue des Tilleuls"
+                  placeholder={t("report.field.address.placeholder")}
                 />
                 {errors.address && <p className="text-xs text-destructive">{errors.address}</p>}
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="district">Quartier *</Label>
+                <Label htmlFor="district">{t("report.field.district")}</Label>
                 <Select value={district} onValueChange={setDistrict}>
                   <SelectTrigger id="district" className="w-full">
-                    <SelectValue placeholder="Sélectionnez un quartier" />
+                    <SelectValue placeholder={t("report.field.district.placeholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {districts.map((d) => (
@@ -192,13 +196,13 @@ function ReportPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description">{t("report.field.description")}</Label>
               <Textarea
                 id="description"
                 rows={4}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Décrivez le désordre constaté, sa taille et le danger éventuel."
+                placeholder={t("report.field.description.placeholder")}
               />
               {errors.description && (
                 <p className="text-xs text-destructive">{errors.description}</p>
@@ -207,14 +211,11 @@ function ReportPage() {
           </section>
 
           <section className="surface-card space-y-3 p-5">
-            <h2 className="text-sm font-semibold">Photos (facultatif)</h2>
-            <p className="text-xs text-muted-foreground">
-              Les photos aident le service voirie à évaluer l'urgence. Dans cette démonstration,
-              seuls les noms des fichiers sont conservés.
-            </p>
+            <h2 className="text-sm font-semibold">{t("report.section.photos")}</h2>
+            <p className="text-xs text-muted-foreground">{t("report.photos.hint")}</p>
             <label className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-input bg-muted/50 px-4 py-6 text-sm text-muted-foreground transition-colors hover:bg-muted">
               <ImagePlus className="size-4" aria-hidden />
-              Ajouter des photos
+              {t("report.photos.add")}
               <input
                 type="file"
                 accept="image/*"
@@ -237,7 +238,7 @@ function ReportPage() {
                     {p}
                     <button
                       type="button"
-                      aria-label={`Retirer ${p}`}
+                      aria-label={t("report.photos.remove", { name: p })}
                       onClick={() => setPhotos((list) => list.filter((_, idx) => idx !== i))}
                       className="text-muted-foreground hover:text-destructive"
                     >
@@ -253,19 +254,19 @@ function ReportPage() {
               size="sm"
               onClick={() => setPhotos((p) => [...p, `photo-simulee-${p.length + 1}.jpg`])}
             >
-              Simuler une photo
+              {t("report.photos.simulate")}
             </Button>
           </section>
 
           <section className="surface-card space-y-4 p-5">
-            <h2 className="text-sm font-semibold">Vos coordonnées (facultatif)</h2>
+            <h2 className="text-sm font-semibold">{t("report.section.contact")}</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
-                <Label htmlFor="name">Nom</Label>
+                <Label htmlFor="name">{t("report.field.name")}</Label>
                 <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
               <div className="space-y-1.5">
-                <Label htmlFor="email">Adresse électronique</Label>
+                <Label htmlFor="email">{t("report.field.email")}</Label>
                 <Input
                   id="email"
                   type="email"
@@ -280,10 +281,10 @@ function ReportPage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <Button type="submit" size="lg" disabled={submitting} className="sm:w-auto">
               {submitting && <Loader2 className="size-4 animate-spin" aria-hidden />}
-              Envoyer le signalement
+              {t("report.submit")}
             </Button>
             <Button type="button" variant="ghost" size="lg" asChild>
-              <Link to="/">Annuler</Link>
+              <Link to="/">{t("report.cancel")}</Link>
             </Button>
           </div>
         </form>
