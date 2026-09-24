@@ -16,6 +16,7 @@ import { Route as AdminContractorsRouteImport } from './routes/admin.contractors
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as ApiHealthRouteImport } from './routes/api.health'
 import { Route as ContractorIndexRouteImport } from './routes/contractor.index'
 import { Route as ContractorHistoryRouteImport } from './routes/contractor.history'
 import { Route as ContractorLoginRouteImport } from './routes/contractor.login'
@@ -23,8 +24,21 @@ import { Route as TrackIndexRouteImport } from './routes/track.index'
 import { Route as TrackReferenceRouteImport } from './routes/track.$reference'
 import { Route as AdminRequestsIndexRouteImport } from './routes/admin.requests.index'
 import { Route as AdminRequestsIdRouteImport } from './routes/admin.requests.$id'
+import { Route as ApiV1ContractorsRouteImport } from './routes/api.v1.contractors'
 import { Route as ContractorJobsIndexRouteImport } from './routes/contractor.jobs.index'
 import { Route as ContractorJobsIdRouteImport } from './routes/contractor.jobs.$id'
+import { Route as ApiV1AdminBootstrapRouteImport } from './routes/api.v1.admin.bootstrap'
+import { Route as ApiV1AuthLoginRouteImport } from './routes/api.v1.auth.login'
+import { Route as ApiV1AuthLogoutRouteImport } from './routes/api.v1.auth.logout'
+import { Route as ApiV1AuthMeRouteImport } from './routes/api.v1.auth.me'
+import { Route as ApiV1ContractorBootstrapRouteImport } from './routes/api.v1.contractor.bootstrap'
+import { Route as ApiV1RequestsIndexRouteImport } from './routes/api.v1.requests.index'
+import { Route as ApiV1RequestsIdRouteImport } from './routes/api.v1.requests.$id'
+import { Route as ApiV1PublicRequestsReferenceRouteImport } from './routes/api.v1.public.requests.$reference'
+import { Route as ApiV1RequestsIdAssignRouteImport } from './routes/api.v1.requests.$id.assign'
+import { Route as ApiV1RequestsIdNotesRouteImport } from './routes/api.v1.requests.$id.notes'
+import { Route as ApiV1RequestsIdPhotosRouteImport } from './routes/api.v1.requests.$id.photos'
+import { Route as ApiV1RequestsIdTransitionRouteImport } from './routes/api.v1.requests.$id.transition'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -59,6 +73,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiHealthRoute = ApiHealthRouteImport.update({
+  id: '/api/health',
+  path: '/api/health',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorIndexRoute = ContractorIndexRouteImport.update({
@@ -96,6 +115,11 @@ const AdminRequestsIdRoute = AdminRequestsIdRouteImport.update({
   path: '/admin/requests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1ContractorsRoute = ApiV1ContractorsRouteImport.update({
+  id: '/api/v1/contractors',
+  path: '/api/v1/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContractorJobsIndexRoute = ContractorJobsIndexRouteImport.update({
   id: '/contractor/jobs/',
   path: '/contractor/jobs/',
@@ -106,6 +130,69 @@ const ContractorJobsIdRoute = ContractorJobsIdRouteImport.update({
   path: '/contractor/jobs/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1AdminBootstrapRoute = ApiV1AdminBootstrapRouteImport.update({
+  id: '/api/v1/admin/bootstrap',
+  path: '/api/v1/admin/bootstrap',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthLoginRoute = ApiV1AuthLoginRouteImport.update({
+  id: '/api/v1/auth/login',
+  path: '/api/v1/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthLogoutRoute = ApiV1AuthLogoutRouteImport.update({
+  id: '/api/v1/auth/logout',
+  path: '/api/v1/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1AuthMeRoute = ApiV1AuthMeRouteImport.update({
+  id: '/api/v1/auth/me',
+  path: '/api/v1/auth/me',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1ContractorBootstrapRoute =
+  ApiV1ContractorBootstrapRouteImport.update({
+    id: '/api/v1/contractor/bootstrap',
+    path: '/api/v1/contractor/bootstrap',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1RequestsIndexRoute = ApiV1RequestsIndexRouteImport.update({
+  id: '/api/v1/requests/',
+  path: '/api/v1/requests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1RequestsIdRoute = ApiV1RequestsIdRouteImport.update({
+  id: '/api/v1/requests/$id',
+  path: '/api/v1/requests/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1PublicRequestsReferenceRoute =
+  ApiV1PublicRequestsReferenceRouteImport.update({
+    id: '/api/v1/public/requests/$reference',
+    path: '/api/v1/public/requests/$reference',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiV1RequestsIdAssignRoute = ApiV1RequestsIdAssignRouteImport.update({
+  id: '/assign',
+  path: '/assign',
+  getParentRoute: () => ApiV1RequestsIdRoute,
+} as any)
+const ApiV1RequestsIdNotesRoute = ApiV1RequestsIdNotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => ApiV1RequestsIdRoute,
+} as any)
+const ApiV1RequestsIdPhotosRoute = ApiV1RequestsIdPhotosRouteImport.update({
+  id: '/photos',
+  path: '/photos',
+  getParentRoute: () => ApiV1RequestsIdRoute,
+} as any)
+const ApiV1RequestsIdTransitionRoute =
+  ApiV1RequestsIdTransitionRouteImport.update({
+    id: '/transition',
+    path: '/transition',
+    getParentRoute: () => ApiV1RequestsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -114,6 +201,7 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/health': typeof ApiHealthRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -121,9 +209,22 @@ export interface FileRoutesByFullPath {
   '/contractor/': typeof ContractorIndexRoute
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRoute
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
+  '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
+  '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
+  '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
+  '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
+  '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
+  '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
+  '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
+  '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
+  '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,6 +233,7 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/health': typeof ApiHealthRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -139,9 +241,22 @@ export interface FileRoutesByTo {
   '/contractor': typeof ContractorIndexRoute
   '/track': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRoute
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
   '/contractor/jobs': typeof ContractorJobsIndexRoute
+  '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
+  '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
+  '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
+  '/api/v1/requests': typeof ApiV1RequestsIndexRoute
+  '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
+  '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
+  '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
+  '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
+  '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -151,6 +266,7 @@ export interface FileRoutesById {
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/api/health': typeof ApiHealthRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -158,9 +274,22 @@ export interface FileRoutesById {
   '/contractor/': typeof ContractorIndexRoute
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRoute
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
+  '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
+  '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
+  '/api/v1/auth/me': typeof ApiV1AuthMeRoute
+  '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
+  '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
+  '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
+  '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
+  '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
+  '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
+  '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,6 +300,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/api/health'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -178,9 +308,22 @@ export interface FileRouteTypes {
     | '/contractor/'
     | '/track/'
     | '/admin/requests/$id'
+    | '/api/v1/contractors'
     | '/contractor/jobs/$id'
     | '/admin/requests/'
     | '/contractor/jobs/'
+    | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/login'
+    | '/api/v1/auth/logout'
+    | '/api/v1/auth/me'
+    | '/api/v1/contractor/bootstrap'
+    | '/api/v1/requests/$id'
+    | '/api/v1/requests/'
+    | '/api/v1/public/requests/$reference'
+    | '/api/v1/requests/$id/assign'
+    | '/api/v1/requests/$id/notes'
+    | '/api/v1/requests/$id/photos'
+    | '/api/v1/requests/$id/transition'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,6 +332,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/api/health'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -196,9 +340,22 @@ export interface FileRouteTypes {
     | '/contractor'
     | '/track'
     | '/admin/requests/$id'
+    | '/api/v1/contractors'
     | '/contractor/jobs/$id'
     | '/admin/requests'
     | '/contractor/jobs'
+    | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/login'
+    | '/api/v1/auth/logout'
+    | '/api/v1/auth/me'
+    | '/api/v1/contractor/bootstrap'
+    | '/api/v1/requests/$id'
+    | '/api/v1/requests'
+    | '/api/v1/public/requests/$reference'
+    | '/api/v1/requests/$id/assign'
+    | '/api/v1/requests/$id/notes'
+    | '/api/v1/requests/$id/photos'
+    | '/api/v1/requests/$id/transition'
   id:
     | '__root__'
     | '/'
@@ -207,6 +364,7 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/api/health'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -214,9 +372,22 @@ export interface FileRouteTypes {
     | '/contractor/'
     | '/track/'
     | '/admin/requests/$id'
+    | '/api/v1/contractors'
     | '/contractor/jobs/$id'
     | '/admin/requests/'
     | '/contractor/jobs/'
+    | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/login'
+    | '/api/v1/auth/logout'
+    | '/api/v1/auth/me'
+    | '/api/v1/contractor/bootstrap'
+    | '/api/v1/requests/$id'
+    | '/api/v1/requests/'
+    | '/api/v1/public/requests/$reference'
+    | '/api/v1/requests/$id/assign'
+    | '/api/v1/requests/$id/notes'
+    | '/api/v1/requests/$id/photos'
+    | '/api/v1/requests/$id/transition'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -226,6 +397,7 @@ export interface RootRouteChildren {
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  ApiHealthRoute: typeof ApiHealthRoute
   ContractorHistoryRoute: typeof ContractorHistoryRoute
   ContractorLoginRoute: typeof ContractorLoginRoute
   TrackReferenceRoute: typeof TrackReferenceRoute
@@ -233,9 +405,18 @@ export interface RootRouteChildren {
   ContractorIndexRoute: typeof ContractorIndexRoute
   TrackIndexRoute: typeof TrackIndexRoute
   AdminRequestsIdRoute: typeof AdminRequestsIdRoute
+  ApiV1ContractorsRoute: typeof ApiV1ContractorsRoute
   ContractorJobsIdRoute: typeof ContractorJobsIdRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
   ContractorJobsIndexRoute: typeof ContractorJobsIndexRoute
+  ApiV1AdminBootstrapRoute: typeof ApiV1AdminBootstrapRoute
+  ApiV1AuthLoginRoute: typeof ApiV1AuthLoginRoute
+  ApiV1AuthLogoutRoute: typeof ApiV1AuthLogoutRoute
+  ApiV1AuthMeRoute: typeof ApiV1AuthMeRoute
+  ApiV1ContractorBootstrapRoute: typeof ApiV1ContractorBootstrapRoute
+  ApiV1RequestsIdRoute: typeof ApiV1RequestsIdRouteWithChildren
+  ApiV1RequestsIndexRoute: typeof ApiV1RequestsIndexRoute
+  ApiV1PublicRequestsReferenceRoute: typeof ApiV1PublicRequestsReferenceRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -289,6 +470,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/health': {
+      id: '/api/health'
+      path: '/api/health'
+      fullPath: '/api/health'
+      preLoaderRoute: typeof ApiHealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contractor/': {
       id: '/contractor/'
       path: '/contractor'
@@ -338,6 +526,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRequestsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/contractors': {
+      id: '/api/v1/contractors'
+      path: '/api/v1/contractors'
+      fullPath: '/api/v1/contractors'
+      preLoaderRoute: typeof ApiV1ContractorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contractor/jobs/': {
       id: '/contractor/jobs/'
       path: '/contractor/jobs'
@@ -352,8 +547,110 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContractorJobsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/admin/bootstrap': {
+      id: '/api/v1/admin/bootstrap'
+      path: '/api/v1/admin/bootstrap'
+      fullPath: '/api/v1/admin/bootstrap'
+      preLoaderRoute: typeof ApiV1AdminBootstrapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/login': {
+      id: '/api/v1/auth/login'
+      path: '/api/v1/auth/login'
+      fullPath: '/api/v1/auth/login'
+      preLoaderRoute: typeof ApiV1AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/logout': {
+      id: '/api/v1/auth/logout'
+      path: '/api/v1/auth/logout'
+      fullPath: '/api/v1/auth/logout'
+      preLoaderRoute: typeof ApiV1AuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/auth/me': {
+      id: '/api/v1/auth/me'
+      path: '/api/v1/auth/me'
+      fullPath: '/api/v1/auth/me'
+      preLoaderRoute: typeof ApiV1AuthMeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/contractor/bootstrap': {
+      id: '/api/v1/contractor/bootstrap'
+      path: '/api/v1/contractor/bootstrap'
+      fullPath: '/api/v1/contractor/bootstrap'
+      preLoaderRoute: typeof ApiV1ContractorBootstrapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/requests/': {
+      id: '/api/v1/requests/'
+      path: '/api/v1/requests'
+      fullPath: '/api/v1/requests/'
+      preLoaderRoute: typeof ApiV1RequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/requests/$id': {
+      id: '/api/v1/requests/$id'
+      path: '/api/v1/requests/$id'
+      fullPath: '/api/v1/requests/$id'
+      preLoaderRoute: typeof ApiV1RequestsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/public/requests/$reference': {
+      id: '/api/v1/public/requests/$reference'
+      path: '/api/v1/public/requests/$reference'
+      fullPath: '/api/v1/public/requests/$reference'
+      preLoaderRoute: typeof ApiV1PublicRequestsReferenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/requests/$id/assign': {
+      id: '/api/v1/requests/$id/assign'
+      path: '/assign'
+      fullPath: '/api/v1/requests/$id/assign'
+      preLoaderRoute: typeof ApiV1RequestsIdAssignRouteImport
+      parentRoute: typeof ApiV1RequestsIdRoute
+    }
+    '/api/v1/requests/$id/notes': {
+      id: '/api/v1/requests/$id/notes'
+      path: '/notes'
+      fullPath: '/api/v1/requests/$id/notes'
+      preLoaderRoute: typeof ApiV1RequestsIdNotesRouteImport
+      parentRoute: typeof ApiV1RequestsIdRoute
+    }
+    '/api/v1/requests/$id/photos': {
+      id: '/api/v1/requests/$id/photos'
+      path: '/photos'
+      fullPath: '/api/v1/requests/$id/photos'
+      preLoaderRoute: typeof ApiV1RequestsIdPhotosRouteImport
+      parentRoute: typeof ApiV1RequestsIdRoute
+    }
+    '/api/v1/requests/$id/transition': {
+      id: '/api/v1/requests/$id/transition'
+      path: '/transition'
+      fullPath: '/api/v1/requests/$id/transition'
+      preLoaderRoute: typeof ApiV1RequestsIdTransitionRouteImport
+      parentRoute: typeof ApiV1RequestsIdRoute
+    }
   }
 }
+
+interface ApiV1RequestsIdRouteChildren {
+  ApiV1RequestsIdAssignRoute: typeof ApiV1RequestsIdAssignRoute
+  ApiV1RequestsIdNotesRoute: typeof ApiV1RequestsIdNotesRoute
+  ApiV1RequestsIdPhotosRoute: typeof ApiV1RequestsIdPhotosRoute
+  ApiV1RequestsIdTransitionRoute: typeof ApiV1RequestsIdTransitionRoute
+}
+
+const ApiV1RequestsIdRouteChildren: ApiV1RequestsIdRouteChildren = {
+  ApiV1RequestsIdAssignRoute: ApiV1RequestsIdAssignRoute,
+  ApiV1RequestsIdNotesRoute: ApiV1RequestsIdNotesRoute,
+  ApiV1RequestsIdPhotosRoute: ApiV1RequestsIdPhotosRoute,
+  ApiV1RequestsIdTransitionRoute: ApiV1RequestsIdTransitionRoute,
+}
+
+const ApiV1RequestsIdRouteWithChildren = ApiV1RequestsIdRoute._addFileChildren(
+  ApiV1RequestsIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -362,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminReportsRoute: AdminReportsRoute,
+  ApiHealthRoute: ApiHealthRoute,
   ContractorHistoryRoute: ContractorHistoryRoute,
   ContractorLoginRoute: ContractorLoginRoute,
   TrackReferenceRoute: TrackReferenceRoute,
@@ -369,9 +667,18 @@ const rootRouteChildren: RootRouteChildren = {
   ContractorIndexRoute: ContractorIndexRoute,
   TrackIndexRoute: TrackIndexRoute,
   AdminRequestsIdRoute: AdminRequestsIdRoute,
+  ApiV1ContractorsRoute: ApiV1ContractorsRoute,
   ContractorJobsIdRoute: ContractorJobsIdRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
   ContractorJobsIndexRoute: ContractorJobsIndexRoute,
+  ApiV1AdminBootstrapRoute: ApiV1AdminBootstrapRoute,
+  ApiV1AuthLoginRoute: ApiV1AuthLoginRoute,
+  ApiV1AuthLogoutRoute: ApiV1AuthLogoutRoute,
+  ApiV1AuthMeRoute: ApiV1AuthMeRoute,
+  ApiV1ContractorBootstrapRoute: ApiV1ContractorBootstrapRoute,
+  ApiV1RequestsIdRoute: ApiV1RequestsIdRouteWithChildren,
+  ApiV1RequestsIndexRoute: ApiV1RequestsIndexRoute,
+  ApiV1PublicRequestsReferenceRoute: ApiV1PublicRequestsReferenceRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
