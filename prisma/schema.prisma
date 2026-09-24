@@ -1,0 +1,226 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  CONTRACTOR
+}
+
+enum SessionClient {
+  WEB
+  TAURI
+}
+
+enum RequestStatus {
+  CREATED
+  VERIFIED
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CONTROLLED
+  CLOSED
+  REJECTED
+}
+
+enum ProblemType {
+  POTHOLE
+  PAVEMENT
+  CRACK
+  SIDEWALK
+  DRAINAGE
+  MARKING
+  OTHER
+}
+
+enum PhotoKind {
+  CITIZEN
+  BEFORE
+  AFTER
+}
+
+enum HistoryActorRole {
+  CITIZEN
+  ADMIN
+  CONTRACTOR
+}
+
+enum NoteVisibility {
+  INTERNAL
+  CONTRACTOR
+}
+
+enum MlAnalysisStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+model User {
+  id              String           @id @default(cuid())
+  emailNormalized String           @unique
+  passwordHash    String
+  name            String
+  role            UserRole
+  active          Boolean          @default(true)
+  contractorId    String?
+  contractor      Contractor?      @relation(fields: [contractorId], references: [id], onDelete: SetNull)
+  sessions        Session[]
+  history         RequestHistory[] @relation("HistoryActor")
+  notes           Note[]           @relation("NoteAuthor")
+  controls        ControlResult[]  @relation("ControlInspector")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([contractorId])
+}
+
+model Session {
+  id        String        @id @default(cuid())
+  tokenHash String        @unique
+  client    SessionClient
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([userId, expiresAt])
+}
+
+model Contractor {
+  id        String          @id @default(cuid())
+  name      String
+  specialty String
+  contact   String
+  phone     String
+  email     String          @unique
+  active    Boolean         @default(true)
+  users     User[]
+  requests  RepairRequest[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model RepairRequest {
+  id                String           @id @default(cuid())
+  serial            BigInt           @unique @default(autoincrement())
+  reference         String?          @unique
+  trackingTokenHash String           @unique
+  problemType       ProblemType
+  address           String
+  district          String
+  description       String
+  latitude          Decimal          @db.Decimal(9, 6)
+  longitude         Decimal          @db.Decimal(9, 6)
+  citizenName       String?
+  citizenEmail      String?
+  status            RequestStatus    @default(CREATED)
+  contractorId      String?
+  contractor        Contractor?      @relation(fields: [contractorId], references: [id], onDelete: SetNull)
+  closedAt          DateTime?
+  photos            Photo[]
+  history           RequestHistory[]
+  notes             Note[]
+  controlResult     ControlResult?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([contractorId, status])
+  @@index([createdAt])
+}
+
+model Photo {
+  id              String        @id @default(cuid())
+  requestId       String
+  request         RepairRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  kind            PhotoKind
+  label           String
+  storageProvider String
+  storageKey      String        @unique
+  deliveryUrl     String?
+  contentType     String
+  sizeBytes       Int
+  width           Int
+  height          Int
+  sha256          String
+  analysis        MlAnalysis?
+  createdAt       DateTime      @default(now())
+
+  @@index([requestId, createdAt])
+}
+
+model RequestHistory {
+  id          String           @id @default(cuid())
+  requestId   String
+  request     RepairRequest    @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  fromStatus  RequestStatus?
+  toStatus    RequestStatus
+  actorUserId String?
+  actorUser   User?            @relation("HistoryActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorLabel  String
+  actorRole   HistoryActorRole
+  comment     String?
+  createdAt   DateTime         @default(now())
+
+  @@index([requestId, createdAt])
+}
+
+model Note {
+  id         String         @id @default(cuid())
+  requestId  String
+  request    RepairRequest  @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User           @relation("NoteAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  visibility NoteVisibility
+  body       String
+  createdAt  DateTime       @default(now())
+
+  @@index([requestId, visibility, createdAt])
+}
+
+model ControlResult {
+  id          String        @id @default(cuid())
+  requestId   String        @unique
+  request     RepairRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  inspectorId String
+  inspector   User          @relation("ControlInspector", fields: [inspectorId], references: [id], onDelete: Restrict)
+  passed      Boolean
+  comment     String
+  createdAt   DateTime      @default(now())
+}
+
+model MlAnalysis {
+  id           String           @id @default(cuid())
+  photoId      String           @unique
+  photo        Photo            @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  status       MlAnalysisStatus @default(PENDING)
+  modelVersion String?
+  durationMs   Float?
+  failureCode  String?
+  detections   MlDetection[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model MlDetection {
+  id         String     @id @default(cuid())
+  analysisId String
+  analysis   MlAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  label      String
+  confidence Float
+  x1         Float
+  y1         Float
+  x2         Float
+  y2         Float
+  createdAt  DateTime   @default(now())
+
+  @@index([analysisId])
+}

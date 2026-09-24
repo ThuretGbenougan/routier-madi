@@ -7,6 +7,9 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  // The centralized API is deployed with the TanStack Start application on Vercel.
+  // Pin this outside Lovable so Nitro does not emit the Cloudflare default target.
+  nitro: { preset: "vercel" },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

@@ -24,6 +24,8 @@ export interface Photo {
   label: string;
   kind: "citizen" | "before" | "after";
   seed: string;
+  /** URL de livraison publique ou signee lorsque le stockage est configure. */
+  url?: string | undefined;
 }
 
 export interface HistoryEntry {
