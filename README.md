@@ -24,3 +24,41 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+## Client municipal Windows (Tauri)
+
+Le navigateur public reste l'application citoyenne et entreprise. Le client
+Tauri réutilise la même interface React, mais ouvre directement l'espace
+municipal (`/admin/login`, ou `/admin/dashboard` lorsqu'une session admin de
+démonstration existe). Il ne contient ni base locale, ni accès Prisma, ni clé
+du service ML.
+
+Configurez l'URL publique du backend centralisé dans `.env.local` :
+
+```sh
+VITE_API_URL=https://platform.example.com
+```
+
+`VITE_API_URL` est une URL publique, jamais un secret. Les identifiants de
+base de données, la clé API du service ML et les autres secrets restent côté
+serveur TanStack Start.
+
+Commandes avec Bun :
+
+```sh
+bun run dev
+bun run build
+bun run desktop:dev
+bun run desktop:build
+bun run tauri dev
+bun run tauri build
+```
+
+Le build Tauri utilise un bundle React statique dédié dans `desktop-dist/`, car
+Tauri ne peut pas embarquer le rendu SSR du web. Son serveur de développement
+utilise le port `8081`. Le build web continue d'utiliser TanStack Start et
+`.output/public`. Sous Windows, les installateurs non signés sont
+générés dans `src-tauri/target/release/bundle/` : dossiers `nsis/` (`.exe`) et
+`msi/` (`.msi`).
+
+Le poste de compilation doit disposer de Rust/Cargo et des outils C++ MSVC.

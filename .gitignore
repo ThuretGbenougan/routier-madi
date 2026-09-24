@@ -10,10 +10,12 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+desktop-dist
 .output
 .vinxi
 .tanstack/**
 .nitro
+src-tauri/target/
 *.local
 
 # Wrangler / Cloudflare

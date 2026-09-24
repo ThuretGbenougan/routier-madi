@@ -1,0 +1,16 @@
+[package]
+name = "routier-madi-desktop"
+version = "0.1.0"
+description = "Voirie Connect municipal desktop client"
+authors = ["Voirie Connect"]
+edition = "2021"
+
+[lib]
+name = "routier_madi_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }

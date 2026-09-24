@@ -4,15 +4,17 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { isTauri } from "@tauri-apps/api/core";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { hydrateFromStorage } from "@/lib/store";
+import { getState, hydrateFromStorage } from "@/lib/store";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 function NotFoundComponent() {
@@ -126,10 +128,17 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
     hydrateFromStorage();
-  }, []);
+    if (!isTauri() || window.location.pathname !== "/") return;
+
+    void navigate({
+      to: getState().session?.role === "ADMIN" ? "/admin/dashboard" : "/admin/login",
+      replace: true,
+    });
+  }, [navigate]);
 
   return (
     <QueryClientProvider client={queryClient}>
