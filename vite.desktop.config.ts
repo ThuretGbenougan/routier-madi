@@ -5,6 +5,9 @@ import tailwindcss from "@tailwindcss/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+  define: {
+    "import.meta.env.VITE_TAURI_DESKTOP": JSON.stringify("true"),
+  },
   plugins: [react(), tailwindcss(), tsconfigPaths()],
   root: "desktop",
   resolve: {

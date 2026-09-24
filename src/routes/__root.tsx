@@ -113,6 +113,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // The web build is SSR and owns the document element. The Tauri build is a
+  // Vite SPA already mounted inside desktop/index.html, so nesting another
+  // <html> element here makes the WebView DOM invalid.
+  if (import.meta.env.VITE_TAURI_DESKTOP === "true") {
+    return <>{children}</>;
+  }
+
   return (
     <html lang="fr">
       <head>
