@@ -2,6 +2,9 @@ import type { RepairRequest, RequestStatus } from "@/types";
 import { apiRequest } from "./client";
 
 export const requestsApi = {
+  adminBootstrap: () => apiRequest<{ requests: RepairRequest[]; contractors: import("@/types").Contractor[] }>("/api/v1/admin/bootstrap"),
+  contractorBootstrap: () => apiRequest<{ requests: RepairRequest[] }>("/api/v1/contractor/bootstrap"),
+  publicStats: () => apiRequest<{ total: number; inProgress: number; closed: number; averageDurationDays: number }>("/api/v1/public/stats"),
   list: (query = "") => apiRequest<{ requests: RepairRequest[] }>(`/api/v1/requests${query}` as `/${string}`),
   get: (id: string) => apiRequest<{ request: RepairRequest }>(`/api/v1/requests/${id}`),
   create: (input: Omit<RepairRequest, "id" | "reference" | "status" | "contractorId" | "createdAt" | "updatedAt" | "photos" | "history" | "dispatcherNotes" | "contractorNotes" | "controlResult">) =>

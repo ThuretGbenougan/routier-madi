@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/i18n/LanguageProvider";
-import { login, useDemoState, useHydrated } from "@/lib/store";
+import { establishApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
+import { authApi } from "@/lib/api/auth-api";
 
 export const Route = createFileRoute("/contractor/login")({
   head: () => ({
@@ -26,8 +27,8 @@ export const Route = createFileRoute("/contractor/login")({
 
 function ContractorLogin() {
   const navigate = useNavigate();
-  const { session } = useDemoState();
-  const hydrated = useHydrated();
+  const { session } = useApiState();
+  const hydrated = useApiInitialized();
   const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,16 +38,17 @@ function ContractorLogin() {
     if (hydrated && session?.role === "CONTRACTOR") navigate({ to: "/contractor/jobs" });
   }, [hydrated, session, navigate]);
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    const result = login(email, password, "CONTRACTOR");
-    if (!result) {
+    try {
+      const result = await authApi.login({ email, password, role: "CONTRACTOR" });
+      await establishApiSession(result);
+      setError("");
+      toast.success(t("contractor.login.welcome", { name: result.name }));
+      navigate({ to: "/contractor/jobs" });
+    } catch {
       setError(t("contractor.login.error"));
-      return;
     }
-    setError("");
-    toast.success(t("contractor.login.welcome", { name: result.name }));
-    navigate({ to: "/contractor/jobs" });
   }
 
   return (

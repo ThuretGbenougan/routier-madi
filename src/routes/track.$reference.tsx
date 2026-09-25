@@ -6,10 +6,12 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { HistoryList, LifecycleTimeline } from "@/components/Timeline";
 import { PhotoGrid } from "@/components/PhotoTile";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { useDemoState, useHydrated } from "@/lib/store";
+import { useQuery } from "@tanstack/react-query";
+import { requestsApi } from "@/lib/api/requests-api";
 import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/track/$reference")({
+  validateSearch: (search: Record<string, unknown>) => ({ code: typeof search["code"] === "string" ? search["code"] : "" }),
   head: ({ params }) => ({
     meta: [
       { title: `Demande ${params.reference} — Voirie Connect` },
@@ -30,9 +32,9 @@ export const Route = createFileRoute("/track/$reference")({
 function TrackDetail() {
   const { t, lang, problemLabel } = useI18n();
   const { reference } = Route.useParams();
-  const { requests, contractors } = useDemoState();
-  const hydrated = useHydrated();
-  const request = requests.find((r) => r.reference.toUpperCase() === reference.toUpperCase());
+  const { code } = Route.useSearch();
+  const query = useQuery({ queryKey: ["public-request", reference, code], queryFn: () => requestsApi.publicByReference(reference, code), enabled: Boolean(code) });
+  const request = query.data?.request;
 
   if (!request) {
     return (
@@ -42,7 +44,7 @@ function TrackDetail() {
             <SearchX className="size-7" aria-hidden />
           </span>
           <h1 className="mt-4 text-xl font-semibold">
-            {hydrated ? t("track.detail.notFound.title") : t("track.detail.searching")}
+            {query.isLoading ? t("track.detail.searching") : t("track.detail.notFound.title")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {t("track.detail.notFound.text", { reference })}
@@ -55,7 +57,6 @@ function TrackDetail() {
     );
   }
 
-  const contractor = contractors.find((c) => c.id === request.contractorId);
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
 
@@ -118,12 +119,6 @@ function TrackDetail() {
             <p className="text-sm">{problemLabel(request.problemType)}</p>
             <p className="mt-3 text-xs text-muted-foreground">{t("track.detail.description")}</p>
             <p className="text-sm">{request.description}</p>
-            {contractor && (
-              <>
-                <p className="mt-3 text-xs text-muted-foreground">{t("track.detail.contractor")}</p>
-                <p className="text-sm">{contractor.name}</p>
-              </>
-            )}
           </section>
 
           <section className="surface-card p-5">

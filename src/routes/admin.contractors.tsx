@@ -4,7 +4,7 @@ import { AdminShell } from "@/components/layout/AdminShell";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { byContractor } from "@/lib/stats";
-import { useDemoState } from "@/lib/store";
+import { useApiState } from "@/lib/api/app-state";
 
 export const Route = createFileRoute("/admin/contractors")({
   head: () => ({
@@ -22,7 +22,7 @@ export const Route = createFileRoute("/admin/contractors")({
 });
 
 function ContractorsPage() {
-  const { requests, contractors } = useDemoState();
+  const { requests, contractors } = useApiState();
   const { t } = useI18n();
   const rows = byContractor(requests, contractors);
 

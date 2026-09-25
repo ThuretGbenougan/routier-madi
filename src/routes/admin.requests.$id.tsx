@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/select";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { addNote, assignContractor, transitionRequest, useDemoState } from "@/lib/store";
+import { refreshApiState, useApiState } from "@/lib/api/app-state";
+import { requestsApi } from "@/lib/api/requests-api";
 
 export const Route = createFileRoute("/admin/requests/$id")({
   head: () => ({
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/admin/requests/$id")({
 function RequestDetail() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
-  const { requests, contractors, session } = useDemoState();
+  const { requests, contractors, session } = useApiState();
   const { t, lang, problemLabel, text } = useI18n();
   const request = requests.find((r) => r.id === id);
   const [selectedContractor, setSelectedContractor] = useState("");
@@ -61,14 +62,29 @@ function RequestDetail() {
     );
   }
 
-  const actor = session?.name ?? t("admin.detail.defaultActor");
   const contractor = contractors.find((c) => c.id === request.contractorId);
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
 
-  function act(fn: () => boolean, message: string) {
-    if (fn()) toast.success(message);
-    else toast.error(t("admin.detail.actionForbidden"));
+  function act(fn: () => Promise<unknown>, message: string) {
+    void fn()
+      .then(() => toast.success(message))
+      .catch(() => toast.error(t("admin.detail.actionForbidden")));
+  }
+
+  async function transition(to: import("@/types").RequestStatus, options: { comment?: string; controlPassed?: boolean }) {
+    await requestsApi.transition(request!.id, { to, ...options });
+    await refreshApiState(session ?? undefined);
+  }
+
+  async function assign(contractorId: string) {
+    await requestsApi.assign(request!.id, { contractorId });
+    await refreshApiState(session ?? undefined);
+  }
+
+  async function addInternalNote(body: string) {
+    await requestsApi.addNote(request!.id, body);
+    await refreshApiState(session ?? undefined);
   }
 
   const nextAction = (() => {
@@ -80,9 +96,7 @@ function RequestDetail() {
               onClick={() =>
                 act(
                   () =>
-                    transitionRequest(request.id, "VERIFIED", {
-                      actor,
-                      role: "ADMIN",
+                    transition("VERIFIED", {
                       comment: t("admin.detail.historyVerified"),
                     }),
                   t("admin.detail.toastVerified"),
@@ -98,9 +112,7 @@ function RequestDetail() {
               onClick={() =>
                 act(
                   () =>
-                    transitionRequest(request.id, "REJECTED", {
-                      actor,
-                      role: "ADMIN",
+                    transition("REJECTED", {
                       comment: t("admin.detail.historyRejected"),
                     }),
                   t("admin.detail.toastRejected"),
@@ -134,7 +146,7 @@ function RequestDetail() {
               disabled={!selectedContractor}
               onClick={() =>
                 act(
-                  () => assignContractor(request.id, selectedContractor, actor),
+                  () => assign(selectedContractor),
                   t("admin.detail.toastAssigned"),
                 )
               }
@@ -168,15 +180,12 @@ function RequestDetail() {
             <div className="flex flex-wrap gap-2">
               <Button
                 onClick={() =>
-                  act(() => {
-                    const ok = transitionRequest(request.id, "CONTROLLED", {
-                      actor,
-                      role: "ADMIN",
+                  act(async () => {
+                    await transition("CONTROLLED", {
                       controlPassed: true,
                       comment: controlComment || t("admin.detail.historyControlPassed"),
                     });
-                    if (ok) setControlComment("");
-                    return ok;
+                    setControlComment("");
                   }, t("admin.detail.toastControl"))
                 }
               >
@@ -191,9 +200,7 @@ function RequestDetail() {
             onClick={() =>
               act(
                 () =>
-                  transitionRequest(request.id, "CLOSED", {
-                    actor,
-                    role: "ADMIN",
+                  transition("CLOSED", {
                     comment: t("admin.detail.historyClosed"),
                   }),
                 t("admin.detail.toastClosed"),
@@ -365,9 +372,12 @@ function RequestDetail() {
               size="sm"
               disabled={note.trim().length === 0}
               onClick={() => {
-                addNote(request.id, note.trim(), actor, "ADMIN");
-                setNote("");
-                toast.success(t("admin.detail.toastNoteAdded"));
+                void addInternalNote(note.trim())
+                  .then(() => {
+                    setNote("");
+                    toast.success(t("admin.detail.toastNoteAdded"));
+                  })
+                  .catch(() => toast.error(t("admin.detail.actionForbidden")));
               }}
             >
               <MessageSquarePlus className="size-4" aria-hidden />

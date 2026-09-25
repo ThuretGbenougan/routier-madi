@@ -5,7 +5,7 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate } from "@/lib/format";
-import { useDemoState } from "@/lib/store";
+import { useApiState } from "@/lib/api/app-state";
 
 export const Route = createFileRoute("/contractor/jobs/")({
   head: () => ({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/contractor/jobs/")({
 });
 
 function JobsPage() {
-  const { requests, session } = useDemoState();
+  const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
   const jobs = requests
     .filter(

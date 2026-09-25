@@ -30,6 +30,7 @@ function TrackPage() {
   const { t } = useI18n();
   const navigate = useNavigate();
   const [value, setValue] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState("");
 
   function onSubmit(e: FormEvent) {
@@ -40,7 +41,8 @@ function TrackPage() {
       return;
     }
     setError("");
-    navigate({ to: "/track/$reference", params: { reference } });
+    if (code.trim().length < 16) { setError("Saisissez votre code de suivi."); return; }
+    navigate({ to: "/track/$reference", params: { reference }, search: { code: code.trim() } });
   }
 
   return (
@@ -61,6 +63,10 @@ function TrackPage() {
               autoComplete="off"
             />
             {error && <p className="text-xs text-destructive">{error}</p>}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="trackingCode">Code de suivi</Label>
+            <Input id="trackingCode" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" />
           </div>
           <Button type="submit" className="w-full">
             <Search className="size-4" aria-hidden />
