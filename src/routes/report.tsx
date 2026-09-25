@@ -14,7 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createRequest } from "@/lib/store";
+import { photosApi } from "@/lib/api/photos-api";
+import { requestsApi } from "@/lib/api/requests-api";
+import { YandexLocationPicker } from "@/components/YandexLocationPicker";
 import type { ProblemType } from "@/types";
 import { useI18n } from "@/i18n/LanguageProvider";
 
@@ -56,10 +58,11 @@ function ReportPage() {
   const [description, setDescription] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitting, setSubmitting] = useState(false);
-  const [reference, setReference] = useState<string | null>(null);
+  const [confirmation, setConfirmation] = useState<{ reference: string; trackingToken: string } | null>(null);
 
   const problemTypes: ProblemType[] = [
     "POTHOLE",
@@ -83,27 +86,33 @@ function ReportPage() {
     return Object.keys(next).length === 0;
   }
 
-  function onSubmit(e: FormEvent) {
+  async function onSubmit(e: FormEvent) {
     e.preventDefault();
     if (!validate()) return;
+    if (!location) { toast.error("Veuillez confirmer l’emplacement sur la carte."); return; }
     setSubmitting(true);
-    window.setTimeout(() => {
-      const created = createRequest({
+    try {
+      const created = await requestsApi.create({
         problemType: problemType as ProblemType,
         address: address.trim(),
         district,
         description: description.trim(),
         citizenName: name.trim(),
         citizenEmail: email.trim(),
-        photoNames: photos,
+        lat: location.lat,
+        lng: location.lng,
       });
+      for (const photo of photos) await photosApi.upload(created.request.id, photo, "citizen", created.trackingToken);
       setSubmitting(false);
-      setReference(created.reference);
-      toast.success(t("report.toast.success"), { description: created.reference });
-    }, 500);
+      setConfirmation({ reference: created.request.reference, trackingToken: created.trackingToken });
+      toast.success(t("report.toast.success"), { description: created.request.reference });
+    } catch {
+      setSubmitting(false);
+      toast.error("Le signalement n’a pas pu être envoyé.");
+    }
   }
 
-  if (reference) {
+  if (confirmation) {
     return (
       <PublicLayout>
         <div className="mx-auto w-full max-w-xl px-4 py-14">
@@ -114,12 +123,14 @@ function ReportPage() {
             <h1 className="mt-4 text-xl font-semibold">{t("report.success.title")}</h1>
             <p className="mt-2 text-sm text-muted-foreground">{t("report.success.text")}</p>
             <p className="mt-5 rounded-lg border border-dashed border-primary/40 bg-primary/5 py-4 text-2xl font-semibold tracking-wider text-primary">
-              {reference}
+              {confirmation.reference}
             </p>
+            <p className="mt-4 text-sm text-muted-foreground">Code de suivi à conserver :</p>
+            <p className="mt-1 rounded-lg border border-dashed border-primary/40 bg-primary/5 py-3 font-mono text-sm text-primary">{confirmation.trackingToken}</p>
             <div className="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
               <Button
                 onClick={() =>
-                  navigate({ to: "/track/$reference", params: { reference } })
+                  navigate({ to: "/track/$reference", params: { reference: confirmation.reference }, search: { code: confirmation.trackingToken } })
                 }
               >
                 {t("report.success.track")}
@@ -222,8 +233,8 @@ function ReportPage() {
                 multiple
                 className="sr-only"
                 onChange={(e) => {
-                  const names = Array.from(e.target.files ?? []).map((f) => f.name);
-                  setPhotos((p) => [...p, ...names].slice(0, 5));
+                  const files = Array.from(e.target.files ?? []);
+                  setPhotos((p) => [...p, ...files].slice(0, 5));
                   e.target.value = "";
                 }}
               />
@@ -232,13 +243,13 @@ function ReportPage() {
               <ul className="flex flex-wrap gap-2">
                 {photos.map((p, i) => (
                   <li
-                    key={`${p}-${i}`}
+                    key={`${p.name}-${i}`}
                     className="flex items-center gap-2 rounded-full border border-border bg-background px-3 py-1 text-xs"
                   >
-                    {p}
+                    {p.name}
                     <button
                       type="button"
-                      aria-label={t("report.photos.remove", { name: p })}
+                      aria-label={t("report.photos.remove", { name: p.name })}
                       onClick={() => setPhotos((list) => list.filter((_, idx) => idx !== i))}
                       className="text-muted-foreground hover:text-destructive"
                     >
@@ -252,10 +263,15 @@ function ReportPage() {
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => setPhotos((p) => [...p, `photo-simulee-${p.length + 1}.jpg`])}
+              disabled
             >
               {t("report.photos.simulate")}
             </Button>
+          </section>
+
+          <section className="surface-card space-y-3 p-5">
+            <h2 className="text-sm font-semibold">Localisation</h2>
+            <YandexLocationPicker value={location} onChange={setLocation} />
           </section>
 
           <section className="surface-card space-y-4 p-5">

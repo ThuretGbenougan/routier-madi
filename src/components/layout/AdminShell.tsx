@@ -11,11 +11,10 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { DemoResetButton } from "@/components/DemoResetButton";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
-import { logout, useDemoState, useHydrated } from "@/lib/store";
+import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
 
 const nav = [
   { to: "/admin/dashboard", key: "shell.nav.dashboard", icon: LayoutDashboard },
@@ -63,9 +62,9 @@ export function AdminShell({
   actions?: ReactNode;
   children: ReactNode;
 }) {
-  const { session } = useDemoState();
+  const { session } = useApiState();
   const { t } = useI18n();
-  const hydrated = useHydrated();
+  const hydrated = useApiInitialized();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -104,8 +103,7 @@ export function AdminShell({
           size="sm"
           className="w-full justify-start text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           onClick={() => {
-            logout();
-            navigate({ to: "/admin/login" });
+            void logoutApiSession().finally(() => navigate({ to: "/admin/login" }));
           }}
         >
           <LogOut className="size-4" aria-hidden />
@@ -145,7 +143,6 @@ export function AdminShell({
             <div className="flex items-center gap-2">
               {actions}
               <LanguageSwitch />
-              <DemoResetButton className="hidden sm:inline-flex" />
             </div>
           </div>
         </header>

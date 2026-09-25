@@ -19,7 +19,7 @@ import { statusOrder } from "@/i18n/fr";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDuration } from "@/lib/format";
 import { averageProcessingDays, byContractor, countByStatus, createdOverTime } from "@/lib/stats";
-import { useDemoState } from "@/lib/store";
+import { useApiState } from "@/lib/api/app-state";
 
 export const Route = createFileRoute("/admin/reports")({
   head: () => ({
@@ -46,7 +46,7 @@ const palette = [
 ];
 
 function ReportsPage() {
-  const { requests, contractors } = useDemoState();
+  const { requests, contractors } = useApiState();
   const { t, lang, statusLabel } = useI18n();
   const counts = countByStatus(requests);
   const statusData = statusOrder.map((s) => ({ name: statusLabel(s), value: counts[s] }));

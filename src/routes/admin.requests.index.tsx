@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate } from "@/lib/format";
-import { useDemoState } from "@/lib/store";
+import { useApiState } from "@/lib/api/app-state";
 import type { RequestStatus } from "@/types";
 
 export const Route = createFileRoute("/admin/requests/")({
@@ -53,7 +53,7 @@ const allStatuses: RequestStatus[] = [
 ];
 
 function RequestsList() {
-  const { requests, contractors } = useDemoState();
+  const { requests, contractors } = useApiState();
   const { t, lang, statusLabel, problemLabel } = useI18n();
   const [status, setStatus] = useState<string>("ALL");
   const [contractorId, setContractorId] = useState<string>("ALL");

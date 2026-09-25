@@ -20,14 +20,16 @@ export function PhotoTile({ photo }: { photo: Photo }) {
 
   return (
     <figure className="overflow-hidden rounded-lg border border-border bg-muted">
-      <div
-        className="flex aspect-4/3 items-center justify-center"
-        style={{
-          background: `linear-gradient(135deg, oklch(0.78 0.04 ${h}), oklch(0.62 0.05 ${(h + 40) % 360}))`,
-        }}
-      >
-        <Camera className="size-7 text-white/85" aria-hidden />
-      </div>
+      {photo.url ? (
+        <img src={photo.url} alt={photo.label} className="aspect-4/3 w-full object-cover" loading="lazy" />
+      ) : (
+        <div
+          className="flex aspect-4/3 items-center justify-center"
+          style={{ background: `linear-gradient(135deg, oklch(0.78 0.04 ${h}), oklch(0.62 0.05 ${(h + 40) % 360}))` }}
+        >
+          <Camera className="size-7 text-white/85" aria-hidden />
+        </div>
+      )}
       <figcaption className="px-2.5 py-2 text-xs text-muted-foreground">
         <span className="block font-medium text-foreground">{photo.label}</span>
         {kindLabel}

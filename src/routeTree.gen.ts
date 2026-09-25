@@ -32,6 +32,7 @@ import { Route as ApiV1AuthLoginRouteImport } from './routes/api.v1.auth.login'
 import { Route as ApiV1AuthLogoutRouteImport } from './routes/api.v1.auth.logout'
 import { Route as ApiV1AuthMeRouteImport } from './routes/api.v1.auth.me'
 import { Route as ApiV1ContractorBootstrapRouteImport } from './routes/api.v1.contractor.bootstrap'
+import { Route as ApiV1PublicStatsRouteImport } from './routes/api.v1.public.stats'
 import { Route as ApiV1RequestsIndexRouteImport } from './routes/api.v1.requests.index'
 import { Route as ApiV1RequestsIdRouteImport } from './routes/api.v1.requests.$id'
 import { Route as ApiV1PublicRequestsReferenceRouteImport } from './routes/api.v1.public.requests.$reference'
@@ -156,6 +157,11 @@ const ApiV1ContractorBootstrapRoute =
     path: '/api/v1/contractor/bootstrap',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiV1PublicStatsRoute = ApiV1PublicStatsRouteImport.update({
+  id: '/api/v1/public/stats',
+  path: '/api/v1/public/stats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1RequestsIndexRoute = ApiV1RequestsIndexRouteImport.update({
   id: '/api/v1/requests/',
   path: '/api/v1/requests/',
@@ -218,6 +224,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests': typeof ApiV1RequestsIndexRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
@@ -283,6 +291,7 @@ export interface FileRoutesById {
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
   '/api/v1/contractor/bootstrap': typeof ApiV1ContractorBootstrapRoute
+  '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
@@ -317,6 +326,7 @@ export interface FileRouteTypes {
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
     | '/api/v1/contractor/bootstrap'
+    | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests/'
     | '/api/v1/public/requests/$reference'
@@ -349,6 +359,7 @@ export interface FileRouteTypes {
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
     | '/api/v1/contractor/bootstrap'
+    | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests'
     | '/api/v1/public/requests/$reference'
@@ -381,6 +392,7 @@ export interface FileRouteTypes {
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
     | '/api/v1/contractor/bootstrap'
+    | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests/'
     | '/api/v1/public/requests/$reference'
@@ -414,6 +426,7 @@ export interface RootRouteChildren {
   ApiV1AuthLogoutRoute: typeof ApiV1AuthLogoutRoute
   ApiV1AuthMeRoute: typeof ApiV1AuthMeRoute
   ApiV1ContractorBootstrapRoute: typeof ApiV1ContractorBootstrapRoute
+  ApiV1PublicStatsRoute: typeof ApiV1PublicStatsRoute
   ApiV1RequestsIdRoute: typeof ApiV1RequestsIdRouteWithChildren
   ApiV1RequestsIndexRoute: typeof ApiV1RequestsIndexRoute
   ApiV1PublicRequestsReferenceRoute: typeof ApiV1PublicRequestsReferenceRoute
@@ -582,6 +595,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1ContractorBootstrapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/public/stats': {
+      id: '/api/v1/public/stats'
+      path: '/api/v1/public/stats'
+      fullPath: '/api/v1/public/stats'
+      preLoaderRoute: typeof ApiV1PublicStatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/requests/': {
       id: '/api/v1/requests/'
       path: '/api/v1/requests'
@@ -676,6 +696,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiV1AuthLogoutRoute: ApiV1AuthLogoutRoute,
   ApiV1AuthMeRoute: ApiV1AuthMeRoute,
   ApiV1ContractorBootstrapRoute: ApiV1ContractorBootstrapRoute,
+  ApiV1PublicStatsRoute: ApiV1PublicStatsRoute,
   ApiV1RequestsIdRoute: ApiV1RequestsIdRouteWithChildren,
   ApiV1RequestsIndexRoute: ApiV1RequestsIndexRoute,
   ApiV1PublicRequestsReferenceRoute: ApiV1PublicRequestsReferenceRoute,

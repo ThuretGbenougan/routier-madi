@@ -2,11 +2,10 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { History, LogOut, Wrench } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { DemoResetButton } from "@/components/DemoResetButton";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
-import { logout, useDemoState, useHydrated } from "@/lib/store";
+import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
 
 const nav = [
   { to: "/contractor/jobs", key: "shell.nav.jobs", icon: Wrench },
@@ -22,9 +21,9 @@ export function ContractorShell({
   description?: string;
   children: ReactNode;
 }) {
-  const { session, contractors } = useDemoState();
+  const { session, contractors } = useApiState();
   const { t } = useI18n();
-  const hydrated = useHydrated();
+  const hydrated = useApiInitialized();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -76,8 +75,7 @@ export function ContractorShell({
             size="icon"
             aria-label={t("action.logout")}
             onClick={() => {
-              logout();
-              navigate({ to: "/contractor/login" });
+              void logoutApiSession().finally(() => navigate({ to: "/contractor/login" }));
             }}
           >
             <LogOut className="size-4" aria-hidden />
@@ -93,7 +91,6 @@ export function ContractorShell({
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitch />
-            <DemoResetButton />
           </div>
         </div>
         {children}

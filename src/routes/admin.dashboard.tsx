@@ -14,7 +14,7 @@ import { statusOrder } from "@/i18n/fr";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDuration } from "@/lib/format";
 import { averageProcessingDays, countByStatus } from "@/lib/stats";
-import { useDemoState } from "@/lib/store";
+import { useApiState } from "@/lib/api/app-state";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
@@ -32,7 +32,7 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function Dashboard() {
-  const { requests, contractors } = useDemoState();
+  const { requests, contractors } = useApiState();
   const { t, lang, statusLabel, problemLabel } = useI18n();
   const counts = countByStatus(requests);
   const avg = averageProcessingDays(requests);

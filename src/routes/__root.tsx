@@ -14,7 +14,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
-import { getState, hydrateFromStorage } from "@/lib/store";
+import { getApiState, hydrateApiState } from "@/lib/api/app-state";
 import { LanguageProvider } from "@/i18n/LanguageProvider";
 
 function NotFoundComponent() {
@@ -138,12 +138,12 @@ function RootComponent() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    hydrateFromStorage();
-    if (!isTauri() || window.location.pathname !== "/") return;
-
-    void navigate({
-      to: getState().session?.role === "ADMIN" ? "/admin/dashboard" : "/admin/login",
-      replace: true,
+    void hydrateApiState().finally(() => {
+      if (!isTauri() || window.location.pathname !== "/") return;
+      void navigate({
+        to: getApiState().session?.role === "ADMIN" ? "/admin/dashboard" : "/admin/login",
+        replace: true,
+      });
     });
   }, [navigate]);
 

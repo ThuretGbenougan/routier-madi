@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, CheckCircle2, ClipboardCheck, MapPin, Search, Send } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
-import { useDemoState } from "@/lib/store";
-import { daysBetween, formatDuration } from "@/lib/format";
+import { useQuery } from "@tanstack/react-query";
+import { requestsApi } from "@/lib/api/requests-api";
+import { formatDuration } from "@/lib/format";
 import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/")({
@@ -27,16 +28,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { t, lang } = useI18n();
-  const { requests } = useDemoState();
-  const closed = requests.filter((r) => r.status === "CLOSED");
-  const inProgress = requests.filter((r) =>
-    ["ASSIGNED", "IN_PROGRESS", "COMPLETED"].includes(r.status),
-  );
-  const avg =
-    closed.length > 0
-      ? closed.reduce((sum, r) => sum + daysBetween(r.createdAt, r.closedAt ?? r.updatedAt), 0) /
-        closed.length
-      : 0;
+  const { data } = useQuery({ queryKey: ["public-stats"], queryFn: requestsApi.publicStats });
+  const statsData = data ?? { total: 0, inProgress: 0, closed: 0, averageDurationDays: 0 };
 
   const steps = [
     {
@@ -57,10 +50,10 @@ function Index() {
   ];
 
   const stats = [
-    { value: String(requests.length), label: t("home.stats.received") },
-    { value: String(inProgress.length), label: t("home.stats.inProgress") },
-    { value: String(closed.length), label: t("home.stats.closed") },
-    { value: formatDuration(avg, lang), label: t("home.stats.avgDuration") },
+    { value: String(statsData.total), label: t("home.stats.received") },
+    { value: String(statsData.inProgress), label: t("home.stats.inProgress") },
+    { value: String(statsData.closed), label: t("home.stats.closed") },
+    { value: formatDuration(statsData.averageDurationDays, lang), label: t("home.stats.avgDuration") },
   ];
 
   return (

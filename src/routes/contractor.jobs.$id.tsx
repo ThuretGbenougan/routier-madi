@@ -11,7 +11,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { transitionRequest, useDemoState } from "@/lib/store";
+import { refreshApiState, useApiState } from "@/lib/api/app-state";
+import { photosApi } from "@/lib/api/photos-api";
+import { requestsApi } from "@/lib/api/requests-api";
 
 export const Route = createFileRoute("/contractor/jobs/$id")({
   head: () => ({
@@ -30,12 +32,12 @@ export const Route = createFileRoute("/contractor/jobs/$id")({
 
 function JobDetail() {
   const { id } = Route.useParams();
-  const { requests, session } = useDemoState();
+  const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
   const request = requests.find((r) => r.id === id);
   const [comment, setComment] = useState("");
-  const [beforePhoto, setBeforePhoto] = useState<string | null>(null);
-  const [afterPhoto, setAfterPhoto] = useState<string | null>(null);
+  const [beforePhoto, setBeforePhoto] = useState<File | null>(null);
+  const [afterPhoto, setAfterPhoto] = useState<File | null>(null);
 
   if (!request) {
     return (
@@ -50,7 +52,6 @@ function JobDetail() {
     );
   }
 
-  const actor = session?.name ?? t("contractor.job.defaultActor");
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
 
@@ -97,14 +98,13 @@ function JobDetail() {
           <Button
             className="mt-4 w-full sm:w-auto"
             onClick={() => {
-              transitionRequest(request.id, "IN_PROGRESS", {
-                actor,
-                role: "CONTRACTOR",
-                comment: t("contractor.job.startComment"),
-                ...(beforePhoto ? { photoLabels: { before: beforePhoto } } : {}),
-              });
-              setBeforePhoto(null);
-              toast.success(t("contractor.job.startedToast"));
+              void (async () => {
+                if (beforePhoto) await photosApi.upload(request.id, beforePhoto, "before");
+                await requestsApi.transition(request.id, { to: "IN_PROGRESS", comment: t("contractor.job.startComment") });
+                await refreshApiState(session ?? undefined);
+                setBeforePhoto(null);
+                toast.success(t("contractor.job.startedToast"));
+              })().catch(() => toast.error("Action impossible."));
             }}
           >
             <PlayCircle className="size-4" aria-hidden />
@@ -152,19 +152,16 @@ function JobDetail() {
             className="w-full sm:w-auto"
             disabled={comment.trim().length < 5}
             onClick={() => {
-              transitionRequest(request.id, "COMPLETED", {
-                actor,
-                role: "CONTRACTOR",
-                comment: comment.trim(),
-                photoLabels: {
-                  ...(beforePhoto ? { before: beforePhoto } : {}),
-                  ...(afterPhoto ? { after: afterPhoto } : {}),
-                },
-              });
-              setComment("");
-              setBeforePhoto(null);
-              setAfterPhoto(null);
-              toast.success(t("contractor.job.completedToast"));
+              void (async () => {
+                if (beforePhoto) await photosApi.upload(request.id, beforePhoto, "before");
+                if (afterPhoto) await photosApi.upload(request.id, afterPhoto, "after");
+                await requestsApi.transition(request.id, { to: "COMPLETED", comment: comment.trim() });
+                await refreshApiState(session ?? undefined);
+                setComment("");
+                setBeforePhoto(null);
+                setAfterPhoto(null);
+                toast.success(t("contractor.job.completedToast"));
+              })().catch(() => toast.error("Action impossible."));
             }}
           >
             <CheckCircle2 className="size-4" aria-hidden />
@@ -234,8 +231,8 @@ function PhotoUpload({
   simulateName,
 }: {
   label: string;
-  value: string | null;
-  onChange: (value: string | null) => void;
+  value: File | null;
+  onChange: (value: File | null) => void;
   simulateName: string;
 }) {
   const { t } = useI18n();
@@ -244,7 +241,7 @@ function PhotoUpload({
       <Label>{label}</Label>
       {value ? (
         <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2 text-sm">
-          <span className="truncate">{value}</span>
+          <span className="truncate">{value.name}</span>
           <Button variant="ghost" size="sm" onClick={() => onChange(null)}>
             {t("contractor.job.photoRemove")}
           </Button>
@@ -260,14 +257,11 @@ function PhotoUpload({
               className="sr-only"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) onChange(file.name);
+                if (file) onChange(file);
                 e.target.value = "";
               }}
             />
           </label>
-          <Button variant="outline" size="sm" onClick={() => onChange(simulateName)}>
-            {t("contractor.job.photoSimulate")}
-          </Button>
         </div>
       )}
     </div>
