@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "prisma generate && vite build",
+    "vercel-build": "node scripts/vercel-build.mjs",
     "build:dev": "vite build --mode development",
     "desktop:dev": "vite --config vite.desktop.config.ts",
     "desktop:build": "vite build --config vite.desktop.config.ts",
