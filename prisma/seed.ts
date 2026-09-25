@@ -17,11 +17,24 @@ function trackingHash(value: string) {
 }
 
 async function resetDatabase() {
-  await db.$transaction([
-    db.mlDetection.deleteMany(), db.mlAnalysis.deleteMany(), db.photo.deleteMany(), db.controlResult.deleteMany(),
-    db.note.deleteMany(), db.requestHistory.deleteMany(), db.repairRequest.deleteMany(), db.session.deleteMany(),
-    db.user.deleteMany(), db.contractor.deleteMany(),
-  ]);
+  await db.$transaction(
+    async (tx) => {
+      await tx.mlDetection.deleteMany();
+      await tx.mlAnalysis.deleteMany();
+      await tx.photo.deleteMany();
+      await tx.controlResult.deleteMany();
+      await tx.note.deleteMany();
+      await tx.requestHistory.deleteMany();
+      await tx.repairRequest.deleteMany();
+      await tx.session.deleteMany();
+      await tx.user.deleteMany();
+      await tx.contractor.deleteMany();
+    },
+    {
+      maxWait: 10_000,
+      timeout: 60_000,
+    },
+  );
 }
 
 async function main() {
