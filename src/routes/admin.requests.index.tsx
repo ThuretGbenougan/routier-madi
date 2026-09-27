@@ -58,6 +58,7 @@ function RequestsList() {
   const [status, setStatus] = useState<string>("ALL");
   const [contractorId, setContractorId] = useState<string>("ALL");
   const [query, setQuery] = useState("");
+  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -175,7 +176,7 @@ function RequestsList() {
               {filtered.map((r) => (
                 <TableRow key={r.id}>
                   <TableCell className="font-medium">{r.reference}</TableCell>
-                  <TableCell className="max-w-56 truncate">{r.address}</TableCell>
+                  <TableCell className="max-w-56 truncate">{locationText(r)}</TableCell>
                   <TableCell>{problemLabel(r.problemType)}</TableCell>
                   <TableCell>
                     <StatusBadge status={r.status} />
@@ -208,7 +209,7 @@ function RequestsList() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-medium">{r.reference}</p>
-                  <p className="truncate text-sm text-muted-foreground">{r.address}</p>
+                  <p className="truncate text-sm text-muted-foreground">{locationText(r)}</p>
                 </div>
                 <StatusBadge status={r.status} />
               </div>

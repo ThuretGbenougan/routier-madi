@@ -49,8 +49,8 @@ export interface RepairRequest {
   id: string;
   reference: string;
   problemType: ProblemType;
-  address: string;
-  district: string;
+  address?: string | undefined;
+  district?: string | undefined;
   description: string;
   lat: number;
   lng: number;

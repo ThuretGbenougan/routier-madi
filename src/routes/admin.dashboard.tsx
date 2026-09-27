@@ -6,7 +6,9 @@ import {
   Inbox,
   ShieldCheck,
   Timer,
+  RefreshCw,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { AdminShell } from "@/components/layout/AdminShell";
 import { StatusBadge } from "@/components/StatusBadge";
 import { Button } from "@/components/ui/button";
@@ -15,6 +17,7 @@ import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDuration } from "@/lib/format";
 import { averageProcessingDays, countByStatus } from "@/lib/stats";
 import { useApiState } from "@/lib/api/app-state";
+import { requestsApi } from "@/lib/api/requests-api";
 
 export const Route = createFileRoute("/admin/dashboard")({
   head: () => ({
@@ -32,8 +35,19 @@ export const Route = createFileRoute("/admin/dashboard")({
 });
 
 function Dashboard() {
-  const { requests, contractors } = useApiState();
+  const { session } = useApiState();
   const { t, lang, statusLabel, problemLabel } = useI18n();
+  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
+  const dashboardQuery = useQuery({
+    queryKey: ["admin-dashboard"],
+    queryFn: requestsApi.adminBootstrap,
+    enabled: session?.role === "ADMIN",
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
+  });
+  const requests = dashboardQuery.data?.requests ?? [];
+  const contractors = dashboardQuery.data?.contractors ?? [];
   const counts = countByStatus(requests);
   const avg = averageProcessingDays(requests);
 
@@ -62,11 +76,31 @@ function Dashboard() {
       title={t("admin.dashboard.title")}
       description={t("admin.dashboard.description")}
       actions={
-        <Button asChild size="sm">
-          <Link to="/admin/requests">{t("admin.dashboard.viewRequests")}</Link>
-        </Button>
+        <>
+          <Button variant="outline" size="sm" disabled={dashboardQuery.isFetching} onClick={() => void dashboardQuery.refetch()}>
+            <RefreshCw className={dashboardQuery.isFetching ? "size-4 animate-spin" : "size-4"} aria-hidden />
+            {dashboardQuery.isFetching ? t("admin.dashboard.api.refreshing") : t("admin.dashboard.api.refresh")}
+          </Button>
+          <Button asChild size="sm">
+            <Link to="/admin/requests">{t("admin.dashboard.viewRequests")}</Link>
+          </Button>
+        </>
       }
     >
+      {dashboardQuery.isPending ? (
+        <div className="surface-card flex min-h-48 items-center justify-center gap-2 p-6 text-sm text-muted-foreground">
+          <RefreshCw className="size-4 animate-spin" aria-hidden />
+          {t("admin.dashboard.api.loading")}
+        </div>
+      ) : dashboardQuery.isError ? (
+        <div className="surface-card p-6 text-center">
+          <p className="text-sm text-muted-foreground">{t("admin.dashboard.api.error")}</p>
+          <Button className="mt-4" variant="outline" onClick={() => void dashboardQuery.refetch()}>
+            {t("admin.dashboard.api.retry")}
+          </Button>
+        </div>
+      ) : (
+        <>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {kpis.map((kpi) => (
           <div key={kpi.label} className="surface-card p-4">
@@ -145,7 +179,7 @@ function Dashboard() {
                     >
                       {r.reference}
                     </Link>
-                    <p className="truncate text-xs text-muted-foreground">{r.address}</p>
+                    <p className="truncate text-xs text-muted-foreground">{locationText(r)}</p>
                   </div>
                   <StatusBadge status={r.status} />
                 </li>
@@ -177,6 +211,8 @@ function Dashboard() {
           </ul>
         </section>
       </div>
+        </>
+      )}
     </AdminShell>
   );
 }

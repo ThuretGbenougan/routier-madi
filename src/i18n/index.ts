@@ -1,5 +1,6 @@
 import { common } from "./dicts/common";
 import { citizen } from "./dicts/citizen";
+import { citizenReport } from "./dicts/citizen-report";
 import { admin } from "./dicts/admin";
 import { contractor } from "./dicts/contractor";
 
@@ -8,8 +9,8 @@ export type Lang = "fr" | "ru";
 export const languages: Lang[] = ["fr", "ru"];
 
 export const dictionaries = {
-  fr: { ...common.fr, ...citizen.fr, ...admin.fr, ...contractor.fr },
-  ru: { ...common.ru, ...citizen.ru, ...admin.ru, ...contractor.ru },
+  fr: { ...common.fr, ...citizen.fr, ...citizenReport.fr, ...admin.fr, ...contractor.fr },
+  ru: { ...common.ru, ...citizen.ru, ...citizenReport.ru, ...admin.ru, ...contractor.ru },
 };
 
 export type TranslationKey = keyof (typeof dictionaries)["fr"];

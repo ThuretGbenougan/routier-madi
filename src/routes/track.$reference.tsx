@@ -59,6 +59,9 @@ function TrackDetail() {
 
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
+  const locationText = request.address && request.district
+    ? t("track.detail.locationValue", { address: request.address, district: request.district })
+    : request.address ?? request.district ?? t("track.detail.locationMapOnly");
 
   return (
     <PublicLayout>
@@ -85,10 +88,7 @@ function TrackDetail() {
               <div>
                 <dt className="text-xs text-muted-foreground">{t("track.detail.location")}</dt>
                 <dd>
-                  {t("track.detail.locationValue", {
-                    address: request.address,
-                    district: request.district,
-                  })}
+                  {locationText}
                 </dd>
               </div>
             </div>

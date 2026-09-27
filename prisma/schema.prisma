@@ -114,8 +114,8 @@ model RepairRequest {
   reference         String?          @unique
   trackingTokenHash String           @unique
   problemType       ProblemType
-  address           String
-  district          String
+  address           String?
+  district          String?
   description       String
   latitude          Decimal          @db.Decimal(9, 6)
   longitude         Decimal          @db.Decimal(9, 6)

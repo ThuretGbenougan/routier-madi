@@ -25,6 +25,7 @@ export const Route = createFileRoute("/contractor/jobs/")({
 function JobsPage() {
   const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
+  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
   const jobs = requests
     .filter(
       (r) =>
@@ -67,7 +68,7 @@ function JobsPage() {
                   </div>
                   <p className="mt-1 flex items-center gap-1.5 truncate text-sm text-muted-foreground">
                     <MapPin className="size-4 shrink-0" aria-hidden />
-                    {job.address}
+                    {locationText(job)}
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {t("contractor.jobs.reportedOn", {

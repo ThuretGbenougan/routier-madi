@@ -8,6 +8,7 @@ export interface ApiAppState {
   contractors: Contractor[];
   session: Session | null;
   loading: boolean;
+  error?: string | undefined;
 }
 
 const emptyState: ApiAppState = { requests: [], contractors: [], session: null, loading: true };
@@ -48,7 +49,7 @@ export async function refreshApiState(session = state.session) {
     setState({ requests: [], contractors: [], session: null, loading: false });
     return;
   }
-  setState({ ...state, session, loading: true });
+  setState({ ...state, session, loading: true, error: undefined });
   try {
     if (session.role === "ADMIN") {
       const result = await requestsApi.adminBootstrap();
@@ -57,8 +58,8 @@ export async function refreshApiState(session = state.session) {
       const result = await requestsApi.contractorBootstrap();
       setState({ session, requests: result.requests, contractors: [], loading: false });
     }
-  } catch {
-    setState({ requests: [], contractors: [], session: null, loading: false });
+  } catch (error) {
+    setState({ ...state, session, loading: false, error: error instanceof Error ? error.name : "API_ERROR" });
   }
 }
 

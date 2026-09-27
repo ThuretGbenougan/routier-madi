@@ -23,6 +23,7 @@ export const Route = createFileRoute("/contractor/history")({
 function HistoryPage() {
   const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
+  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
   const done = requests
     .filter(
       (r) =>
@@ -56,7 +57,7 @@ function HistoryPage() {
                   <span className="text-sm font-semibold">{r.reference}</span>
                   <StatusBadge status={r.status} />
                 </div>
-                <p className="mt-1 truncate text-sm text-muted-foreground">{r.address}</p>
+                <p className="mt-1 truncate text-sm text-muted-foreground">{locationText(r)}</p>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {t("contractor.history.completedOn", {
                     problem: problemLabel(r.problemType),

@@ -15,8 +15,8 @@ const problemType = z.enum(["POTHOLE", "PAVEMENT", "CRACK", "SIDEWALK", "DRAINAG
 
 export const createRequestSchema = z.object({
   problemType,
-  address: z.string().trim().min(5).max(300),
-  district: z.string().trim().min(1).max(100),
+  address: z.string().trim().min(5).max(300).optional(),
+  district: z.string().trim().min(1).max(100).optional(),
   description: z.string().trim().min(15).max(5000),
   lat: z.number().finite().min(-90).max(90),
   lng: z.number().finite().min(-180).max(180),

@@ -234,10 +234,11 @@ function RequestDetail() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">{request.reference}</h2>
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            {!request.address && <p className="text-sm text-muted-foreground">{t("location.mapOnly")}</p>}
+            {request.address && <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <MapPin className="size-4" aria-hidden />
-              {request.address} — {t("admin.detail.districtLabel", { district: request.district })}
-            </p>
+              {request.address} — {t("admin.detail.districtLabel", { district: request.district ?? t("location.mapOnly") })}
+            </p>}
             <p className="mt-1 text-xs text-muted-foreground">
               {t("admin.detail.deposited", {
                 date: formatDate(request.createdAt, lang),

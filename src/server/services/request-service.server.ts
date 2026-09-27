@@ -32,8 +32,8 @@ export async function createPublicRequest(input: CreateRequestInput) {
     const request = await tx.repairRequest.create({
       data: {
         problemType: input.problemType,
-        address: input.address,
-        district: input.district,
+        address: input.address ?? null,
+        district: input.district ?? null,
         description: input.description,
         citizenName: input.citizenName ?? null,
         citizenEmail: input.citizenEmail ?? null,
