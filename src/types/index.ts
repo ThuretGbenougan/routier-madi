@@ -9,17 +9,25 @@ export type RequestStatus =
   | "REJECTED";
 
 export type ProblemType =
-  | "POTHOLE"
-  | "PAVEMENT"
-  | "CRACK"
-  | "SIDEWALK"
-  | "DRAINAGE"
-  | "MARKING"
-  | "OTHER";
+  "POTHOLE" | "PAVEMENT" | "CRACK" | "SIDEWALK" | "DRAINAGE" | "MARKING" | "OTHER";
 
 export type Role = "ADMIN" | "CONTRACTOR";
 
+export interface PhotoAnalysis {
+  id: string;
+  status: "PENDING" | "PROCESSING" | "SUCCEEDED" | "FAILED" | "SKIPPED";
+  attempts: number;
+  failureCode: string | null;
+  modelVersion: string | null;
+  durationMs: number | null;
+  width: number | null;
+  height: number | null;
+  detections: { label: string; confidence: number; box: [number, number, number, number] }[];
+}
+
 export interface Photo {
+  cycle?: number;
+  analysis?: PhotoAnalysis;
   id: string;
   label: string;
   kind: "citizen" | "before" | "after";
@@ -46,6 +54,8 @@ export interface Note {
 }
 
 export interface RepairRequest {
+  interventionCycle?: number;
+  controls?: { at: string; actor: string; passed: boolean; comment: string; cycle: number }[];
   id: string;
   reference: string;
   problemType: ProblemType;

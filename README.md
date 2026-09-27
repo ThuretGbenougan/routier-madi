@@ -106,3 +106,7 @@ bun run build
 Les clients web et Tauri restent actuellement en mode démo tant que Neon n’est
 pas configuré et que l’adaptateur de données UI n’a pas été basculé. Cette
 précaution évite de casser le déploiement public avant la migration des données.
+
+## Photos, analyse ML et contrôles
+
+Le parcours utilise les envois directs signés vers Cloudinary et une file QStash gratuite pour le service ML Render Free. Voir [le guide d’exploitation](docs/ml-workflow.md) pour la configuration, les migrations, les tests et le rattrapage des photos existantes. Le seed est désormais une opération manuelle réservée à une base de démonstration.

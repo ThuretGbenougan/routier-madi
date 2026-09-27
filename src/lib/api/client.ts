@@ -42,6 +42,11 @@ export class ApiError extends Error {
   }
 }
 
+let sessionExpired: (() => void) | undefined;
+export function onSessionExpired(callback: () => void) {
+  sessionExpired = callback;
+}
+
 let tauriAccessToken: string | null = null;
 
 /** Tauri keeps its opaque access token only in memory. */
@@ -60,7 +65,9 @@ type ApiRequestOptions = Omit<RequestInit, "body" | "headers"> & {
 };
 
 function requestId() {
-  return globalThis.crypto?.randomUUID?.() ?? `req_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+  return (
+    globalThis.crypto?.randomUUID?.() ?? `req_${Date.now()}_${Math.random().toString(36).slice(2)}`
+  );
 }
 
 function isJsonResponse(response: Response) {
@@ -77,7 +84,12 @@ function normalizeError(status: number, body: unknown, response: Response) {
   }
   return new ApiError(status, {
     error: {
-      code: status === 401 ? "AUTH_SESSION_EXPIRED" : status === 429 ? "RATE_LIMIT_EXCEEDED" : "NETWORK_ERROR",
+      code:
+        status === 401
+          ? "AUTH_SESSION_EXPIRED"
+          : status === 429
+            ? "RATE_LIMIT_EXCEEDED"
+            : "NETWORK_ERROR",
       message: "La requete n'a pas pu etre traitee.",
       details: [],
       requestId: response.headers.get("x-request-id") ?? "unknown",
@@ -89,7 +101,10 @@ function normalizeError(status: number, body: unknown, response: Response) {
  * Unique transport HTTP for browser and Tauri. Feature clients must use this
  * function instead of invoking fetch directly.
  */
-export async function apiRequest<T>(path: `/${string}`, options: ApiRequestOptions = {}): Promise<T> {
+export async function apiRequest<T>(
+  path: `/${string}`,
+  options: ApiRequestOptions = {},
+): Promise<T> {
   const controller = new AbortController();
   const timeoutMs = options.timeoutMs ?? 15_000;
   const timeout = globalThis.setTimeout(() => controller.abort(), timeoutMs);
@@ -101,7 +116,11 @@ export async function apiRequest<T>(path: `/${string}`, options: ApiRequestOptio
   if (tauri && tauriAccessToken) headers.set("authorization", `Bearer ${tauriAccessToken}`);
 
   let body: BodyInit | undefined;
-  if (options.body instanceof FormData || options.body instanceof Blob || typeof options.body === "string") {
+  if (
+    options.body instanceof FormData ||
+    options.body instanceof Blob ||
+    typeof options.body === "string"
+  ) {
     body = options.body;
   } else if (options.body !== undefined) {
     headers.set("content-type", "application/json");
@@ -122,16 +141,29 @@ export async function apiRequest<T>(path: `/${string}`, options: ApiRequestOptio
     return payload as T;
   } catch (error) {
     if (error instanceof ApiError) {
-      if (error.status === 401 && tauri) setTauriAccessToken(null);
+      if (error.status === 401) {
+        setTauriAccessToken(null);
+        sessionExpired?.();
+      }
       throw error;
     }
     if (error instanceof DOMException && error.name === "AbortError") {
       throw new ApiError(408, {
-        error: { code: "REQUEST_TIMEOUT", message: "La requete a expire.", details: [], requestId: "client" },
+        error: {
+          code: "REQUEST_TIMEOUT",
+          message: "La requete a expire.",
+          details: [],
+          requestId: "client",
+        },
       });
     }
     throw new ApiError(0, {
-      error: { code: "NETWORK_ERROR", message: "Le serveur est inaccessible.", details: [], requestId: "client" },
+      error: {
+        code: "NETWORK_ERROR",
+        message: "Le serveur est inaccessible.",
+        details: [],
+        requestId: "client",
+      },
     });
   } finally {
     globalThis.clearTimeout(timeout);

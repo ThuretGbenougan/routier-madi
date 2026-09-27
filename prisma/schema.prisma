@@ -56,6 +56,8 @@ enum NoteVisibility {
 }
 
 enum MlAnalysisStatus {
+  PROCESSING
+  SKIPPED
   PENDING
   SUCCEEDED
   FAILED
@@ -128,7 +130,9 @@ model RepairRequest {
   photos            Photo[]
   history           RequestHistory[]
   notes             Note[]
-  controlResult     ControlResult?
+  controls          ControlResult[]
+  uploads           PhotoUpload[]
+  interventionCycle Int              @default(1)
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
@@ -152,6 +156,8 @@ model Photo {
   height          Int
   sha256          String
   analysis        MlAnalysis?
+  upload          PhotoUpload?
+  cycle           Int           @default(1)
   createdAt       DateTime      @default(now())
 
   @@index([requestId, createdAt])
@@ -188,7 +194,8 @@ model Note {
 
 model ControlResult {
   id          String        @id @default(cuid())
-  requestId   String        @unique
+  requestId   String
+  cycle       Int           @default(1)
   request     RepairRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   inspectorId String
   inspector   User          @relation("ControlInspector", fields: [inspectorId], references: [id], onDelete: Restrict)
@@ -202,6 +209,13 @@ model MlAnalysis {
   photoId      String           @unique
   photo        Photo            @relation(fields: [photoId], references: [id], onDelete: Cascade)
   status       MlAnalysisStatus @default(PENDING)
+  generation   Int              @default(1)
+  attempts     Int              @default(0)
+  leaseToken   String?
+  leaseUntil   DateTime?
+  imageWidth   Int?
+  imageHeight  Int?
+  outbox       MlOutbox[]
   modelVersion String?
   durationMs   Float?
   failureCode  String?
@@ -223,4 +237,43 @@ model MlDetection {
   createdAt  DateTime   @default(now())
 
   @@index([analysisId])
+}
+
+model PhotoUpload {
+  id String @id @default(cuid())
+  requestId String
+  request RepairRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  actorKey String
+  idempotencyKey String
+  kind PhotoKind
+  cycle Int
+  storageKey String @unique
+  label String
+  photoId String? @unique
+  photo Photo? @relation(fields: [photoId], references: [id], onDelete: SetNull)
+  expiresAt DateTime
+  cleanedAt DateTime?
+  createdAt DateTime @default(now())
+  @@unique([requestId, actorKey, idempotencyKey])
+  @@index([expiresAt])
+}
+
+model MlOutbox {
+  id String @id @default(cuid())
+  analysisId String
+  analysis MlAnalysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  generation Int
+  messageId String?
+  publishedAt DateTime?
+  publishingUntil DateTime?
+  createdAt DateTime @default(now())
+  @@unique([analysisId, generation])
+  @@index([publishedAt, createdAt])
+}
+
+model RateBucket {
+  key String @id
+  count Int @default(0)
+  expiresAt DateTime
+  @@index([expiresAt])
 }

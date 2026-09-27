@@ -3,17 +3,27 @@ import type { Contractor, Photo, RepairRequest } from "@/types";
 
 export const repairRequestInclude = {
   contractor: true,
-  photos: { orderBy: { createdAt: "asc" } },
+  photos: {
+    orderBy: { createdAt: "asc" },
+    include: { analysis: { include: { detections: true } } },
+  },
   history: { orderBy: { createdAt: "asc" }, include: { actorUser: true } },
   notes: { orderBy: { createdAt: "asc" }, include: { author: true } },
-  controlResult: { include: { inspector: true } },
+  controls: { include: { inspector: true }, orderBy: { createdAt: "asc" } },
 } satisfies Prisma.RepairRequestInclude;
 
 export type RepairRequestRecord = Prisma.RepairRequestGetPayload<{
   include: typeof repairRequestInclude;
 }>;
 
-export function toContractorDto(record: { id: string; name: string; specialty: string; contact: string; phone: string; email: string }): Contractor {
+export function toContractorDto(record: {
+  id: string;
+  name: string;
+  specialty: string;
+  contact: string;
+  phone: string;
+  email: string;
+}): Contractor {
   return {
     id: record.id,
     name: record.name,
@@ -30,12 +40,33 @@ function toPhotoDto(photo: RepairRequestRecord["photos"][number]): Photo {
     label: photo.label,
     kind: photo.kind.toLowerCase() as Photo["kind"],
     seed: photo.id,
+    cycle: photo.cycle,
+    ...(photo.analysis
+      ? {
+          analysis: {
+            id: photo.analysis.id,
+            status: photo.analysis.status,
+            attempts: photo.analysis.attempts,
+            failureCode: photo.analysis.failureCode,
+            modelVersion: photo.analysis.modelVersion,
+            durationMs: photo.analysis.durationMs,
+            width: photo.analysis.imageWidth,
+            height: photo.analysis.imageHeight,
+            detections: photo.analysis.detections.map((d) => ({
+              label: d.label,
+              confidence: d.confidence,
+              box: [d.x1, d.y1, d.x2, d.y2],
+            })),
+          },
+        }
+      : {}),
     ...(photo.deliveryUrl ? { url: photo.deliveryUrl } : {}),
-  } as Photo;
+  };
 }
 
 function toBaseDto(record: RepairRequestRecord): RepairRequest {
   if (!record.reference) throw new Error("Request reference is missing");
+  const controlResult = record.controls.at(-1);
   const notes = record.notes.map((note) => ({
     id: note.id,
     at: note.createdAt.toISOString(),
@@ -55,6 +86,14 @@ function toBaseDto(record: RepairRequestRecord): RepairRequest {
     lng: Number(record.longitude),
     ...(record.citizenName ? { citizenName: record.citizenName } : {}),
     ...(record.citizenEmail ? { citizenEmail: record.citizenEmail } : {}),
+    interventionCycle: record.interventionCycle,
+    controls: record.controls.map((control) => ({
+      at: control.createdAt.toISOString(),
+      actor: control.inspector.name,
+      passed: control.passed,
+      comment: control.comment,
+      cycle: control.cycle,
+    })),
     status: record.status as RepairRequest["status"],
     contractorId: record.contractorId,
     createdAt: record.createdAt.toISOString(),
@@ -71,13 +110,13 @@ function toBaseDto(record: RepairRequestRecord): RepairRequest {
     })),
     dispatcherNotes: notes.filter((_, index) => record.notes[index]?.visibility === "INTERNAL"),
     contractorNotes: notes.filter((_, index) => record.notes[index]?.visibility === "CONTRACTOR"),
-    ...(record.controlResult
+    ...(controlResult
       ? {
           controlResult: {
-            at: record.controlResult.createdAt.toISOString(),
-            actor: record.controlResult.inspector.name,
-            passed: record.controlResult.passed,
-            comment: record.controlResult.comment,
+            at: controlResult.createdAt.toISOString(),
+            actor: controlResult.inspector.name,
+            passed: controlResult.passed,
+            comment: controlResult.comment,
           },
         }
       : {}),
@@ -92,6 +131,7 @@ export function toContractorRepairRequestDto(record: RepairRequestRecord) {
   const dto = toBaseDto(record);
   return {
     ...dto,
+    photos: dto.photos.map(({ analysis: _analysis, ...photo }) => photo),
     citizenName: undefined,
     citizenEmail: undefined,
     dispatcherNotes: [],
@@ -103,13 +143,28 @@ export function toPublicRepairRequestDto(record: RepairRequestRecord) {
   const dto = toBaseDto(record);
   return {
     ...dto,
+    photos: dto.photos.map(({ analysis: _analysis, ...photo }) => photo),
     citizenName: undefined,
     citizenEmail: undefined,
     dispatcherNotes: [],
     contractorNotes: [],
+    controls: (dto.controls ?? []).map((control) => ({
+      ...control,
+      actor: "Service voirie",
+      comment: "Contrôle réalisé.",
+    })),
+    controlResult: dto.controlResult
+      ? { ...dto.controlResult, actor: "Service voirie", comment: "Contrôle réalisé." }
+      : undefined,
     history: dto.history.map((entry) => ({
       ...entry,
-      actor: entry.role === "ADMIN" ? "Service voirie" : entry.role === "CONTRACTOR" ? "Entreprise" : "Citoyen",
+      comment: undefined,
+      actor:
+        entry.role === "ADMIN"
+          ? "Service voirie"
+          : entry.role === "CONTRACTOR"
+            ? "Entreprise"
+            : "Citoyen",
     })),
   } satisfies RepairRequest;
 }
