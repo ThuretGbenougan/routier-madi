@@ -16,7 +16,11 @@ export function requireContractor(principal: AuthPrincipal) {
 
 export function requireRequestAccess(principal: AuthPrincipal, contractorId: string | null) {
   if (principal.role === UserRole.ADMIN) return;
-  if (principal.role !== UserRole.CONTRACTOR || !principal.contractorId || principal.contractorId !== contractorId) {
+  if (
+    principal.role !== UserRole.CONTRACTOR ||
+    !principal.contractorId ||
+    principal.contractorId !== contractorId
+  ) {
     throw new NotFoundError();
   }
 }

@@ -11,7 +11,15 @@ const requestStatus = z.enum([
   "REJECTED",
 ]);
 
-const problemType = z.enum(["POTHOLE", "PAVEMENT", "CRACK", "SIDEWALK", "DRAINAGE", "MARKING", "OTHER"]);
+const problemType = z.enum([
+  "POTHOLE",
+  "PAVEMENT",
+  "CRACK",
+  "SIDEWALK",
+  "DRAINAGE",
+  "MARKING",
+  "OTHER",
+]);
 
 export const createRequestSchema = z.object({
   problemType,

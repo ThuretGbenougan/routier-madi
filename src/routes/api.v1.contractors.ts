@@ -12,10 +12,14 @@ export const Route = createFileRoute("/api/v1/contractors")({
   server: {
     handlers: {
       OPTIONS: ({ request }) => preflightResponse(request),
-      GET: ({ request }) => handleApiRoute(request, async ({ request, requestId }) => {
-        requireAdmin(await requirePrincipal(request));
-        return jsonResponse({ contractors: (await listContractors(db)).map(toContractorDto) }, requestId);
-      }),
+      GET: ({ request }) =>
+        handleApiRoute(request, async ({ request, requestId }) => {
+          requireAdmin(await requirePrincipal(request));
+          return jsonResponse(
+            { contractors: (await listContractors(db)).map(toContractorDto) },
+            requestId,
+          );
+        }),
     },
   },
 });

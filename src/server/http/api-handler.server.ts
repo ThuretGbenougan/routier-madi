@@ -23,7 +23,10 @@ function zodToValidationError(error: ZodError) {
   );
 }
 
-export async function handleApiRoute(request: Request, handler: (context: ApiContext) => Promise<Response>) {
+export async function handleApiRoute(
+  request: Request,
+  handler: (context: ApiContext) => Promise<Response>,
+) {
   const requestId = requestIdFrom(request);
   try {
     const response = await handler({ request, requestId });
@@ -38,13 +41,18 @@ export async function handleApiRoute(request: Request, handler: (context: ApiCon
       return response;
     }
 
-    console.error(JSON.stringify({
-      level: "error",
-      event: "api_unhandled_error",
+    console.error(
+      JSON.stringify({
+        level: "error",
+        event: "api_unhandled_error",
+        requestId,
+        errorName: error instanceof Error ? error.name : "UnknownError",
+      }),
+    );
+    const response = errorResponse(
+      new AppError("INTERNAL_ERROR", 500, "Une erreur interne est survenue."),
       requestId,
-      errorName: error instanceof Error ? error.name : "UnknownError",
-    }));
-    const response = errorResponse(new AppError("INTERNAL_ERROR", 500, "Une erreur interne est survenue."), requestId);
+    );
     for (const [key, value] of corsHeaders(request)) response.headers.set(key, value);
     return response;
   }
@@ -53,11 +61,15 @@ export async function handleApiRoute(request: Request, handler: (context: ApiCon
 export async function parseJsonBody<T>(request: Request): Promise<T> {
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
-    throw new ValidationError([{ path: "body", message: "Le corps JSON est requis.", code: "INVALID_CONTENT_TYPE" }]);
+    throw new ValidationError([
+      { path: "body", message: "Le corps JSON est requis.", code: "INVALID_CONTENT_TYPE" },
+    ]);
   }
   try {
     return (await request.json()) as T;
   } catch {
-    throw new ValidationError([{ path: "body", message: "Le JSON est invalide.", code: "INVALID_JSON" }]);
+    throw new ValidationError([
+      { path: "body", message: "Le JSON est invalide.", code: "INVALID_JSON" },
+    ]);
   }
 }

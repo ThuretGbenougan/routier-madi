@@ -10,11 +10,12 @@ export const Route = createFileRoute("/api/v1/contractor/bootstrap")({
   server: {
     handlers: {
       OPTIONS: ({ request }) => preflightResponse(request),
-      GET: ({ request }) => handleApiRoute(request, async ({ request, requestId }) => {
-        const principal = await requirePrincipal(request);
-        requireContractor(principal);
-        return jsonResponse(await getBootstrap(principal), requestId);
-      }),
+      GET: ({ request }) =>
+        handleApiRoute(request, async ({ request, requestId }) => {
+          const principal = await requirePrincipal(request);
+          requireContractor(principal);
+          return jsonResponse(await getBootstrap(principal), requestId);
+        }),
     },
   },
 });

@@ -136,7 +136,11 @@ function ReportsPage() {
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={contractorData} layout="vertical" margin={{ left: 40 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" horizontal={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  horizontal={false}
+                />
                 <XAxis
                   type="number"
                   allowDecimals={false}
@@ -156,8 +160,18 @@ function ReportsPage() {
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="total" name={t("admin.reports.seriesAssigned")} fill="var(--color-chart-1)" radius={4} />
-                <Bar dataKey="done" name={t("admin.reports.seriesDone")} fill="var(--color-chart-2)" radius={4} />
+                <Bar
+                  dataKey="total"
+                  name={t("admin.reports.seriesAssigned")}
+                  fill="var(--color-chart-1)"
+                  radius={4}
+                />
+                <Bar
+                  dataKey="done"
+                  name={t("admin.reports.seriesDone")}
+                  fill="var(--color-chart-2)"
+                  radius={4}
+                />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -168,7 +182,11 @@ function ReportsPage() {
           <div className="mt-4 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeData} margin={{ left: -20 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="var(--color-border)"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="label"
                   tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }}

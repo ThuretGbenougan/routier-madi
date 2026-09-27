@@ -58,7 +58,8 @@ function RequestsList() {
   const [status, setStatus] = useState<string>("ALL");
   const [contractorId, setContractorId] = useState<string>("ALL");
   const [query, setQuery] = useState("");
-  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
+  const locationText = (request: { address?: string | undefined }) =>
+    request.address ?? t("location.mapOnly");
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -73,10 +74,7 @@ function RequestsList() {
       )
       .filter((r) =>
         q
-          ? [r.reference, r.address, r.description, r.district]
-              .join(" ")
-              .toLowerCase()
-              .includes(q)
+          ? [r.reference, r.address, r.description, r.district].join(" ").toLowerCase().includes(q)
           : true,
       )
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));

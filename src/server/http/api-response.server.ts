@@ -9,7 +9,12 @@ export type ApiErrorBody = {
   };
 };
 
-export function jsonResponse(body: unknown, requestId: string, status = 200, headers?: HeadersInit) {
+export function jsonResponse(
+  body: unknown,
+  requestId: string,
+  status = 200,
+  headers?: HeadersInit,
+) {
   const responseHeaders = new Headers(headers);
   responseHeaders.set("content-type", "application/json; charset=utf-8");
   responseHeaders.set("x-request-id", requestId);
