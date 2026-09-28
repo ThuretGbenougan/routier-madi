@@ -1,3 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
+import { ContractorInvitationDialog } from "@/components/ContractorInvitationDialog";
+import { contractorsApi } from "@/lib/api/contractors-api";
+import { formatDateTime } from "@/lib/format";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Mail, Phone, User } from "lucide-react";
 import { AdminShell } from "@/components/layout/AdminShell";
@@ -22,15 +26,39 @@ export const Route = createFileRoute("/admin/contractors")({
 });
 
 function ContractorsPage() {
-  const { requests, contractors } = useApiState();
-  const { t } = useI18n();
+  const { requests, session } = useApiState();
+  const query = useQuery({
+    queryKey: ["contractors", session?.userId],
+    queryFn: contractorsApi.list,
+    enabled: session?.role === "ADMIN",
+    refetchInterval: 30_000,
+  });
+  const contractors = query.data?.contractors ?? [];
+  const enabled = query.data?.invitationsEnabled === true && !query.isError;
+  const { t, lang } = useI18n();
   const rows = byContractor(requests, contractors);
 
   return (
     <AdminShell
       title={t("admin.contractors.title")}
       description={t("admin.contractors.description")}
+      actions={<ContractorInvitationDialog disabled={!enabled} />}
     >
+      {query.isPending && <p role="status">{t("invite.loading")}</p>}
+      {query.isError && (
+        <div role="alert" className="mb-4">
+          <p>{t("invite.loadError")}</p>
+          <Button variant="outline" onClick={() => void query.refetch()}>
+            {t("invite.retry")}
+          </Button>
+        </div>
+      )}
+      {query.data && !query.data.invitationsEnabled && (
+        <p className="mb-4 rounded-lg border border-border p-4 text-sm" role="status">
+          {t("invite.unconfigured")}
+        </p>
+      )}
+      {query.isSuccess && !rows.length && <p>{t("invite.empty")}</p>}
       <div className="grid gap-4 md:grid-cols-2">
         {rows.map(({ contractor, total, active, done }) => (
           <article key={contractor.id} className="surface-card p-5">
@@ -67,6 +95,26 @@ function ContractorsPage() {
               </li>
             </ul>
 
+            <div className="mt-4 space-y-2 border-t border-border pt-4">
+              <p className="text-sm font-medium">
+                {t(`invite.status.${contractor.accessStatus ?? "NONE"}`)}
+              </p>
+              {contractor.invitation && contractor.accessStatus !== "ACTIVE" && (
+                <>
+                  <p className="text-xs text-muted-foreground">
+                    {t(`invite.delivery.${contractor.invitation.delivery}`)}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("invite.expiry", {
+                      date: formatDateTime(contractor.invitation.expiresAt, lang),
+                    })}
+                  </p>
+                </>
+              )}
+              {!["ACTIVE", "DISABLED"].includes(contractor.accessStatus ?? "NONE") && (
+                <ContractorInvitationDialog contractor={contractor} disabled={!enabled} />
+              )}
+            </div>
             <Button asChild variant="outline" size="sm" className="mt-4">
               <Link to="/admin/requests">{t("admin.contractors.viewRequests")}</Link>
             </Button>

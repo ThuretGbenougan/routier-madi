@@ -29,5 +29,20 @@ export async function listRequests(db: DbClient, where: Prisma.RepairRequestWher
 }
 
 export async function listContractors(db: DbClient) {
-  return db.contractor.findMany({ where: { active: true }, orderBy: { name: "asc" } });
+  return db.contractor.findMany({
+    where: { active: true },
+    include: {
+      users: {
+        select: {
+          role: true,
+          active: true,
+          accountActivated: true,
+          invitation: {
+            select: { expiresAt: true, issuedAt: true, language: true, delivery: true },
+          },
+        },
+      },
+    },
+    orderBy: { name: "asc" },
+  });
 }

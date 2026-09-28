@@ -23,8 +23,43 @@ export function toContractorDto(record: {
   contact: string;
   phone: string;
   email: string;
+  users?: {
+    role: string;
+    active: boolean;
+    accountActivated: boolean;
+    invitation: { expiresAt: Date; issuedAt: Date; language: string; delivery: string } | null;
+  }[];
 }): Contractor {
+  const users = record.users ?? [];
+  const canAssign = users.some(
+    (user) => user.role === "CONTRACTOR" && user.active && user.accountActivated,
+  );
+  const invitation = users.find((user) => user.invitation)?.invitation;
+  const accessStatus = canAssign
+    ? "ACTIVE"
+    : users.some((user) => !user.active || user.accountActivated)
+      ? "DISABLED"
+      : invitation
+        ? invitation.expiresAt <= new Date()
+          ? "EXPIRED"
+          : "PENDING"
+        : "NONE";
   return {
+    canAssign,
+    accessStatus,
+    invitation: invitation
+      ? {
+          expiresAt: invitation.expiresAt.toISOString(),
+          issuedAt: invitation.issuedAt.toISOString(),
+          language: invitation.language === "ru" ? "ru" : "fr",
+          delivery:
+            invitation.delivery === "ACCEPTED"
+              ? "ACCEPTED"
+              : invitation.delivery === "FAILED"
+                ? "FAILED"
+                : "PENDING",
+        }
+      : null,
     id: record.id,
     name: record.name,
     specialty: record.specialty,

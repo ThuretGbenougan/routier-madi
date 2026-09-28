@@ -3,6 +3,9 @@ import { z } from "zod";
 const serverEnvSchema = z.object({
   DATABASE_URL: z.string().url(),
   SESSION_SECRET: z.string().min(32),
+  BREVO_API_KEY: z.string().min(1).optional(),
+  BREVO_SENDER_EMAIL: z.string().optional(),
+  BREVO_SENDER_NAME: z.string().min(1).optional(),
   ML_API_URL: z.string().url().optional(),
   ML_API_KEY: z.string().min(1).optional(),
   CLOUDINARY_CLOUD_NAME: z.string().min(1).optional(),

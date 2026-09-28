@@ -19,7 +19,7 @@ export async function login(
 ) {
   const user = await db.user.findUnique({ where: { emailNormalized: input.email } });
   const valid =
-    Boolean(user?.active) &&
+    Boolean(user?.active && user.accountActivated) &&
     Boolean(user && (await argon2.verify(user.passwordHash, input.password)));
   if (!user || !valid || (input.role && user.role !== input.role)) {
     throw new AuthenticationError();

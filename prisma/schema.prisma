@@ -66,6 +66,8 @@ enum MlAnalysisStatus {
 model User {
   id              String           @id @default(cuid())
   emailNormalized String           @unique
+  accountActivated Boolean          @default(true)
+  invitation      ContractorInvitation?
   passwordHash    String
   name            String
   role            UserRole
@@ -276,4 +278,17 @@ model RateBucket {
   count Int @default(0)
   expiresAt DateTime
   @@index([expiresAt])
+}
+
+model ContractorInvitation {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash    String   @unique
+  expiresAt    DateTime
+  consumedAt   DateTime?
+  issuedAt     DateTime @default(now())
+  language     String
+  delivery     String   @default("PENDING")
+  messageId    String?
 }

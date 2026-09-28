@@ -19,6 +19,7 @@ import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as ApiHealthRouteImport } from './routes/api.health'
 import { Route as ContractorIndexRouteImport } from './routes/contractor.index'
+import { Route as ContractorActivateRouteImport } from './routes/contractor.activate'
 import { Route as ContractorHistoryRouteImport } from './routes/contractor.history'
 import { Route as ContractorLoginRouteImport } from './routes/contractor.login'
 import { Route as TrackIndexRouteImport } from './routes/track.index'
@@ -32,6 +33,7 @@ import { Route as ContractorJobsIdRouteImport } from './routes/contractor.jobs.$
 import { Route as ApiInternalMlProcessRouteImport } from './routes/api.internal.ml.process'
 import { Route as ApiV1AdminAnalysesRouteImport } from './routes/api.v1.admin.analyses'
 import { Route as ApiV1AdminBootstrapRouteImport } from './routes/api.v1.admin.bootstrap'
+import { Route as ApiV1AuthActivateRouteImport } from './routes/api.v1.auth.activate'
 import { Route as ApiV1AuthLoginRouteImport } from './routes/api.v1.auth.login'
 import { Route as ApiV1AuthLogoutRouteImport } from './routes/api.v1.auth.logout'
 import { Route as ApiV1AuthMeRouteImport } from './routes/api.v1.auth.me'
@@ -39,6 +41,7 @@ import { Route as ApiV1ContractorBootstrapRouteImport } from './routes/api.v1.co
 import { Route as ApiV1PublicStatsRouteImport } from './routes/api.v1.public.stats'
 import { Route as ApiV1RequestsIndexRouteImport } from './routes/api.v1.requests.index'
 import { Route as ApiV1RequestsIdRouteImport } from './routes/api.v1.requests.$id'
+import { Route as ApiV1ContractorsIdInvitationsRouteImport } from './routes/api.v1.contractors.$id.invitations'
 import { Route as ApiV1PublicRequestsReferenceRouteImport } from './routes/api.v1.public.requests.$reference'
 import { Route as ApiV1RequestsIdAssignRouteImport } from './routes/api.v1.requests.$id.assign'
 import { Route as ApiV1RequestsIdNotesRouteImport } from './routes/api.v1.requests.$id.notes'
@@ -96,6 +99,11 @@ const ApiHealthRoute = ApiHealthRouteImport.update({
 const ContractorIndexRoute = ContractorIndexRouteImport.update({
   id: '/contractor/',
   path: '/contractor/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContractorActivateRoute = ContractorActivateRouteImport.update({
+  id: '/contractor/activate',
+  path: '/contractor/activate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorHistoryRoute = ContractorHistoryRouteImport.update({
@@ -163,6 +171,11 @@ const ApiV1AdminBootstrapRoute = ApiV1AdminBootstrapRouteImport.update({
   path: '/api/v1/admin/bootstrap',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1AuthActivateRoute = ApiV1AuthActivateRouteImport.update({
+  id: '/api/v1/auth/activate',
+  path: '/api/v1/auth/activate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiV1AuthLoginRoute = ApiV1AuthLoginRouteImport.update({
   id: '/api/v1/auth/login',
   path: '/api/v1/auth/login',
@@ -199,6 +212,12 @@ const ApiV1RequestsIdRoute = ApiV1RequestsIdRouteImport.update({
   path: '/api/v1/requests/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1ContractorsIdInvitationsRoute =
+  ApiV1ContractorsIdInvitationsRouteImport.update({
+    id: '/$id/invitations',
+    path: '/$id/invitations',
+    getParentRoute: () => ApiV1ContractorsRoute,
+  } as any)
 const ApiV1PublicRequestsReferenceRoute =
   ApiV1PublicRequestsReferenceRouteImport.update({
     id: '/api/v1/public/requests/$reference',
@@ -254,6 +273,7 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/health': typeof ApiHealthRoute
+  '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -262,13 +282,14 @@ export interface FileRoutesByFullPath {
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
-  '/api/v1/contractors': typeof ApiV1ContractorsRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
   '/api/internal/ml/process': typeof ApiInternalMlProcessRoute
   '/api/v1/admin/analyses': typeof ApiV1AdminAnalysesRoute
   '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/activate': typeof ApiV1AuthActivateRoute
   '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
@@ -276,6 +297,7 @@ export interface FileRoutesByFullPath {
   '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
+  '/api/v1/contractors/$id/invitations': typeof ApiV1ContractorsIdInvitationsRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
   '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
   '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
@@ -294,6 +316,7 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/health': typeof ApiHealthRoute
+  '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -302,13 +325,14 @@ export interface FileRoutesByTo {
   '/track': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
-  '/api/v1/contractors': typeof ApiV1ContractorsRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
   '/contractor/jobs': typeof ContractorJobsIndexRoute
   '/api/internal/ml/process': typeof ApiInternalMlProcessRoute
   '/api/v1/admin/analyses': typeof ApiV1AdminAnalysesRoute
   '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/activate': typeof ApiV1AuthActivateRoute
   '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
@@ -316,6 +340,7 @@ export interface FileRoutesByTo {
   '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests': typeof ApiV1RequestsIndexRoute
+  '/api/v1/contractors/$id/invitations': typeof ApiV1ContractorsIdInvitationsRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
   '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
   '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
@@ -335,6 +360,7 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
   '/api/health': typeof ApiHealthRoute
+  '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
   '/contractor/login': typeof ContractorLoginRoute
   '/track/$reference': typeof TrackReferenceRoute
@@ -343,13 +369,14 @@ export interface FileRoutesById {
   '/track/': typeof TrackIndexRoute
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
-  '/api/v1/contractors': typeof ApiV1ContractorsRoute
+  '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
   '/api/internal/ml/process': typeof ApiInternalMlProcessRoute
   '/api/v1/admin/analyses': typeof ApiV1AdminAnalysesRoute
   '/api/v1/admin/bootstrap': typeof ApiV1AdminBootstrapRoute
+  '/api/v1/auth/activate': typeof ApiV1AuthActivateRoute
   '/api/v1/auth/login': typeof ApiV1AuthLoginRoute
   '/api/v1/auth/logout': typeof ApiV1AuthLogoutRoute
   '/api/v1/auth/me': typeof ApiV1AuthMeRoute
@@ -357,6 +384,7 @@ export interface FileRoutesById {
   '/api/v1/public/stats': typeof ApiV1PublicStatsRoute
   '/api/v1/requests/$id': typeof ApiV1RequestsIdRouteWithChildren
   '/api/v1/requests/': typeof ApiV1RequestsIndexRoute
+  '/api/v1/contractors/$id/invitations': typeof ApiV1ContractorsIdInvitationsRoute
   '/api/v1/public/requests/$reference': typeof ApiV1PublicRequestsReferenceRoute
   '/api/v1/requests/$id/assign': typeof ApiV1RequestsIdAssignRoute
   '/api/v1/requests/$id/notes': typeof ApiV1RequestsIdNotesRoute
@@ -377,6 +405,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/reports'
     | '/api/health'
+    | '/contractor/activate'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -392,6 +421,7 @@ export interface FileRouteTypes {
     | '/api/internal/ml/process'
     | '/api/v1/admin/analyses'
     | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/activate'
     | '/api/v1/auth/login'
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
@@ -399,6 +429,7 @@ export interface FileRouteTypes {
     | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests/'
+    | '/api/v1/contractors/$id/invitations'
     | '/api/v1/public/requests/$reference'
     | '/api/v1/requests/$id/assign'
     | '/api/v1/requests/$id/notes'
@@ -417,6 +448,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/reports'
     | '/api/health'
+    | '/contractor/activate'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -432,6 +464,7 @@ export interface FileRouteTypes {
     | '/api/internal/ml/process'
     | '/api/v1/admin/analyses'
     | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/activate'
     | '/api/v1/auth/login'
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
@@ -439,6 +472,7 @@ export interface FileRouteTypes {
     | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests'
+    | '/api/v1/contractors/$id/invitations'
     | '/api/v1/public/requests/$reference'
     | '/api/v1/requests/$id/assign'
     | '/api/v1/requests/$id/notes'
@@ -457,6 +491,7 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/reports'
     | '/api/health'
+    | '/contractor/activate'
     | '/contractor/history'
     | '/contractor/login'
     | '/track/$reference'
@@ -472,6 +507,7 @@ export interface FileRouteTypes {
     | '/api/internal/ml/process'
     | '/api/v1/admin/analyses'
     | '/api/v1/admin/bootstrap'
+    | '/api/v1/auth/activate'
     | '/api/v1/auth/login'
     | '/api/v1/auth/logout'
     | '/api/v1/auth/me'
@@ -479,6 +515,7 @@ export interface FileRouteTypes {
     | '/api/v1/public/stats'
     | '/api/v1/requests/$id'
     | '/api/v1/requests/'
+    | '/api/v1/contractors/$id/invitations'
     | '/api/v1/public/requests/$reference'
     | '/api/v1/requests/$id/assign'
     | '/api/v1/requests/$id/notes'
@@ -498,6 +535,7 @@ export interface RootRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminReportsRoute: typeof AdminReportsRoute
   ApiHealthRoute: typeof ApiHealthRoute
+  ContractorActivateRoute: typeof ContractorActivateRoute
   ContractorHistoryRoute: typeof ContractorHistoryRoute
   ContractorLoginRoute: typeof ContractorLoginRoute
   TrackReferenceRoute: typeof TrackReferenceRoute
@@ -506,13 +544,14 @@ export interface RootRouteChildren {
   TrackIndexRoute: typeof TrackIndexRoute
   AdminRequestsIdRoute: typeof AdminRequestsIdRoute
   ApiInternalMaintenanceRoute: typeof ApiInternalMaintenanceRoute
-  ApiV1ContractorsRoute: typeof ApiV1ContractorsRoute
+  ApiV1ContractorsRoute: typeof ApiV1ContractorsRouteWithChildren
   ContractorJobsIdRoute: typeof ContractorJobsIdRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
   ContractorJobsIndexRoute: typeof ContractorJobsIndexRoute
   ApiInternalMlProcessRoute: typeof ApiInternalMlProcessRoute
   ApiV1AdminAnalysesRoute: typeof ApiV1AdminAnalysesRoute
   ApiV1AdminBootstrapRoute: typeof ApiV1AdminBootstrapRoute
+  ApiV1AuthActivateRoute: typeof ApiV1AuthActivateRoute
   ApiV1AuthLoginRoute: typeof ApiV1AuthLoginRoute
   ApiV1AuthLogoutRoute: typeof ApiV1AuthLogoutRoute
   ApiV1AuthMeRoute: typeof ApiV1AuthMeRoute
@@ -594,6 +633,13 @@ declare module '@tanstack/react-router' {
       path: '/contractor'
       fullPath: '/contractor/'
       preLoaderRoute: typeof ContractorIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contractor/activate': {
+      id: '/contractor/activate'
+      path: '/contractor/activate'
+      fullPath: '/contractor/activate'
+      preLoaderRoute: typeof ContractorActivateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contractor/history': {
@@ -687,6 +733,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1AdminBootstrapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/v1/auth/activate': {
+      id: '/api/v1/auth/activate'
+      path: '/api/v1/auth/activate'
+      fullPath: '/api/v1/auth/activate'
+      preLoaderRoute: typeof ApiV1AuthActivateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/v1/auth/login': {
       id: '/api/v1/auth/login'
       path: '/api/v1/auth/login'
@@ -735,6 +788,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/v1/requests/$id'
       preLoaderRoute: typeof ApiV1RequestsIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/contractors/$id/invitations': {
+      id: '/api/v1/contractors/$id/invitations'
+      path: '/$id/invitations'
+      fullPath: '/api/v1/contractors/$id/invitations'
+      preLoaderRoute: typeof ApiV1ContractorsIdInvitationsRouteImport
+      parentRoute: typeof ApiV1ContractorsRoute
     }
     '/api/v1/public/requests/$reference': {
       id: '/api/v1/public/requests/$reference'
@@ -795,6 +855,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ApiV1ContractorsRouteChildren {
+  ApiV1ContractorsIdInvitationsRoute: typeof ApiV1ContractorsIdInvitationsRoute
+}
+
+const ApiV1ContractorsRouteChildren: ApiV1ContractorsRouteChildren = {
+  ApiV1ContractorsIdInvitationsRoute: ApiV1ContractorsIdInvitationsRoute,
+}
+
+const ApiV1ContractorsRouteWithChildren =
+  ApiV1ContractorsRoute._addFileChildren(ApiV1ContractorsRouteChildren)
+
 interface ApiV1RequestsIdPhotoUploadsRouteChildren {
   ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute: typeof ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute
 }
@@ -840,6 +911,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminReportsRoute: AdminReportsRoute,
   ApiHealthRoute: ApiHealthRoute,
+  ContractorActivateRoute: ContractorActivateRoute,
   ContractorHistoryRoute: ContractorHistoryRoute,
   ContractorLoginRoute: ContractorLoginRoute,
   TrackReferenceRoute: TrackReferenceRoute,
@@ -848,13 +920,14 @@ const rootRouteChildren: RootRouteChildren = {
   TrackIndexRoute: TrackIndexRoute,
   AdminRequestsIdRoute: AdminRequestsIdRoute,
   ApiInternalMaintenanceRoute: ApiInternalMaintenanceRoute,
-  ApiV1ContractorsRoute: ApiV1ContractorsRoute,
+  ApiV1ContractorsRoute: ApiV1ContractorsRouteWithChildren,
   ContractorJobsIdRoute: ContractorJobsIdRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
   ContractorJobsIndexRoute: ContractorJobsIndexRoute,
   ApiInternalMlProcessRoute: ApiInternalMlProcessRoute,
   ApiV1AdminAnalysesRoute: ApiV1AdminAnalysesRoute,
   ApiV1AdminBootstrapRoute: ApiV1AdminBootstrapRoute,
+  ApiV1AuthActivateRoute: ApiV1AuthActivateRoute,
   ApiV1AuthLoginRoute: ApiV1AuthLoginRoute,
   ApiV1AuthLogoutRoute: ApiV1AuthLogoutRoute,
   ApiV1AuthMeRoute: ApiV1AuthMeRoute,

@@ -86,6 +86,14 @@ export interface RepairRequest {
 }
 
 export interface Contractor {
+  accessStatus?: "NONE" | "PENDING" | "EXPIRED" | "ACTIVE" | "DISABLED";
+  canAssign?: boolean;
+  invitation?: {
+    expiresAt: string;
+    issuedAt: string;
+    language: "fr" | "ru";
+    delivery: "PENDING" | "ACCEPTED" | "FAILED";
+  } | null;
   id: string;
   name: string;
   specialty: string;

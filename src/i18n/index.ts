@@ -1,3 +1,4 @@
+import { invitations } from "./dicts/invitations";
 import { common } from "./dicts/common";
 import { citizen } from "./dicts/citizen";
 import { citizenReport } from "./dicts/citizen-report";
@@ -15,6 +16,7 @@ export const languages: Lang[] = ["fr", "ru"];
 export const dictionaries = {
   fr: {
     ...common.fr,
+    ...invitations.fr,
     ...requestLocation.fr,
     ...citizen.fr,
     ...citizenReport.fr,
@@ -24,6 +26,7 @@ export const dictionaries = {
   },
   ru: {
     ...common.ru,
+    ...invitations.ru,
     ...requestLocation.ru,
     ...citizen.ru,
     ...citizenReport.ru,

@@ -102,7 +102,13 @@ export async function getOptionalPrincipal(request: Request): Promise<AuthPrinci
     where: { tokenHash: hashToken(token) },
     include: { user: true },
   });
-  if (!session || session.revokedAt || session.expiresAt <= new Date() || !session.user.active)
+  if (
+    !session ||
+    session.revokedAt ||
+    session.expiresAt <= new Date() ||
+    !session.user.active ||
+    !session.user.accountActivated
+  )
     return null;
 
   return {
