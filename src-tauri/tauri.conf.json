@@ -22,7 +22,7 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self'; connect-src 'self' https: http://localhost:* ws://localhost:*; img-src 'self' asset: http://asset.localhost blob: data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'"
+      "csp": "default-src 'self'; connect-src 'self' https: http://localhost:* ws://localhost:*; img-src 'self' asset: http://asset.localhost blob: data: https:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; script-src 'self'; frame-src https://yandex.com"
     }
   },
   "bundle": {

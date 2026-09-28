@@ -1,3 +1,4 @@
+import { RequestLocationMap } from "@/components/RequestLocationMap";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, CheckCircle2, ImagePlus, MapPin, PlayCircle } from "lucide-react";
@@ -95,6 +96,8 @@ function JobDetail() {
         </div>
         <p className="mt-4 border-t border-border pt-4 text-sm">{request.description}</p>
       </header>
+
+      <RequestLocationMap lat={request.lat} lng={request.lng} />
 
       <section className="surface-card mt-4 p-5">
         <h3 className="text-sm font-semibold">{t("contractor.job.progressTitle")}</h3>
