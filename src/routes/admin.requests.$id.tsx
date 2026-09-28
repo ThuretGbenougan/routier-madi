@@ -1,3 +1,4 @@
+import { RequestLocationMap } from "@/components/RequestLocationMap";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, CheckCircle2, MapPin, MessageSquarePlus, XCircle } from "lucide-react";
@@ -240,7 +241,7 @@ function RequestDetail() {
   return (
     <AdminShell
       title={request.reference}
-      description={`${problemLabel(request.problemType)} · ${request.address}`}
+      description={`${problemLabel(request.problemType)} · ${request.address || t("location.mapOnly")}`}
       actions={
         <Button variant="outline" size="sm" onClick={() => navigate({ to: "/admin/requests" })}>
           <ArrowLeft className="size-4" aria-hidden />
@@ -295,6 +296,8 @@ function RequestDetail() {
         </div>
       </header>
 
+      <RequestLocationMap lat={request.lat} lng={request.lng} />
+
       <section className="surface-card mt-4 p-5">
         <h3 className="text-sm font-semibold">{t("admin.detail.lifecycle")}</h3>
         <div className="mt-4">
@@ -321,14 +324,6 @@ function RequestDetail() {
               <dd>
                 {request.citizenName ?? t("admin.detail.anonymous")}
                 {request.citizenEmail ? ` · ${request.citizenEmail}` : ""}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-xs text-muted-foreground">
-                {t("admin.detail.approximateLocation")}
-              </dt>
-              <dd>
-                {request.lat.toFixed(4)}, {request.lng.toFixed(4)}
               </dd>
             </div>
           </dl>

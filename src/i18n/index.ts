@@ -6,6 +6,8 @@ import { contractor } from "./dicts/contractor";
 
 import { mlWorkflow } from "./dicts/ml-workflow";
 
+import { requestLocation } from "./dicts/request-location";
+
 export type Lang = "fr" | "ru";
 
 export const languages: Lang[] = ["fr", "ru"];
@@ -13,6 +15,7 @@ export const languages: Lang[] = ["fr", "ru"];
 export const dictionaries = {
   fr: {
     ...common.fr,
+    ...requestLocation.fr,
     ...citizen.fr,
     ...citizenReport.fr,
     ...admin.fr,
@@ -21,6 +24,7 @@ export const dictionaries = {
   },
   ru: {
     ...common.ru,
+    ...requestLocation.ru,
     ...citizen.ru,
     ...citizenReport.ru,
     ...admin.ru,
