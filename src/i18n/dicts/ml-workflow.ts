@@ -1,5 +1,13 @@
 export const mlWorkflow = {
   fr: {
+    "admin.action.assignmentUnavailable":
+      "Cette demande n’est plus disponible pour une attribution. Actualisez la page.",
+    "admin.action.concurrentUpdate": "La demande a été modifiée. Actualisez la page et réessayez.",
+    "admin.action.sessionExpired": "Votre session a expiré. Reconnectez-vous.",
+    "admin.action.accessDenied": "Vous n’avez pas l’autorisation d’effectuer cette action.",
+    "admin.action.rateLimited": "Trop de tentatives. Patientez avant de réessayer.",
+    "admin.action.contractorUnavailable":
+      "Cette entreprise est introuvable ou inactive. Sélectionnez une autre entreprise.",
     "ml.PENDING": "Analyse en attente",
     "ml.PROCESSING": "Analyse en cours",
     "ml.SUCCEEDED": "Analyse terminée",
@@ -30,6 +38,15 @@ export const mlWorkflow = {
       "Un compte rendu et une photo après travaux de cette intervention sont obligatoires.",
   },
   ru: {
+    "admin.action.assignmentUnavailable":
+      "Это обращение больше недоступно для назначения подрядчика. Обновите страницу.",
+    "admin.action.concurrentUpdate":
+      "Обращение было изменено. Обновите страницу и повторите попытку.",
+    "admin.action.sessionExpired": "Срок действия сеанса истёк. Войдите снова.",
+    "admin.action.accessDenied": "У вас нет прав для выполнения этого действия.",
+    "admin.action.rateLimited": "Слишком много попыток. Подождите и повторите попытку.",
+    "admin.action.contractorUnavailable":
+      "Подрядчик не найден или неактивен. Выберите другого подрядчика.",
     "ml.PENDING": "Анализ ожидает выполнения",
     "ml.PROCESSING": "Выполняется анализ",
     "ml.SUCCEEDED": "Анализ завершён",

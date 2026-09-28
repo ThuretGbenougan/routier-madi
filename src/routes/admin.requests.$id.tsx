@@ -21,6 +21,7 @@ import { formatDate, formatDateTime } from "@/lib/format";
 import { useRequest, refreshApiState, useApiState } from "@/lib/api/app-state";
 import { requestsApi } from "@/lib/api/requests-api";
 import { ApiError } from "@/lib/api/client";
+import { adminActionErrorKey } from "@/i18n/admin-action-error";
 
 export const Route = createFileRoute("/admin/requests/$id")({
   head: () => ({
@@ -76,7 +77,7 @@ function RequestDetail() {
     void fn()
       .then(() => toast.success(message))
       .catch((error: unknown) => {
-        toast.error(error instanceof ApiError ? error.message : t("admin.dashboard.api.error"));
+        toast.error(t(error instanceof ApiError ? adminActionErrorKey(error) : "work.actionError"));
       });
   }
 
