@@ -21,7 +21,8 @@ export async function qstash(
     signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) throw new Error(`QSTASH_HTTP_${response.status}`);
-  return response.status === 204 ? {} : response.json();
+  const bodyText = await response.text();
+  return bodyText.trim() ? JSON.parse(bodyText) : {};
 }
 
 export async function verifyQstash(request: Request) {

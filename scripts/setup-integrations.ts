@@ -8,7 +8,7 @@ if (!env.PUBLIC_APP_URL || !env.CLOUDINARY_UPLOAD_PRESET)
   throw new Error("PUBLIC_APP_URL and CLOUDINARY_UPLOAD_PRESET are required");
 if (!process.argv.includes("--apply")) {
   console.log(
-    "Dry run: configure a signed image preset (8 MiB), serial ML queue, and 15-minute maintenance schedule. Pass --apply to create/update these resources.",
+    "Dry run: configure a signed image preset, serial ML queue, and 15-minute maintenance schedule. The application enforces the 8 MiB limit. Pass --apply to create/update these resources.",
   );
 } else {
   if (!env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET)
@@ -21,7 +21,6 @@ if (!process.argv.includes("--apply")) {
   const preset = {
     unsigned: false,
     allowed_formats: "jpg,jpeg,png,webp",
-    max_file_size: 8 * 1024 * 1024,
     overwrite: false,
   };
   try {
@@ -34,6 +33,17 @@ if (!process.argv.includes("--apply")) {
       throw error;
     await cloudinary.api.create_upload_preset({ name: env.CLOUDINARY_UPLOAD_PRESET, ...preset });
   }
+  const saved = await cloudinary.api.upload_preset(env.CLOUDINARY_UPLOAD_PRESET);
+  const formats = Array.isArray(saved.settings?.allowed_formats)
+    ? saved.settings.allowed_formats
+    : String(saved.settings?.allowed_formats ?? "").split(",");
+  if (
+    ![false, "false", "0"].includes(saved.unsigned) ||
+    ![false, "false", "0"].includes(saved.settings?.overwrite) ||
+    formats.length !== 4 ||
+    !["jpg", "jpeg", "png", "webp"].every((format) => formats.includes(format))
+  )
+    throw new Error("Cloudinary preset verification failed");
   await qstash("queues", { queueName: "routier-ml", parallelism: 1 });
   const destination = `${env.PUBLIC_APP_URL.replace(/\/$/, "")}/api/internal/maintenance`;
   const schedules = (await qstash("schedules", undefined, undefined, "GET")) as {
