@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/select";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { refreshApiState, useApiState } from "@/lib/api/app-state";
+import { useRequest, refreshApiState, useApiState } from "@/lib/api/app-state";
 import { requestsApi } from "@/lib/api/requests-api";
 
 export const Route = createFileRoute("/admin/requests/$id")({
@@ -42,7 +42,8 @@ function RequestDetail() {
   const navigate = useNavigate();
   const { requests, contractors, session } = useApiState();
   const { t, lang, problemLabel, text } = useI18n();
-  const request = requests.find((r) => r.id === id);
+  const detailQuery = useRequest(id);
+  const request = detailQuery.data?.request;
   const [selectedContractor, setSelectedContractor] = useState("");
   const [note, setNote] = useState("");
   const [controlComment, setControlComment] = useState("");
@@ -52,7 +53,11 @@ function RequestDetail() {
       <AdminShell title={t("admin.detail.notFoundTitle")}>
         <div className="surface-card p-10 text-center">
           <p className="text-sm text-muted-foreground">
-            {t("admin.detail.notFoundBody")}
+            {detailQuery.isPending
+              ? t("admin.dashboard.api.loading")
+              : detailQuery.isError && detailQuery.error.message !== "NOT_FOUND"
+                ? t("admin.dashboard.api.error")
+                : t("admin.detail.notFoundBody")}
           </p>
           <Button asChild className="mt-4">
             <Link to="/admin/requests">{t("admin.detail.backToList")}</Link>
@@ -72,7 +77,10 @@ function RequestDetail() {
       .catch(() => toast.error(t("admin.detail.actionForbidden")));
   }
 
-  async function transition(to: import("@/types").RequestStatus, options: { comment?: string; controlPassed?: boolean }) {
+  async function transition(
+    to: import("@/types").RequestStatus,
+    options: { comment?: string; controlPassed?: boolean },
+  ) {
     await requestsApi.transition(request!.id, { to, ...options });
     await refreshApiState(session ?? undefined);
   }
@@ -144,12 +152,7 @@ function RequestDetail() {
             </div>
             <Button
               disabled={!selectedContractor}
-              onClick={() =>
-                act(
-                  () => assign(selectedContractor),
-                  t("admin.detail.toastAssigned"),
-                )
-              }
+              onClick={() => act(() => assign(selectedContractor), t("admin.detail.toastAssigned"))}
             >
               {t("admin.detail.assign")}
             </Button>
@@ -191,6 +194,21 @@ function RequestDetail() {
               >
                 {t("admin.detail.validateControl")}
               </Button>
+              <Button
+                variant="outline"
+                disabled={!controlComment.trim()}
+                onClick={() =>
+                  act(async () => {
+                    await transition("IN_PROGRESS", {
+                      comment: controlComment.trim(),
+                      controlPassed: false,
+                    });
+                    setControlComment("");
+                  }, t("work.reworkSaved"))
+                }
+              >
+                {t("work.rework")}
+              </Button>
             </div>
           </div>
         );
@@ -211,11 +229,7 @@ function RequestDetail() {
           </Button>
         );
       default:
-        return (
-          <p className="text-sm text-muted-foreground">
-            {t("admin.detail.noMoreActions")}
-          </p>
-        );
+        return <p className="text-sm text-muted-foreground">{t("admin.detail.noMoreActions")}</p>;
     }
   })();
 
@@ -230,15 +244,38 @@ function RequestDetail() {
         </Button>
       }
     >
+      {request.controls && request.controls.length > 0 && (
+        <section className="surface-card mb-4 p-4">
+          <h2 className="font-semibold">{t("work.controls")}</h2>
+          <ul className="mt-2 space-y-2">
+            {request.controls.map((control, index) => (
+              <li key={index}>
+                <strong>
+                  {t("work.cycle", { cycle: control.cycle })} ·{" "}
+                  {t(control.passed ? "work.passed" : "work.failed")}
+                </strong>
+                <p>{control.comment}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       <header className="surface-card p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">{request.reference}</h2>
-            {!request.address && <p className="text-sm text-muted-foreground">{t("location.mapOnly")}</p>}
-            {request.address && <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="size-4" aria-hidden />
-              {request.address} — {t("admin.detail.districtLabel", { district: request.district ?? t("location.mapOnly") })}
-            </p>}
+            {!request.address && (
+              <p className="text-sm text-muted-foreground">{t("location.mapOnly")}</p>
+            )}
+            {request.address && (
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="size-4" aria-hidden />
+                {request.address} —{" "}
+                {t("admin.detail.districtLabel", {
+                  district: request.district ?? t("location.mapOnly"),
+                })}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
               {t("admin.detail.deposited", {
                 date: formatDate(request.createdAt, lang),
@@ -270,7 +307,9 @@ function RequestDetail() {
               <dd>{problemLabel(request.problemType)}</dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">{t("admin.detail.citizenDescription")}</dt>
+              <dt className="text-xs text-muted-foreground">
+                {t("admin.detail.citizenDescription")}
+              </dt>
               <dd>{request.description}</dd>
             </div>
             <div>
@@ -281,7 +320,9 @@ function RequestDetail() {
               </dd>
             </div>
             <div>
-              <dt className="text-xs text-muted-foreground">{t("admin.detail.approximateLocation")}</dt>
+              <dt className="text-xs text-muted-foreground">
+                {t("admin.detail.approximateLocation")}
+              </dt>
               <dd>
                 {request.lat.toFixed(4)}, {request.lng.toFixed(4)}
               </dd>
@@ -294,7 +335,9 @@ function RequestDetail() {
           {contractor ? (
             <dl className="mt-3 space-y-2 text-sm">
               <div>
-                <dt className="text-xs text-muted-foreground">{t("admin.detail.contractorLabel")}</dt>
+                <dt className="text-xs text-muted-foreground">
+                  {t("admin.detail.contractorLabel")}
+                </dt>
                 <dd className="font-medium">{contractor.name}</dd>
               </div>
               <div>

@@ -8,11 +8,14 @@ export const citizen = {
     "home.steps.title": "Comment ça marche",
     "home.steps.step": "Étape {count}",
     "home.steps.report.title": "Vous signalez",
-    "home.steps.report.text": "Décrivez le problème, indiquez l'adresse et ajoutez une ou plusieurs photos.",
+    "home.steps.report.text":
+      "Décrivez le problème, indiquez l'adresse et ajoutez une ou plusieurs photos.",
     "home.steps.assign.title": "La ville vérifie et attribue",
-    "home.steps.assign.text": "Le service voirie contrôle le signalement puis confie les travaux à une entreprise.",
+    "home.steps.assign.text":
+      "Le service voirie contrôle le signalement puis confie les travaux à une entreprise.",
     "home.steps.track.title": "Vous suivez jusqu'à la clôture",
-    "home.steps.track.text": "Chaque étape est visible avec votre numéro de suivi, jusqu'au contrôle final.",
+    "home.steps.track.text":
+      "Chaque étape est visible avec votre numéro de suivi, jusqu'au contrôle final.",
     "home.stats.title": "La voirie en chiffres",
     "home.stats.received": "Signalements reçus",
     "home.stats.inProgress": "Interventions en cours",
@@ -33,7 +36,8 @@ export const citizen = {
     "report.field.district": "Quartier *",
     "report.field.district.placeholder": "Sélectionnez un quartier",
     "report.field.description": "Description *",
-    "report.field.description.placeholder": "Décrivez le désordre constaté, sa taille et le danger éventuel.",
+    "report.field.description.placeholder":
+      "Décrivez le désordre constaté, sa taille et le danger éventuel.",
     "report.section.photos": "Photos (facultatif)",
     "report.photos.hint":
       "Les photos aident le service voirie à évaluer l'urgence. Dans cette démonstration, seuls les noms des fichiers sont conservés.",
@@ -58,7 +62,8 @@ export const citizen = {
     "report.success.home": "Retour à l'accueil",
 
     "track.search.title": "Suivre une demande",
-    "track.search.subtitle": "Saisissez le numéro de suivi communiqué lors du dépôt de votre signalement.",
+    "track.search.subtitle":
+      "Saisissez le numéro de suivi communiqué lors du dépôt de votre signalement.",
     "track.search.label": "Numéro de suivi",
     "track.search.placeholder": "RR-2026-0001",
     "track.search.submit": "Rechercher",
@@ -95,11 +100,14 @@ export const citizen = {
     "home.steps.title": "Как это работает",
     "home.steps.step": "Шаг {count}",
     "home.steps.report.title": "Вы подаёте заявку",
-    "home.steps.report.text": "Опишите проблему, укажите адрес и приложите одну или несколько фотографий.",
+    "home.steps.report.text":
+      "Опишите проблему, укажите адрес и приложите одну или несколько фотографий.",
     "home.steps.assign.title": "Служба проверяет и назначает исполнителя",
-    "home.steps.assign.text": "Дорожная служба проверяет заявку и передаёт работы подрядной организации.",
+    "home.steps.assign.text":
+      "Дорожная служба проверяет заявку и передаёт работы подрядной организации.",
     "home.steps.track.title": "Вы отслеживаете заявку до закрытия",
-    "home.steps.track.text": "Каждый этап виден по вашему номеру заявки вплоть до итоговой проверки.",
+    "home.steps.track.text":
+      "Каждый этап виден по вашему номеру заявки вплоть до итоговой проверки.",
     "home.stats.title": "Дорожная служба в цифрах",
     "home.stats.received": "Получено заявок",
     "home.stats.inProgress": "Работы в процессе",
@@ -120,7 +128,8 @@ export const citizen = {
     "report.field.district": "Район *",
     "report.field.district.placeholder": "Выберите район",
     "report.field.description": "Описание *",
-    "report.field.description.placeholder": "Опишите обнаруженную проблему, её масштаб и возможную опасность.",
+    "report.field.description.placeholder":
+      "Опишите обнаруженную проблему, её масштаб и возможную опасность.",
     "report.section.photos": "Фотографии (не обязательно)",
     "report.photos.hint":
       "Фотографии помогают дорожной службе оценить срочность. В этой демонстрации сохраняются только названия файлов.",

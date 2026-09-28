@@ -54,7 +54,8 @@ export const admin = {
     "admin.requests.emptyDescription": "Modifiez la recherche ou réinitialisez les filtres.",
 
     "admin.detail.notFoundTitle": "Demande introuvable",
-    "admin.detail.notFoundBody": "Cette demande n'existe pas ou a été supprimée lors d'une réinitialisation.",
+    "admin.detail.notFoundBody":
+      "Cette demande n'existe pas ou a été supprimée lors d'une réinitialisation.",
     "admin.detail.backToList": "Retour à la liste",
     "admin.detail.back": "Retour",
     "admin.detail.defaultActor": "Service voirie",
@@ -69,10 +70,12 @@ export const admin = {
     "admin.detail.assignPlaceholder": "Sélectionnez une entreprise",
     "admin.detail.toastAssigned": "Entreprise attribuée",
     "admin.detail.assign": "Attribuer",
-    "admin.detail.inProgressNote": "Intervention confiée à {contractor}. La prochaine action relève de l'entreprise.",
+    "admin.detail.inProgressNote":
+      "Intervention confiée à {contractor}. La prochaine action relève de l'entreprise.",
     "admin.detail.contractorFallback": "l'entreprise",
     "admin.detail.controlObservations": "Observations du contrôle qualité",
-    "admin.detail.controlPlaceholder": "Conformité des travaux, finitions, signalisation remise en état…",
+    "admin.detail.controlPlaceholder":
+      "Conformité des travaux, finitions, signalisation remise en état…",
     "admin.detail.historyControlPassed": "Contrôle qualité : intervention conforme.",
     "admin.detail.toastControl": "Contrôle enregistré",
     "admin.detail.validateControl": "Valider le contrôle",
@@ -103,7 +106,8 @@ export const admin = {
     "admin.detail.internalNotes": "Notes internes",
     "admin.detail.noInternalNotes": "Aucune note interne.",
     "admin.detail.addNote": "Ajouter une note",
-    "admin.detail.notePlaceholder": "Observation interne, échange téléphonique, contrainte technique…",
+    "admin.detail.notePlaceholder":
+      "Observation interne, échange téléphonique, contrainte technique…",
     "admin.detail.toastNoteAdded": "Note ajoutée",
     "admin.detail.saveNote": "Enregistrer la note",
     "admin.detail.contractorReport": "Compte rendu de l'entreprise",
@@ -113,7 +117,8 @@ export const admin = {
     "admin.detail.districtLabel": "quartier {district}",
 
     "admin.contractors.title": "Entreprises partenaires",
-    "admin.contractors.description": "Charge de travail et coordonnées des entreprises attributaires",
+    "admin.contractors.description":
+      "Charge de travail et coordonnées des entreprises attributaires",
     "admin.contractors.total": "Total",
     "admin.contractors.active": "En cours",
     "admin.contractors.done": "Réalisées",
@@ -205,7 +210,8 @@ export const admin = {
     "admin.detail.assignPlaceholder": "Выберите подрядчика",
     "admin.detail.toastAssigned": "Подрядчик назначен",
     "admin.detail.assign": "Назначить",
-    "admin.detail.inProgressNote": "Работы поручены подрядчику {contractor}. Следующее действие — за подрядчиком.",
+    "admin.detail.inProgressNote":
+      "Работы поручены подрядчику {contractor}. Следующее действие — за подрядчиком.",
     "admin.detail.contractorFallback": "подрядчику",
     "admin.detail.controlObservations": "Замечания по контролю качества",
     "admin.detail.controlPlaceholder": "Соответствие работ, отделка, восстановление разметки…",
@@ -239,7 +245,8 @@ export const admin = {
     "admin.detail.internalNotes": "Внутренние заметки",
     "admin.detail.noInternalNotes": "Внутренних заметок нет.",
     "admin.detail.addNote": "Добавить заметку",
-    "admin.detail.notePlaceholder": "Внутреннее замечание, телефонный разговор, техническое ограничение…",
+    "admin.detail.notePlaceholder":
+      "Внутреннее замечание, телефонный разговор, техническое ограничение…",
     "admin.detail.toastNoteAdded": "Заметка добавлена",
     "admin.detail.saveNote": "Сохранить заметку",
     "admin.detail.contractorReport": "Отчёт подрядчика",

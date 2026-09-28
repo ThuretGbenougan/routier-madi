@@ -35,3 +35,7 @@ src-tauri/target/
 *.sw?
 .env
 src/generated/
+
+# Verification artifacts
+playwright-report/
+test-results/

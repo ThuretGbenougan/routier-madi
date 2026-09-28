@@ -53,7 +53,10 @@ function Index() {
     { value: String(statsData.total), label: t("home.stats.received") },
     { value: String(statsData.inProgress), label: t("home.stats.inProgress") },
     { value: String(statsData.closed), label: t("home.stats.closed") },
-    { value: formatDuration(statsData.averageDurationDays, lang), label: t("home.stats.avgDuration") },
+    {
+      value: formatDuration(statsData.averageDurationDays, lang),
+      label: t("home.stats.avgDuration"),
+    },
   ];
 
   return (

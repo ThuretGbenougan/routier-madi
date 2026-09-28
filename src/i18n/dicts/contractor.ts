@@ -5,7 +5,8 @@ export const contractor = {
     "contractor.login.email": "Adresse électronique",
     "contractor.login.password": "Mot de passe",
     "contractor.login.submit": "Se connecter",
-    "contractor.login.error": "Identifiants incorrects. Utilisez le compte de démonstration proposé.",
+    "contractor.login.error":
+      "Identifiants incorrects. Utilisez le compte de démonstration proposé.",
     "contractor.login.welcome": "Bienvenue {name}",
     "contractor.login.demoTitle": "Accès de démonstration",
     "contractor.login.demoCreds": "contractor@city.demo · demo123",
@@ -16,7 +17,8 @@ export const contractor = {
     "contractor.jobs.title": "Mes interventions",
     "contractor.jobs.description": "{count} chantier{plural} à traiter",
     "contractor.jobs.empty.title": "Aucune intervention en attente",
-    "contractor.jobs.empty.description": "Les nouvelles attributions du service voirie apparaîtront ici.",
+    "contractor.jobs.empty.description":
+      "Les nouvelles attributions du service voirie apparaîtront ici.",
     "contractor.jobs.empty.historyCta": "Voir l'historique",
     "contractor.jobs.reportedOn": "{problem} · signalé le {date}",
 
@@ -34,7 +36,8 @@ export const contractor = {
     "contractor.job.reportedOn": "Signalé le {date}",
     "contractor.job.progressTitle": "Avancement",
     "contractor.job.startTitle": "Démarrer l'intervention",
-    "contractor.job.startDescription": "Confirmez l'arrivée sur site pour passer le chantier en cours.",
+    "contractor.job.startDescription":
+      "Confirmez l'arrivée sur site pour passer le chantier en cours.",
     "contractor.job.startCta": "Démarrer l'intervention",
     "contractor.job.startedToast": "Intervention démarrée",
     "contractor.job.startComment": "Démarrage de l'intervention sur site.",
@@ -43,7 +46,8 @@ export const contractor = {
     "contractor.job.afterPhotoSimulateName": "apres-travaux.jpg",
     "contractor.job.closeTitle": "Clôturer les travaux",
     "contractor.job.reportLabel": "Compte rendu des travaux",
-    "contractor.job.reportPlaceholder": "Nature des travaux réalisés, matériaux, durée, remise en circulation…",
+    "contractor.job.reportPlaceholder":
+      "Nature des travaux réalisés, matériaux, durée, remise en circulation…",
     "contractor.job.beforePhotoLabelPlain": "Photo avant travaux",
     "contractor.job.afterPhotoLabelPlain": "Photo après travaux",
     "contractor.job.completeCta": "Marquer comme terminé",
@@ -68,7 +72,8 @@ export const contractor = {
     "contractor.login.email": "Электронная почта",
     "contractor.login.password": "Пароль",
     "contractor.login.submit": "Войти",
-    "contractor.login.error": "Неверные учётные данные. Используйте демонстрационную учётную запись.",
+    "contractor.login.error":
+      "Неверные учётные данные. Используйте демонстрационную учётную запись.",
     "contractor.login.welcome": "Добро пожаловать, {name}",
     "contractor.login.demoTitle": "Демонстрационный доступ",
     "contractor.login.demoCreds": "contractor@city.demo · demo123",
@@ -97,7 +102,8 @@ export const contractor = {
     "contractor.job.reportedOn": "Заявлено {date}",
     "contractor.job.progressTitle": "Ход выполнения",
     "contractor.job.startTitle": "Начать работы",
-    "contractor.job.startDescription": "Подтвердите прибытие на объект, чтобы перевести его в статус «в работе».",
+    "contractor.job.startDescription":
+      "Подтвердите прибытие на объект, чтобы перевести его в статус «в работе».",
     "contractor.job.startCta": "Начать работы",
     "contractor.job.startedToast": "Работы начаты",
     "contractor.job.startComment": "Начало работ на объекте.",
@@ -106,7 +112,8 @@ export const contractor = {
     "contractor.job.afterPhotoSimulateName": "после-работ.jpg",
     "contractor.job.closeTitle": "Завершить работы",
     "contractor.job.reportLabel": "Отчёт о выполненных работах",
-    "contractor.job.reportPlaceholder": "Характер выполненных работ, материалы, длительность, восстановление движения…",
+    "contractor.job.reportPlaceholder":
+      "Характер выполненных работ, материалы, длительность, восстановление движения…",
     "contractor.job.beforePhotoLabelPlain": "Фото до начала работ",
     "contractor.job.afterPhotoLabelPlain": "Фото после работ",
     "contractor.job.completeCta": "Отметить как завершённое",

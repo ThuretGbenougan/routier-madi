@@ -8,9 +8,13 @@ export const Route = createFileRoute("/api/v1/auth/me")({
   server: {
     handlers: {
       OPTIONS: ({ request }) => preflightResponse(request),
-      GET: ({ request }) => handleApiRoute(request, async ({ request, requestId }) => {
-        return jsonResponse({ session: toSessionDto(await requirePrincipal(request)) }, requestId);
-      }),
+      GET: ({ request }) =>
+        handleApiRoute(request, async ({ request, requestId }) => {
+          return jsonResponse(
+            { session: toSessionDto(await requirePrincipal(request)) },
+            requestId,
+          );
+        }),
     },
   },
 });

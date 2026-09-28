@@ -25,12 +25,12 @@ export const Route = createFileRoute("/contractor/jobs/")({
 function JobsPage() {
   const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
-  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
+  const locationText = (request: { address?: string | undefined }) =>
+    request.address ?? t("location.mapOnly");
   const jobs = requests
     .filter(
       (r) =>
-        r.contractorId === session?.contractorId &&
-        ["ASSIGNED", "IN_PROGRESS"].includes(r.status),
+        r.contractorId === session?.contractorId && ["ASSIGNED", "IN_PROGRESS"].includes(r.status),
     )
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 

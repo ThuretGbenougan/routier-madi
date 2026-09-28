@@ -1,13 +1,32 @@
 import { createHmac, randomBytes } from "node:crypto";
-import { HistoryActorRole, NoteVisibility, RequestStatus, UserRole } from "../../generated/prisma/client";
+import {
+  HistoryActorRole,
+  NoteVisibility,
+  RequestStatus,
+  UserRole,
+} from "../../generated/prisma/client";
 import type { AuthPrincipal } from "../auth/session.server";
 import { requireAdmin, requireRequestAccess } from "../authorization/guards.server";
 import { db } from "../db.server";
 import { ConflictError, NotFoundError, ValidationError } from "../errors/app-error.server";
 import { getServerEnv } from "../env.server";
-import { toAdminRepairRequestDto, toContractorDto, toContractorRepairRequestDto, toPublicRepairRequestDto } from "../mappers/repair-request-mappers.server";
-import { findRequestById, findRequestByReference, listContractors, listRequests } from "../repositories/request-repository.server";
-import type { createRequestSchema, noteSchema, requestListSchema } from "../validation/request-schemas.server";
+import {
+  toAdminRepairRequestDto,
+  toContractorDto,
+  toContractorRepairRequestDto,
+  toPublicRepairRequestDto,
+} from "../mappers/repair-request-mappers.server";
+import {
+  findRequestById,
+  findRequestByReference,
+  listContractors,
+  listRequests,
+} from "../repositories/request-repository.server";
+import type {
+  createRequestSchema,
+  noteSchema,
+  requestListSchema,
+} from "../validation/request-schemas.server";
 import type { z } from "zod";
 
 type CreateRequestInput = z.infer<typeof createRequestSchema>;
@@ -89,26 +108,53 @@ export async function verifyPublicRequestAccess(id: string, trackingToken: strin
 export async function getBootstrap(principal: AuthPrincipal) {
   if (principal.role === UserRole.ADMIN) {
     const [requests, contractors] = await Promise.all([listRequests(db, {}), listContractors(db)]);
-    return { requests: requests.map(toAdminRepairRequestDto), contractors: contractors.map(toContractorDto) };
+    return {
+      requests: requests.map(toAdminRepairRequestDto),
+      contractors: contractors.map(toContractorDto),
+    };
   }
-  if (!principal.contractorId) throw new ConflictError("CONTRACTOR_ACCESS_DENIED", "Compte entreprise non configure.");
+  if (!principal.contractorId)
+    throw new ConflictError("CONTRACTOR_ACCESS_DENIED", "Compte entreprise non configure.");
   const requests = await listRequests(db, { contractorId: principal.contractorId });
   return { requests: requests.map(toContractorRepairRequestDto) };
 }
 
-export async function listRequestsForPrincipal(principal: AuthPrincipal, filters: RequestListInput) {
+export async function listRequestsForPrincipal(
+  principal: AuthPrincipal,
+  filters: RequestListInput,
+) {
   const where = {
     ...(filters.status ? { status: filters.status } : {}),
-    ...(filters.query ? { OR: [{ reference: { contains: filters.query, mode: "insensitive" as const } }, { address: { contains: filters.query, mode: "insensitive" as const } }] } : {}),
-    ...(principal.role === UserRole.CONTRACTOR ? { contractorId: principal.contractorId ?? "__none__" } : filters.contractorId ? { contractorId: filters.contractorId } : {}),
+    ...(filters.query
+      ? {
+          OR: [
+            { reference: { contains: filters.query, mode: "insensitive" as const } },
+            { address: { contains: filters.query, mode: "insensitive" as const } },
+          ],
+        }
+      : {}),
+    ...(principal.role === UserRole.CONTRACTOR
+      ? { contractorId: principal.contractorId ?? "__none__" }
+      : filters.contractorId
+        ? { contractorId: filters.contractorId }
+        : {}),
   };
   const rows = await listRequests(db, where);
-  return rows.slice((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize).map((row) =>
-    principal.role === UserRole.ADMIN ? toAdminRepairRequestDto(row) : toContractorRepairRequestDto(row),
-  );
+  return rows
+    .slice((filters.page - 1) * filters.pageSize, filters.page * filters.pageSize)
+    .map((row) =>
+      principal.role === UserRole.ADMIN
+        ? toAdminRepairRequestDto(row)
+        : toContractorRepairRequestDto(row),
+    );
 }
 
-export async function assignRequest(input: { requestId: string; contractorId: string; comment?: string | undefined; actor: AuthPrincipal }) {
+export async function assignRequest(input: {
+  requestId: string;
+  contractorId: string;
+  comment?: string | undefined;
+  actor: AuthPrincipal;
+}) {
   requireAdmin(input.actor);
   await db.$transaction(async (tx) => {
     const request = await findRequestById(tx, input.requestId);
@@ -116,13 +162,26 @@ export async function assignRequest(input: { requestId: string; contractorId: st
     if (request.status !== RequestStatus.VERIFIED || request.contractorId) {
       throw new ConflictError("REQUEST_ALREADY_ASSIGNED", "La demande ne peut pas etre attribuee.");
     }
-    const contractor = await tx.contractor.findFirst({ where: { id: input.contractorId, active: true } });
-    if (!contractor) throw new ValidationError([{ path: "contractorId", message: "Entreprise introuvable ou inactive.", code: "CONTRACTOR_NOT_FOUND" }]);
+    const contractor = await tx.contractor.findFirst({
+      where: { id: input.contractorId, active: true },
+    });
+    if (!contractor)
+      throw new ValidationError([
+        {
+          path: "contractorId",
+          message: "Entreprise introuvable ou inactive.",
+          code: "CONTRACTOR_NOT_FOUND",
+        },
+      ]);
     const updated = await tx.repairRequest.updateMany({
       where: { id: request.id, status: RequestStatus.VERIFIED, contractorId: null },
       data: { contractorId: contractor.id, status: RequestStatus.ASSIGNED },
     });
-    if (updated.count !== 1) throw new ConflictError("REQUEST_CONCURRENT_UPDATE", "La demande a ete modifiee. Rechargez les donnees.");
+    if (updated.count !== 1)
+      throw new ConflictError(
+        "REQUEST_CONCURRENT_UPDATE",
+        "La demande a ete modifiee. Rechargez les donnees.",
+      );
     await tx.requestHistory.create({
       data: {
         requestId: request.id,
@@ -142,12 +201,14 @@ export async function addNote(input: { requestId: string; note: NoteInput; actor
   await db.$transaction(async (tx) => {
     const request = await findRequestById(tx, input.requestId);
     if (!request) throw new NotFoundError("REQUEST_NOT_FOUND", "Demande introuvable.");
-    if (input.actor.role === UserRole.CONTRACTOR) requireRequestAccess(input.actor, request.contractorId);
+    if (input.actor.role === UserRole.CONTRACTOR)
+      requireRequestAccess(input.actor, request.contractorId);
     await tx.note.create({
       data: {
         requestId: request.id,
         authorId: input.actor.userId,
-        visibility: input.actor.role === UserRole.ADMIN ? NoteVisibility.INTERNAL : NoteVisibility.CONTRACTOR,
+        visibility:
+          input.actor.role === UserRole.ADMIN ? NoteVisibility.INTERNAL : NoteVisibility.CONTRACTOR,
         body: input.note.body,
       },
     });

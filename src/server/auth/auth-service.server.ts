@@ -13,9 +13,14 @@ export async function hashPassword(password: string) {
   });
 }
 
-export async function login(input: { email: string; password: string; role?: "ADMIN" | "CONTRACTOR" | undefined }, request: Request) {
+export async function login(
+  input: { email: string; password: string; role?: "ADMIN" | "CONTRACTOR" | undefined },
+  request: Request,
+) {
   const user = await db.user.findUnique({ where: { emailNormalized: input.email } });
-  const valid = Boolean(user?.active) && Boolean(user && (await argon2.verify(user.passwordHash, input.password)));
+  const valid =
+    Boolean(user?.active) &&
+    Boolean(user && (await argon2.verify(user.passwordHash, input.password)));
   if (!user || !valid || (input.role && user.role !== input.role)) {
     throw new AuthenticationError();
   }

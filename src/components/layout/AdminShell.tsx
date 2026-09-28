@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
 
 const nav = [
+  { to: "/admin/analyses", key: "ml.title", icon: BarChart3 },
   { to: "/admin/dashboard", key: "shell.nav.dashboard", icon: LayoutDashboard },
   { to: "/admin/requests", key: "shell.nav.requests", icon: ClipboardList },
   { to: "/admin/contractors", key: "shell.nav.contractors", icon: Users },

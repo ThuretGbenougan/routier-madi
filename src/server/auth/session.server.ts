@@ -53,13 +53,16 @@ export function toSessionDto(principal: AuthPrincipal): SessionDto {
   };
 }
 
-export async function createSession(user: {
-  id: string;
-  name: string;
-  emailNormalized: string;
-  role: UserRole;
-  contractorId: string | null;
-}, client: SessionClient) {
+export async function createSession(
+  user: {
+    id: string;
+    name: string;
+    emailNormalized: string;
+    role: UserRole;
+    contractorId: string | null;
+  },
+  client: SessionClient,
+) {
   const token = newToken();
   const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
   const session = await db.session.create({
@@ -99,7 +102,8 @@ export async function getOptionalPrincipal(request: Request): Promise<AuthPrinci
     where: { tokenHash: hashToken(token) },
     include: { user: true },
   });
-  if (!session || session.revokedAt || session.expiresAt <= new Date() || !session.user.active) return null;
+  if (!session || session.revokedAt || session.expiresAt <= new Date() || !session.user.active)
+    return null;
 
   return {
     sessionId: session.id,
@@ -114,7 +118,8 @@ export async function getOptionalPrincipal(request: Request): Promise<AuthPrinci
 
 export async function requirePrincipal(request: Request) {
   const principal = await getOptionalPrincipal(request);
-  if (!principal) throw new AuthenticationError("AUTH_SESSION_EXPIRED", "Session invalide ou expiree.");
+  if (!principal)
+    throw new AuthenticationError("AUTH_SESSION_EXPIRED", "Session invalide ou expiree.");
   return principal;
 }
 

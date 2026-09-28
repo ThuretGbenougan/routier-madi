@@ -1,8 +1,15 @@
-import { HistoryActorRole, NoteVisibility, RequestStatus, UserRole } from "../../generated/prisma/client";
+import {
+  HistoryActorRole,
+  NoteVisibility,
+  RequestStatus,
+  UserRole,
+} from "../../generated/prisma/client";
 import type { AuthPrincipal } from "../auth/session.server";
 import { ConflictError, NotFoundError, ValidationError } from "../errors/app-error.server";
 import { findRequestById } from "../repositories/request-repository.server";
 import { db } from "../db.server";
+
+import { assertCompletion, assertControl } from "./workflow-policy";
 
 const transitions: Record<RequestStatus, RequestStatus[]> = {
   CREATED: [RequestStatus.VERIFIED, RequestStatus.REJECTED],
@@ -19,9 +26,18 @@ function actorRole(role: UserRole) {
   return role === UserRole.ADMIN ? HistoryActorRole.ADMIN : HistoryActorRole.CONTRACTOR;
 }
 
-function assertTransitionAllowed(current: RequestStatus, next: RequestStatus, actor: AuthPrincipal, contractorId: string | null, comment?: string) {
+function assertTransitionAllowed(
+  current: RequestStatus,
+  next: RequestStatus,
+  actor: AuthPrincipal,
+  contractorId: string | null,
+  comment?: string,
+) {
   if (!transitions[current].includes(next)) {
-    throw new ConflictError("REQUEST_INVALID_TRANSITION", "La transition demandee n'est pas autorisee.");
+    throw new ConflictError(
+      "REQUEST_INVALID_TRANSITION",
+      "La transition demandee n'est pas autorisee.",
+    );
   }
   const adminTransitions = new Set([
     `${RequestStatus.CREATED}:${RequestStatus.VERIFIED}`,
@@ -39,32 +55,76 @@ function assertTransitionAllowed(current: RequestStatus, next: RequestStatus, ac
 
   if (actor.role === UserRole.ADMIN && adminTransitions.has(key)) {
     if (current === RequestStatus.COMPLETED && next === RequestStatus.IN_PROGRESS && !comment) {
-      throw new ValidationError([{ path: "comment", message: "Un commentaire est requis pour une reprise.", code: "REWORK_COMMENT_REQUIRED" }]);
+      throw new ValidationError([
+        {
+          path: "comment",
+          message: "Un commentaire est requis pour une reprise.",
+          code: "REWORK_COMMENT_REQUIRED",
+        },
+      ]);
     }
     return;
   }
-  if (actor.role === UserRole.CONTRACTOR && contractorTransitions.has(key) && actor.contractorId === contractorId) return;
-  throw new ConflictError("REQUEST_INVALID_TRANSITION", "La transition demandee n'est pas autorisee.");
+  if (
+    actor.role === UserRole.CONTRACTOR &&
+    contractorTransitions.has(key) &&
+    actor.contractorId === contractorId
+  )
+    return;
+  throw new ConflictError(
+    "REQUEST_INVALID_TRANSITION",
+    "La transition demandee n'est pas autorisee.",
+  );
 }
 
-export async function transitionRequest(input: { requestId: string; to: RequestStatus; comment?: string | undefined; controlPassed?: boolean | undefined; actor: AuthPrincipal }) {
+export async function transitionRequest(input: {
+  requestId: string;
+  to: RequestStatus;
+  comment?: string | undefined;
+  controlPassed?: boolean | undefined;
+  actor: AuthPrincipal;
+}) {
   return db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT "id" FROM "RepairRequest" WHERE "id" = ${input.requestId} FOR UPDATE`;
     const request = await findRequestById(tx, input.requestId);
     if (!request) throw new NotFoundError();
-    assertTransitionAllowed(request.status, input.to, input.actor, request.contractorId, input.comment);
+    assertTransitionAllowed(
+      request.status,
+      input.to,
+      input.actor,
+      request.contractorId,
+      input.comment,
+    );
 
-    if (input.to === RequestStatus.CONTROLLED && typeof input.controlPassed !== "boolean") {
-      throw new ValidationError([{ path: "controlPassed", message: "Le resultat du controle est requis.", code: "CONTROL_RESULT_REQUIRED" }]);
+    assertControl(
+      input.to,
+      input.controlPassed,
+      request.controls.at(-1),
+      request.interventionCycle,
+    );
+    if (input.to === RequestStatus.COMPLETED) {
+      assertCompletion(
+        input.comment,
+        request.photos.some(
+          (photo) => photo.kind === "AFTER" && photo.cycle === request.interventionCycle,
+        ),
+      );
     }
+    const rework =
+      request.status === RequestStatus.COMPLETED && input.to === RequestStatus.IN_PROGRESS;
     const updateResult = await tx.repairRequest.updateMany({
       where: { id: request.id, status: request.status },
       data: {
         status: input.to,
+        ...(rework ? { interventionCycle: { increment: 1 } } : {}),
         ...(input.to === RequestStatus.CLOSED ? { closedAt: new Date() } : {}),
       },
     });
     if (updateResult.count !== 1) {
-      throw new ConflictError("REQUEST_CONCURRENT_UPDATE", "La demande a ete modifiee. Rechargez les donnees.");
+      throw new ConflictError(
+        "REQUEST_CONCURRENT_UPDATE",
+        "La demande a ete modifiee. Rechargez les donnees.",
+      );
     }
     await tx.requestHistory.create({
       data: {
@@ -77,7 +137,11 @@ export async function transitionRequest(input: { requestId: string; to: RequestS
         comment: input.comment ?? null,
       },
     });
-    if (request.status === RequestStatus.COMPLETED && input.to === RequestStatus.IN_PROGRESS && input.comment) {
+    if (
+      request.status === RequestStatus.COMPLETED &&
+      input.to === RequestStatus.IN_PROGRESS &&
+      input.comment
+    ) {
       await tx.note.create({
         data: {
           requestId: request.id,
@@ -87,12 +151,13 @@ export async function transitionRequest(input: { requestId: string; to: RequestS
         },
       });
     }
-    if (input.to === RequestStatus.CONTROLLED && typeof input.controlPassed === "boolean") {
+    if (input.to === RequestStatus.CONTROLLED || rework) {
       await tx.controlResult.create({
         data: {
           requestId: request.id,
           inspectorId: input.actor.userId,
-          passed: input.controlPassed,
+          passed: !rework,
+          cycle: request.interventionCycle,
           comment: input.comment ?? "Controle realise.",
         },
       });

@@ -6,7 +6,10 @@ type LoginResponse = { session: Session; accessToken?: string };
 
 export const authApi = {
   async login(input: LoginInput) {
-    const result = await apiRequest<LoginResponse>("/api/v1/auth/login", { method: "POST", body: input });
+    const result = await apiRequest<LoginResponse>("/api/v1/auth/login", {
+      method: "POST",
+      body: input,
+    });
     setTauriAccessToken(result.accessToken ?? null);
     return result.session;
   },

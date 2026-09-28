@@ -4,13 +4,29 @@ import { citizenReport } from "./dicts/citizen-report";
 import { admin } from "./dicts/admin";
 import { contractor } from "./dicts/contractor";
 
+import { mlWorkflow } from "./dicts/ml-workflow";
+
 export type Lang = "fr" | "ru";
 
 export const languages: Lang[] = ["fr", "ru"];
 
 export const dictionaries = {
-  fr: { ...common.fr, ...citizen.fr, ...citizenReport.fr, ...admin.fr, ...contractor.fr },
-  ru: { ...common.ru, ...citizen.ru, ...citizenReport.ru, ...admin.ru, ...contractor.ru },
+  fr: {
+    ...common.fr,
+    ...citizen.fr,
+    ...citizenReport.fr,
+    ...admin.fr,
+    ...contractor.fr,
+    ...mlWorkflow.fr,
+  },
+  ru: {
+    ...common.ru,
+    ...citizen.ru,
+    ...citizenReport.ru,
+    ...admin.ru,
+    ...contractor.ru,
+    ...mlWorkflow.ru,
+  },
 };
 
 export type TranslationKey = keyof (typeof dictionaries)["fr"];

@@ -1,22 +1,20 @@
 import { AuthorizationError, RateLimitError } from "../errors/app-error.server";
 import { isTauriRequest } from "../auth/session.server";
 
-type Bucket = { count: number; resetAt: number };
-const buckets = new Map<string, Bucket>();
+import { db } from "../db.server";
+import { createHash } from "node:crypto";
 
-/**
- * Process-local limiter for the MVP. It deliberately bounds bursts locally;
- * production must replace it with a shared Vercel/Redis compatible limiter.
- */
-export function enforceRateLimit(key: string, limit: number, windowMs: number) {
-  const now = Date.now();
-  const bucket = buckets.get(key);
-  if (!bucket || bucket.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-    return;
-  }
-  bucket.count += 1;
-  if (bucket.count > limit) throw new RateLimitError(Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)));
+/** Fixed-window counters shared by every server instance. */
+export async function enforceRateLimit(key: string, limit: number, windowMs: number) {
+  const start = Math.floor(Date.now() / windowMs) * windowMs;
+  const bucketKey = `${createHash("sha256").update(key).digest("hex")}:${start}`;
+  const bucket = await db.rateBucket.upsert({
+    where: { key: bucketKey },
+    create: { key: bucketKey, count: 1, expiresAt: new Date(start + windowMs) },
+    update: { count: { increment: 1 } },
+  });
+  if (bucket.count > limit)
+    throw new RateLimitError(Math.max(1, Math.ceil((start + windowMs - Date.now()) / 1000)));
 }
 
 export function clientIp(request: Request) {
@@ -33,6 +31,8 @@ function allowedOrigins() {
     "http://localhost:5173",
     "http://localhost:8081",
     "tauri://localhost",
+    "http://tauri.localhost",
+    "https://tauri.localhost",
     ...configured,
   ]);
 }
@@ -56,7 +56,8 @@ export function preflightResponse(request: Request) {
 
 /** Cookie-authenticated mutations must come from the configured application. */
 export function requireTrustedMutationOrigin(request: Request) {
-  if (isTauriRequest(request) || request.headers.get("authorization")?.startsWith("Bearer ")) return;
+  if (isTauriRequest(request) || request.headers.get("authorization")?.startsWith("Bearer "))
+    return;
   const origin = request.headers.get("origin");
   if (!origin || !allowedOrigins().has(origin)) {
     throw new AuthorizationError("CSRF_ORIGIN_REJECTED", "Origine de requete non autorisee.");

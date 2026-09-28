@@ -8,7 +8,26 @@ export default defineConfig({
   define: {
     "import.meta.env.VITE_TAURI_DESKTOP": JSON.stringify("true"),
   },
-  plugins: [react(), tailwindcss(), tsconfigPaths()],
+  plugins: [
+    {
+      name: "desktop-api-route-stubs",
+      enforce: "pre",
+      transform(code, id) {
+        if (!/\/src\/routes\/api\.[^/]+\.tsx?$/.test(id.split("?")[0] ?? "")) return;
+        const route = code.match(/createFileRoute\(["']([^"']+)["']\)/)?.[1];
+        if (!route) throw new Error(`API route identifier missing: ${id}`);
+        // The shared generated tree references API routes. Desktop needs only their
+        // identifiers, never their server handlers or server-side dependencies.
+        return {
+          code: `import { createFileRoute } from "@tanstack/react-router"; export const Route = createFileRoute(${JSON.stringify(route)})({});`,
+          map: null,
+        };
+      },
+    },
+    react(),
+    tailwindcss(),
+    tsconfigPaths(),
+  ],
   root: "desktop",
   resolve: {
     alias: {

@@ -41,7 +41,10 @@ function TrackPage() {
       return;
     }
     setError("");
-    if (code.trim().length < 16) { setError("Saisissez votre code de suivi."); return; }
+    if (code.trim().length < 16) {
+      setError("Saisissez votre code de suivi.");
+      return;
+    }
     navigate({ to: "/track/$reference", params: { reference }, search: { code: code.trim() } });
   }
 
@@ -66,7 +69,12 @@ function TrackPage() {
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="trackingCode">Code de suivi</Label>
-            <Input id="trackingCode" value={code} onChange={(e) => setCode(e.target.value)} autoComplete="off" />
+            <Input
+              id="trackingCode"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              autoComplete="off"
+            />
           </div>
           <Button type="submit" className="w-full">
             <Search className="size-4" aria-hidden />

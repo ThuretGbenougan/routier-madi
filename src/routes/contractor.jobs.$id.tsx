@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { refreshApiState, useApiState } from "@/lib/api/app-state";
+import { useRequest, refreshApiState, useApiState } from "@/lib/api/app-state";
 import { photosApi } from "@/lib/api/photos-api";
 import { requestsApi } from "@/lib/api/requests-api";
 
@@ -34,7 +34,9 @@ function JobDetail() {
   const { id } = Route.useParams();
   const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
-  const request = requests.find((r) => r.id === id);
+  const detailQuery = useRequest(id);
+  const request = detailQuery.data?.request;
+  const [busy, setBusy] = useState(false);
   const [comment, setComment] = useState("");
   const [beforePhoto, setBeforePhoto] = useState<File | null>(null);
   const [afterPhoto, setAfterPhoto] = useState<File | null>(null);
@@ -43,7 +45,11 @@ function JobDetail() {
     return (
       <ContractorShell title={t("contractor.job.notFoundTitle")}>
         <div className="surface-card p-10 text-center">
-          <p className="text-sm text-muted-foreground">{t("contractor.job.notFoundDescription")}</p>
+          <p className="text-sm text-muted-foreground">
+            {detailQuery.isPending
+              ? t("admin.dashboard.api.loading")
+              : t("contractor.job.notFoundDescription")}
+          </p>
           <Button asChild className="mt-4">
             <Link to="/contractor/jobs">{t("contractor.job.backToJobs")}</Link>
           </Button>
@@ -69,11 +75,18 @@ function JobDetail() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">{request.reference}</h2>
-            {!request.address && <p className="text-sm text-muted-foreground">{t("location.mapOnly")}</p>}
-            {request.address && <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <MapPin className="size-4" aria-hidden />
-              {request.address} — {t("contractor.job.district", { district: request.district ?? t("location.mapOnly") })}
-            </p>}
+            {!request.address && (
+              <p className="text-sm text-muted-foreground">{t("location.mapOnly")}</p>
+            )}
+            {request.address && (
+              <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <MapPin className="size-4" aria-hidden />
+                {request.address} —{" "}
+                {t("contractor.job.district", {
+                  district: request.district ?? t("location.mapOnly"),
+                })}
+              </p>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">
               {t("contractor.job.reportedOn", { date: formatDate(request.createdAt, lang) })}
             </p>
@@ -98,14 +111,21 @@ function JobDetail() {
           </p>
           <Button
             className="mt-4 w-full sm:w-auto"
+            disabled={busy}
             onClick={() => {
+              setBusy(true);
               void (async () => {
                 if (beforePhoto) await photosApi.upload(request.id, beforePhoto, "before");
-                await requestsApi.transition(request.id, { to: "IN_PROGRESS", comment: t("contractor.job.startComment") });
+                await requestsApi.transition(request.id, {
+                  to: "IN_PROGRESS",
+                  comment: t("contractor.job.startComment"),
+                });
                 await refreshApiState(session ?? undefined);
                 setBeforePhoto(null);
                 toast.success(t("contractor.job.startedToast"));
-              })().catch(() => toast.error("Action impossible."));
+              })()
+                .catch(() => toast.error(t("work.actionError")))
+                .finally(() => setBusy(false));
             }}
           >
             <PlayCircle className="size-4" aria-hidden />
@@ -151,26 +171,37 @@ function JobDetail() {
           </div>
           <Button
             className="w-full sm:w-auto"
-            disabled={comment.trim().length < 5}
+            disabled={
+              busy ||
+              comment.trim().length < 5 ||
+              (!afterPhoto &&
+                !request.photos.some(
+                  (p) => p.kind === "after" && p.cycle === request.interventionCycle,
+                ))
+            }
             onClick={() => {
+              setBusy(true);
               void (async () => {
                 if (beforePhoto) await photosApi.upload(request.id, beforePhoto, "before");
                 if (afterPhoto) await photosApi.upload(request.id, afterPhoto, "after");
-                await requestsApi.transition(request.id, { to: "COMPLETED", comment: comment.trim() });
+                await requestsApi.transition(request.id, {
+                  to: "COMPLETED",
+                  comment: comment.trim(),
+                });
                 await refreshApiState(session ?? undefined);
                 setComment("");
                 setBeforePhoto(null);
                 setAfterPhoto(null);
                 toast.success(t("contractor.job.completedToast"));
-              })().catch(() => toast.error("Action impossible."));
+              })()
+                .catch(() => toast.error(t("work.actionError")))
+                .finally(() => setBusy(false));
             }}
           >
             <CheckCircle2 className="size-4" aria-hidden />
             {t("contractor.job.completeCta")}
           </Button>
-          <p className="text-xs text-muted-foreground">
-            {t("contractor.job.completeHint")}
-          </p>
+          <p className="text-xs text-muted-foreground">{t("contractor.job.completeHint")}</p>
         </section>
       )}
 
@@ -254,11 +285,18 @@ function PhotoUpload({
             {t("contractor.job.photoAdd")}
             <input
               type="file"
-              accept="image/*"
+              accept="image/jpeg,image/png,image/webp"
               className="sr-only"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) onChange(file);
+                if (
+                  file &&
+                  file.size > 0 &&
+                  file.size <= 8 * 1024 * 1024 &&
+                  ["image/jpeg", "image/png", "image/webp"].includes(file.type)
+                )
+                  onChange(file);
+                else if (file) toast.error(t("report.photos.hint"));
                 e.target.value = "";
               }}
             />

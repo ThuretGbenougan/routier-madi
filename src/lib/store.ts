@@ -37,7 +37,7 @@ export function createInitialState(): DemoState {
 
 let state: DemoState = createInitialState();
 const serverState: DemoState = state;
-let listeners = new Set<() => void>();
+const listeners = new Set<() => void>();
 
 function emit() {
   listeners.forEach((l) => l());
@@ -256,8 +256,7 @@ export function transitionRequest(
       status: to,
       updatedAt: now,
       closedAt: to === "CLOSED" ? now : r.closedAt,
-      contractorId:
-        options.contractorId !== undefined ? options.contractorId : r.contractorId,
+      contractorId: options.contractorId !== undefined ? options.contractorId : r.contractorId,
       photos,
       history: [...r.history, entry],
       contractorNotes:

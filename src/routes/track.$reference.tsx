@@ -11,7 +11,9 @@ import { requestsApi } from "@/lib/api/requests-api";
 import { useI18n } from "@/i18n/LanguageProvider";
 
 export const Route = createFileRoute("/track/$reference")({
-  validateSearch: (search: Record<string, unknown>) => ({ code: typeof search["code"] === "string" ? search["code"] : "" }),
+  validateSearch: (search: Record<string, unknown>) => ({
+    code: typeof search["code"] === "string" ? search["code"] : "",
+  }),
   head: ({ params }) => ({
     meta: [
       { title: `Demande ${params.reference} — Voirie Connect` },
@@ -33,7 +35,11 @@ function TrackDetail() {
   const { t, lang, problemLabel } = useI18n();
   const { reference } = Route.useParams();
   const { code } = Route.useSearch();
-  const query = useQuery({ queryKey: ["public-request", reference, code], queryFn: () => requestsApi.publicByReference(reference, code), enabled: Boolean(code) });
+  const query = useQuery({
+    queryKey: ["public-request", reference, code],
+    queryFn: () => requestsApi.publicByReference(reference, code),
+    enabled: Boolean(code),
+  });
   const request = query.data?.request;
 
   if (!request) {
@@ -59,9 +65,10 @@ function TrackDetail() {
 
   const citizenPhotos = request.photos.filter((p) => p.kind === "citizen");
   const workPhotos = request.photos.filter((p) => p.kind !== "citizen");
-  const locationText = request.address && request.district
-    ? t("track.detail.locationValue", { address: request.address, district: request.district })
-    : request.address ?? request.district ?? t("track.detail.locationMapOnly");
+  const locationText =
+    request.address && request.district
+      ? t("track.detail.locationValue", { address: request.address, district: request.district })
+      : (request.address ?? request.district ?? t("track.detail.locationMapOnly"));
 
   return (
     <PublicLayout>
@@ -87,9 +94,7 @@ function TrackDetail() {
               <MapPin className="mt-0.5 size-4 text-muted-foreground" aria-hidden />
               <div>
                 <dt className="text-xs text-muted-foreground">{t("track.detail.location")}</dt>
-                <dd>
-                  {locationText}
-                </dd>
+                <dd>{locationText}</dd>
               </div>
             </div>
             <div className="flex items-start gap-2">

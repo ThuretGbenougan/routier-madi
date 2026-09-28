@@ -19,7 +19,10 @@ export const Route = createFileRoute("/contractor/login")({
         content: "Accès réservé aux entreprises partenaires chargées des travaux de voirie.",
       },
       { property: "og:title", content: "Connexion entreprise — Voirie Connect" },
-      { property: "og:description", content: "Suivi des interventions attribuées aux entreprises." },
+      {
+        property: "og:description",
+        content: "Suivi des interventions attribuées aux entreprises.",
+      },
     ],
   }),
   component: ContractorLogin,
@@ -103,23 +106,6 @@ function ContractorLogin() {
               {t("contractor.login.submit")}
             </Button>
           </form>
-
-          <div className="mt-5 rounded-lg border border-dashed border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">{t("contractor.login.demoTitle")}</p>
-            <p className="mt-1">{t("contractor.login.demoCreds")}</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => {
-                setEmail("contractor@city.demo");
-                setPassword("demo123");
-              }}
-            >
-              {t("contractor.login.demoFill")}
-            </Button>
-          </div>
 
           <p className="mt-4 text-center text-xs text-muted-foreground">
             {t("contractor.login.adminPrompt")}{" "}

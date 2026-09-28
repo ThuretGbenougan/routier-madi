@@ -1,6 +1,9 @@
 import { useSyncExternalStore } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { authApi } from "./auth-api";
 import { requestsApi } from "./requests-api";
+import { getQueryClient } from "./query-client";
+import { ApiError, onSessionExpired } from "./client";
 import type { Contractor, RepairRequest, Session } from "@/types";
 
 export interface ApiAppState {
@@ -10,67 +13,77 @@ export interface ApiAppState {
   loading: boolean;
   error?: string | undefined;
 }
-
-const emptyState: ApiAppState = { requests: [], contractors: [], session: null, loading: true };
-let state = emptyState;
-const serverState = emptyState;
+let session: Session | null = null;
 let initialized = false;
 let hydrationPromise: Promise<void> | null = null;
 const listeners = new Set<() => void>();
-
 function emit() {
-  listeners.forEach((listener) => listener());
+  listeners.forEach((fn) => fn());
 }
-
-function setState(next: ApiAppState) {
-  state = next;
+function subscribe(fn: () => void) {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+function clearSession() {
+  session = null;
+  getQueryClient().clear();
   emit();
 }
+onSessionExpired(clearSession);
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-export function useApiState() {
-  return useSyncExternalStore(subscribe, () => state, () => serverState);
-}
-
-export function useApiInitialized() {
-  return useSyncExternalStore(subscribe, () => initialized, () => false);
-}
-
-export function getApiState() {
-  return state;
-}
-
-export async function refreshApiState(session = state.session) {
-  if (!session) {
-    setState({ requests: [], contractors: [], session: null, loading: false });
-    return;
-  }
-  setState({ ...state, session, loading: true, error: undefined });
-  try {
-    if (session.role === "ADMIN") {
-      const result = await requestsApi.adminBootstrap();
-      setState({ session, requests: result.requests, contractors: result.contractors, loading: false });
-    } else {
+export function useApiState(): ApiAppState {
+  const current = useSyncExternalStore(
+    subscribe,
+    () => session,
+    () => null,
+  );
+  const ready = useApiInitialized();
+  const query = useQuery({
+    queryKey: ["bootstrap", current?.userId],
+    enabled: Boolean(current),
+    queryFn: async () => {
+      if (current?.role === "ADMIN") return requestsApi.adminBootstrap();
       const result = await requestsApi.contractorBootstrap();
-      setState({ session, requests: result.requests, contractors: [], loading: false });
-    }
-  } catch (error) {
-    setState({ ...state, session, loading: false, error: error instanceof Error ? error.name : "API_ERROR" });
-  }
+      return { ...result, contractors: [] as Contractor[] };
+    },
+    staleTime: 15_000,
+    refetchInterval: 30_000,
+    retry: (count, error) => !(error instanceof ApiError && error.status === 401) && count < 1,
+  });
+  return {
+    session: current,
+    requests: query.data?.requests ?? [],
+    contractors: query.data?.contractors ?? [],
+    loading: !ready || Boolean(current && query.isPending),
+    error: query.error?.message,
+  };
 }
-
+export function useApiInitialized() {
+  return useSyncExternalStore(
+    subscribe,
+    () => initialized,
+    () => false,
+  );
+}
+export function getApiState(): ApiAppState {
+  return { session, requests: [], contractors: [], loading: !initialized };
+}
+export async function refreshApiState(next = session) {
+  if (next?.userId !== session?.userId) getQueryClient().clear();
+  session = next;
+  emit();
+  await getQueryClient().invalidateQueries();
+}
 export async function hydrateApiState() {
   if (initialized) return;
   if (hydrationPromise) return hydrationPromise;
   hydrationPromise = (async () => {
     try {
-      await refreshApiState(await authApi.me());
+      session = await authApi.me();
     } catch {
-      setState({ requests: [], contractors: [], session: null, loading: false });
+      session = null;
     } finally {
       initialized = true;
       emit();
@@ -78,15 +91,38 @@ export async function hydrateApiState() {
   })();
   return hydrationPromise;
 }
-
-export async function establishApiSession(session: Session) {
-  await refreshApiState(session);
+export async function establishApiSession(next: Session) {
+  getQueryClient().clear();
+  session = next;
+  initialized = true;
+  emit();
 }
-
 export async function logoutApiSession() {
   try {
     await authApi.logout();
   } finally {
-    setState({ requests: [], contractors: [], session: null, loading: false });
+    clearSession();
   }
+}
+
+export function useRequest(id: string) {
+  const current = useSyncExternalStore(
+    subscribe,
+    () => session,
+    () => null,
+  );
+  return useQuery({
+    queryKey: ["request", current?.userId, id],
+    queryFn: () => requestsApi.get(id),
+    enabled: Boolean(current),
+    staleTime: 0,
+    refetchInterval: (query) =>
+      query.state.data?.request.photos.some(
+        (p) => p.analysis && ["PENDING", "PROCESSING"].includes(p.analysis.status),
+      )
+        ? 5000
+        : 30_000,
+    retry: (count, error) =>
+      !(error instanceof ApiError && [401, 404].includes(error.status)) && count < 1,
+  });
 }

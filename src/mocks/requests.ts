@@ -21,8 +21,7 @@ const seeds: Seed[] = [
     type: "POTHOLE",
     address: "12 rue des Tilleuls",
     district: "Centre",
-    description:
-      "Nid-de-poule profond au milieu de la chaussée, dangereux pour les deux-roues.",
+    description: "Nid-de-poule profond au milieu de la chaussée, dangereux pour les deux-roues.",
     status: "CLOSED",
     contractorId: "c1",
     daysAgo: 62,

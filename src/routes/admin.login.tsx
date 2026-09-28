@@ -104,23 +104,6 @@ function AdminLogin() {
             </Button>
           </form>
 
-          <div className="mt-5 rounded-lg border border-dashed border-border bg-muted/50 p-3 text-xs text-muted-foreground">
-            <p className="font-medium text-foreground">{t("admin.login.demoTitle")}</p>
-            <p className="mt-1">admin@city.demo · demo123</p>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              className="mt-2"
-              onClick={() => {
-                setEmail("admin@city.demo");
-                setPassword("demo123");
-              }}
-            >
-              {t("admin.login.demoFill")}
-            </Button>
-          </div>
-
           <p className="mt-4 text-center text-xs text-muted-foreground">
             {t("admin.login.contractorPrompt")}{" "}
             <Link to="/contractor/login" className="text-primary hover:underline">

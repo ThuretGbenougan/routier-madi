@@ -23,7 +23,8 @@ export const Route = createFileRoute("/contractor/history")({
 function HistoryPage() {
   const { requests, session } = useApiState();
   const { t, problemLabel, lang } = useI18n();
-  const locationText = (request: { address?: string | undefined }) => request.address ?? t("location.mapOnly");
+  const locationText = (request: { address?: string | undefined }) =>
+    request.address ?? t("location.mapOnly");
   const done = requests
     .filter(
       (r) =>

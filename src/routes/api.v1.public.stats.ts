@@ -5,8 +5,13 @@ import { preflightResponse } from "@/server/security/request-security.server";
 import { getPublicStats } from "@/server/services/public-stats-service.server";
 
 export const Route = createFileRoute("/api/v1/public/stats")({
-  server: { handlers: {
-    OPTIONS: ({ request }) => preflightResponse(request),
-    GET: ({ request }) => handleApiRoute(request, async ({ requestId }) => jsonResponse(await getPublicStats(), requestId)),
-  } },
+  server: {
+    handlers: {
+      OPTIONS: ({ request }) => preflightResponse(request),
+      GET: ({ request }) =>
+        handleApiRoute(request, async ({ requestId }) =>
+          jsonResponse(await getPublicStats(), requestId),
+        ),
+    },
+  },
 });

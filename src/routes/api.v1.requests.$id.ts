@@ -9,9 +9,13 @@ export const Route = createFileRoute("/api/v1/requests/$id")({
   server: {
     handlers: {
       OPTIONS: ({ request }) => preflightResponse(request),
-      GET: ({ request, params }) => handleApiRoute(request, async ({ request, requestId }) => {
-        return jsonResponse({ request: await getRequestForPrincipal(params.id, await requirePrincipal(request)) }, requestId);
-      }),
+      GET: ({ request, params }) =>
+        handleApiRoute(request, async ({ request, requestId }) => {
+          return jsonResponse(
+            { request: await getRequestForPrincipal(params.id, await requirePrincipal(request)) },
+            requestId,
+          );
+        }),
     },
   },
 });
