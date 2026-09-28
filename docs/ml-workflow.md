@@ -29,7 +29,7 @@ bun run integrations:setup
 bun run integrations:setup --apply
 ```
 
-La première commande affiche le périmètre sans modifier les services. La seconde configure le preset signé (8 Mio, formats autorisés, sans écrasement), la file série et la maintenance. Elle crée ou actualise les ressources ; elle n’achète aucun abonnement. Vérifier dans QStash que les destinations pointent vers le bon environnement. Ne jamais partager la même file, base ou configuration de stockage entre recette et exploitation.
+La première commande affiche le périmètre sans modifier les services. La seconde configure et vérifie le preset signé (formats autorisés, sans écrasement), la file série et la maintenance. La limite de 8 Mio est contrôlée par l’interface et par le serveur à la confirmation ; le paramètre `max_file_size` n’est pas conservé par le preset Cloudinary vérifié en recette. Un fichier refusé à la confirmation peut donc occuper temporairement du stockage avant le nettoyage de sa réservation. Le script crée ou actualise les ressources ; il n’achète aucun abonnement. Vérifier dans QStash que les destinations pointent vers le bon environnement. Ne jamais partager la même file, base ou configuration de stockage entre recette et exploitation.
 
 Les routes internes vérifient la signature QStash et ne doivent pas être protégées par un écran de connexion Vercel inaccessible à QStash. La configuration Nitro produit une Function avec `maxDuration: 180` ; vérifier `.vercel/output/functions/__server.func/.vc-config.json` après compilation.
 

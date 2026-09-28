@@ -6,13 +6,31 @@ vi.mock("../src/server/env.server", () => ({
     PUBLIC_APP_URL: "https://app.test",
     QSTASH_CURRENT_SIGNING_KEY: "current-test",
     QSTASH_NEXT_SIGNING_KEY: "next-test",
+    QSTASH_TOKEN: "test-token",
   }),
 }));
 import { analyzeRoadImage } from "../src/server/integrations/ml-client.server";
-import { verifyQstash } from "../src/server/integrations/qstash.server";
+import { qstash, verifyQstash } from "../src/server/integrations/qstash.server";
 
 afterEach(() => vi.unstubAllGlobals());
 describe("external transport contracts", () => {
+  it.each([200, 201, 204])(
+    "accepts empty successful queue responses with status %i",
+    async (status) => {
+      vi.stubGlobal(
+        "fetch",
+        vi.fn(async () => new Response(null, { status })),
+      );
+      await expect(qstash("queues", { queueName: "test", parallelism: 1 })).resolves.toEqual({});
+    },
+  );
+  it("preserves message identifiers returned by the queue", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => Response.json({ messageId: "message-test" })),
+    );
+    await expect(qstash("publish/test", {})).resolves.toEqual({ messageId: "message-test" });
+  });
   it("sends the file field with server authentication", async () => {
     const fetcher = vi.fn(async (_url, init) => {
       expect(init.headers["x-api-key"]).toBe("test-key");
