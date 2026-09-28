@@ -163,7 +163,11 @@ export async function assignRequest(input: {
       throw new ConflictError("REQUEST_ALREADY_ASSIGNED", "La demande ne peut pas etre attribuee.");
     }
     const contractor = await tx.contractor.findFirst({
-      where: { id: input.contractorId, active: true },
+      where: {
+        id: input.contractorId,
+        active: true,
+        users: { some: { role: "CONTRACTOR", active: true, accountActivated: true } },
+      },
     });
     if (!contractor)
       throw new ValidationError([

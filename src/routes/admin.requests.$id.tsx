@@ -147,11 +147,13 @@ function RequestDetail() {
                   <SelectValue placeholder={t("admin.detail.assignPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {contractors.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>
-                      {c.name} — {c.specialty}
-                    </SelectItem>
-                  ))}
+                  {contractors
+                    .filter((c) => c.canAssign)
+                    .map((c) => (
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name} — {c.specialty}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
