@@ -38,8 +38,17 @@ export const transitionSchema = z.object({
   controlPassed: z.boolean().optional(),
 });
 
+// Persisted demo contractors use short IDs (c1, c2, ...). Their existence and
+// active status are checked by the service, not inferred from the ID format.
+const contractorIdSchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(128)
+  .regex(/^[A-Za-z0-9_-]+$/);
+
 export const assignSchema = z.object({
-  contractorId: z.string().cuid(),
+  contractorId: contractorIdSchema,
   comment: z.string().trim().min(1).max(2000).optional(),
 });
 
@@ -49,7 +58,7 @@ export const noteSchema = z.object({
 
 export const requestListSchema = z.object({
   status: requestStatus.optional(),
-  contractorId: z.string().cuid().optional(),
+  contractorId: contractorIdSchema.optional(),
   query: z.string().trim().max(100).optional(),
   page: z.coerce.number().int().min(1).max(10_000).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(50),

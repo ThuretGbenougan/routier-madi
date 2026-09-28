@@ -20,6 +20,7 @@ import { useI18n } from "@/i18n/LanguageProvider";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { useRequest, refreshApiState, useApiState } from "@/lib/api/app-state";
 import { requestsApi } from "@/lib/api/requests-api";
+import { ApiError } from "@/lib/api/client";
 
 export const Route = createFileRoute("/admin/requests/$id")({
   head: () => ({
@@ -74,7 +75,9 @@ function RequestDetail() {
   function act(fn: () => Promise<unknown>, message: string) {
     void fn()
       .then(() => toast.success(message))
-      .catch(() => toast.error(t("admin.detail.actionForbidden")));
+      .catch((error: unknown) => {
+        toast.error(error instanceof ApiError ? error.message : t("admin.dashboard.api.error"));
+      });
   }
 
   async function transition(
