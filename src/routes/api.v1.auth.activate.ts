@@ -7,7 +7,7 @@ import {
   enforceRateLimit,
   clientIp,
 } from "@/server/security/request-security.server";
-import { activateContractor } from "@/server/services/contractor-service.server";
+import { activateUser } from "@/server/services/user-invitation-service.server";
 import { activationSchema } from "@/server/validation/contractor-schemas.server";
 
 export const Route = createFileRoute("/api/v1/auth/activate")({
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/api/v1/auth/activate")({
           requireTrustedMutationOrigin(request);
           await enforceRateLimit(`activation:${clientIp(request)}`, 10, 15 * 60_000);
           const input = activationSchema.parse(await parseJsonBody(request));
-          await activateContractor(input.token, input.password);
-          return jsonResponse({ activated: true }, requestId);
+          const role = await activateUser(input.token, input.password);
+          return jsonResponse({ activated: true, role }, requestId);
         }),
     },
   },

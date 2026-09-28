@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
 
 const nav = [
+  { to: "/admin/users", key: "users.title", icon: Users },
   { to: "/admin/analyses", key: "ml.title", icon: BarChart3 },
   { to: "/admin/dashboard", key: "shell.nav.dashboard", icon: LayoutDashboard },
   { to: "/admin/requests", key: "shell.nav.requests", icon: ClipboardList },
@@ -141,7 +142,7 @@ export function AdminShell({
                 <p className="truncate text-sm text-muted-foreground">{description}</p>
               )}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex max-w-full flex-wrap items-center gap-2">
               {actions}
               <LanguageSwitch />
             </div>

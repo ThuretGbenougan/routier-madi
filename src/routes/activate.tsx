@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ActivateUser } from "@/components/ActivateUser";
-export const Route = createFileRoute("/contractor/activate")({
+export const Route = createFileRoute("/activate")({
   head: () => ({
     meta: [
       { title: "Activation — Voirie Connect" },

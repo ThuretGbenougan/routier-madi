@@ -35,20 +35,25 @@ function escapeHtml(value: string) {
   );
 }
 
-export function invitationEmail(name: string, url: string, language: "fr" | "ru") {
+export function invitationEmail(
+  name: string,
+  url: string,
+  language: "fr" | "ru",
+  role: "ADMIN" | "CONTRACTOR" = "CONTRACTOR",
+) {
   const copy =
     language === "ru"
       ? {
           subject: "Активируйте доступ к Voirie Connect",
           greeting: `Здравствуйте, ${name}!`,
-          body: "Вас пригласили в пространство подрядчика Voirie Connect. Выберите пароль, чтобы активировать доступ. Ссылка действует 48 часов и может быть использована только один раз.",
+          body: `Вас пригласили в пространство ${role === "ADMIN" ? "администратора" : "подрядчика"} Voirie Connect. Выберите пароль, чтобы активировать доступ. Ссылка действует 48 часов и может быть использована только один раз.`,
           action: "Активировать доступ",
           footer: "Если ссылка истекла, попросите администратора отправить новое приглашение.",
         }
       : {
           subject: "Activez votre accès à Voirie Connect",
           greeting: `Bonjour ${name},`,
-          body: "Vous êtes invité à rejoindre l’espace entreprise de Voirie Connect. Choisissez votre mot de passe pour activer votre accès. Ce lien est valable 48 heures et utilisable une seule fois.",
+          body: `Vous êtes invité à rejoindre l’espace ${role === "ADMIN" ? "administrateur" : "entreprise"} de Voirie Connect. Choisissez votre mot de passe pour activer votre accès. Ce lien est valable 48 heures et utilisable une seule fois.`,
           action: "Activer mon accès",
           footer:
             "Si le lien a expiré, demandez à l’administrateur de vous renvoyer une invitation.",
@@ -65,10 +70,14 @@ export async function sendInvitationEmail(input: {
   name: string;
   token: string;
   language: "fr" | "ru";
+  role?: "ADMIN" | "CONTRACTOR";
 }) {
   requireInvitationConfig();
   const env = getServerEnv();
-  const url = new URL("/contractor/activate", env.PUBLIC_APP_URL);
+  const url = new URL(
+    input.role === "ADMIN" ? "/activate" : "/contractor/activate",
+    env.PUBLIC_APP_URL,
+  );
   url.hash = new URLSearchParams({ token: input.token, lang: input.language }).toString();
   const response = await fetch("https://api.brevo.com/v3/smtp/email", {
     method: "POST",
@@ -80,7 +89,7 @@ export async function sendInvitationEmail(input: {
     body: JSON.stringify({
       sender: { name: env.BREVO_SENDER_NAME, email: env.BREVO_SENDER_EMAIL },
       to: [{ email: input.email, name: input.name.slice(0, 70) }],
-      ...invitationEmail(input.name, url.toString(), input.language),
+      ...invitationEmail(input.name, url.toString(), input.language, input.role),
     }),
     signal: AbortSignal.timeout(10_000),
   });

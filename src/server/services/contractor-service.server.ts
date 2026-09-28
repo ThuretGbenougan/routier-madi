@@ -1,62 +1,16 @@
-import { createHash, randomBytes } from "node:crypto";
+import { randomBytes } from "node:crypto";
 import type { z } from "zod";
 import { db } from "../db.server";
 import { requireAdmin } from "../authorization/guards.server";
 import type { AuthPrincipal } from "../auth/session.server";
 import { hashPassword } from "../auth/auth-service.server";
-import { AppError, ConflictError, NotFoundError, RateLimitError } from "../errors/app-error.server";
-import { requireInvitationConfig, sendInvitationEmail } from "../integrations/brevo.server";
+import { ConflictError, NotFoundError, RateLimitError } from "../errors/app-error.server";
+import { requireInvitationConfig } from "../integrations/brevo.server";
 import { enforceRateLimit } from "../security/request-security.server";
 import type { contractorSchema } from "../validation/contractor-schemas.server";
 
-function tokenHash(token: string) {
-  return createHash("sha256").update(token).digest("hex");
-}
-function newInvitation(language: "fr" | "ru") {
-  const token = randomBytes(32).toString("base64url");
-  return {
-    token,
-    data: {
-      tokenHash: tokenHash(token),
-      expiresAt: new Date(Date.now() + 48 * 60 * 60_000),
-      issuedAt: new Date(),
-      language,
-      consumedAt: null,
-      delivery: "PENDING",
-      messageId: null,
-    },
-  };
-}
-function duplicate(error: unknown): never {
-  if (error && typeof error === "object" && "code" in error && error.code === "P2002")
-    throw new ConflictError("CONTRACTOR_EMAIL_EXISTS", "Cette adresse e-mail est déjà utilisée.");
-  throw error;
-}
-async function deliver(
-  user: { id: string; emailNormalized: string; name: string },
-  invitation: ReturnType<typeof newInvitation>,
-) {
-  let delivery = "FAILED";
-  let messageId: string | null = null;
-  try {
-    messageId = await sendInvitationEmail({
-      email: user.emailNormalized,
-      name: user.name,
-      token: invitation.token,
-      language: invitation.data.language,
-    });
-    delivery = "ACCEPTED";
-  } catch {
-    console.warn(
-      JSON.stringify({ event: "contractor_invitation_delivery_failed", userId: user.id }),
-    );
-  }
-  await db.contractorInvitation.updateMany({
-    where: { userId: user.id, tokenHash: invitation.data.tokenHash },
-    data: { delivery, messageId },
-  });
-  return { delivery };
-}
+import { newInvitation, deliver, duplicate } from "./user-invitation-service.server";
+export { activateUser as activateContractor } from "./user-invitation-service.server";
 
 export async function createContractor(
   input: z.infer<typeof contractorSchema>,
@@ -138,7 +92,7 @@ export async function inviteContractor(id: string, language: "fr" | "ru", actor:
           include: { invitation: true },
         });
       }
-      await tx.contractorInvitation.upsert({
+      await tx.userInvitation.upsert({
         where: { userId: current.id },
         create: { userId: current.id, ...invitation.data },
         update: invitation.data,
@@ -147,44 +101,4 @@ export async function inviteContractor(id: string, language: "fr" | "ru", actor:
     })
     .catch(duplicate);
   return deliver(user, invitation);
-}
-
-export async function activateContractor(token: string, password: string) {
-  const hash = tokenHash(token);
-  const found = await db.contractorInvitation.findUnique({
-    where: { tokenHash: hash },
-    include: { user: true },
-  });
-  const invalid = () =>
-    new AppError(
-      "INVITATION_INVALID",
-      422,
-      "Ce lien est invalide ou a expiré. Demandez une nouvelle invitation.",
-    );
-  if (!found || found.consumedAt || found.expiresAt <= new Date() || !found.user.contractorId)
-    throw invalid();
-  const passwordHash = await hashPassword(password);
-  await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT id FROM "Contractor" WHERE id = ${found.user.contractorId} FOR UPDATE`;
-    const user = await tx.user.findUnique({
-      where: { id: found.userId },
-      include: { contractor: true },
-    });
-    if (
-      !user?.active ||
-      user.accountActivated ||
-      user.role !== "CONTRACTOR" ||
-      !user.contractor?.active
-    )
-      throw invalid();
-    const consumed = await tx.contractorInvitation.updateMany({
-      where: { id: found.id, tokenHash: hash, consumedAt: null, expiresAt: { gt: new Date() } },
-      data: { consumedAt: new Date() },
-    });
-    if (consumed.count !== 1) throw invalid();
-    await tx.user.update({
-      where: { id: user.id },
-      data: { passwordHash, accountActivated: true },
-    });
-  });
 }

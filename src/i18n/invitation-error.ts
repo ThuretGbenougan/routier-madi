@@ -8,6 +8,8 @@ export function invitationErrorKey(error: unknown): TranslationKey {
       return "invite.unconfigured";
     case "CONTRACTOR_EMAIL_EXISTS":
       return "invite.duplicate";
+    case "USER_NOT_INVITABLE":
+      return "users.notInvitable";
     case "CONTRACTOR_ACCOUNT_EXISTS":
       return "invite.exists";
     case "INVITATION_INVALID":

@@ -64,6 +64,22 @@ describe("invitation mail", () => {
     expect(body.textContent).toContain("/contractor/activate#token=secret-token&lang=ru");
     expect(body.to[0].email).toBe("user@test.invalid");
   });
+  it("sends admin invitations to the shared activation page", async () => {
+    vi.mocked(fetch).mockResolvedValue(
+      new Response(JSON.stringify({ messageId: "admin-mail" }), { status: 201 }),
+    );
+    await sendInvitationEmail({
+      email: "admin@test.invalid",
+      name: "Admin",
+      token: "secret-token",
+      language: "fr",
+      role: "ADMIN",
+    });
+    const body = JSON.parse(String(vi.mocked(fetch).mock.calls[0]![1]?.body));
+    expect(body.textContent).toContain("/activate#token=secret-token&lang=fr");
+    expect(body.textContent).toContain("administrateur");
+    expect(body.textContent).not.toContain("/contractor/activate");
+  });
   it.each([400, 401, 429, 500])("rejects Brevo HTTP %s", async (status) => {
     vi.mocked(fetch).mockResolvedValue(new Response("failure", { status }));
     await expect(

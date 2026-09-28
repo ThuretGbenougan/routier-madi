@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivateRouteImport } from './routes/activate'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnalysesRouteImport } from './routes/admin.analyses'
@@ -17,6 +18,7 @@ import { Route as AdminContractorsRouteImport } from './routes/admin.contractors
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as ApiHealthRouteImport } from './routes/api.health'
 import { Route as ContractorIndexRouteImport } from './routes/contractor.index'
 import { Route as ContractorActivateRouteImport } from './routes/contractor.activate'
@@ -28,6 +30,7 @@ import { Route as AdminRequestsIndexRouteImport } from './routes/admin.requests.
 import { Route as AdminRequestsIdRouteImport } from './routes/admin.requests.$id'
 import { Route as ApiInternalMaintenanceRouteImport } from './routes/api.internal.maintenance'
 import { Route as ApiV1ContractorsRouteImport } from './routes/api.v1.contractors'
+import { Route as ApiV1UsersRouteImport } from './routes/api.v1.users'
 import { Route as ContractorJobsIndexRouteImport } from './routes/contractor.jobs.index'
 import { Route as ContractorJobsIdRouteImport } from './routes/contractor.jobs.$id'
 import { Route as ApiInternalMlProcessRouteImport } from './routes/api.internal.ml.process'
@@ -48,12 +51,18 @@ import { Route as ApiV1RequestsIdNotesRouteImport } from './routes/api.v1.reques
 import { Route as ApiV1RequestsIdPhotoUploadsRouteImport } from './routes/api.v1.requests.$id.photo-uploads'
 import { Route as ApiV1RequestsIdPhotosRouteImport } from './routes/api.v1.requests.$id.photos'
 import { Route as ApiV1RequestsIdTransitionRouteImport } from './routes/api.v1.requests.$id.transition'
+import { Route as ApiV1UsersIdInvitationsRouteImport } from './routes/api.v1.users.$id.invitations'
 import { Route as ApiV1PhotosPhotoIdAnalysisRetryRouteImport } from './routes/api.v1.photos.$photoId.analysis.retry'
 import { Route as ApiV1RequestsIdPhotoUploadsUploadIdCompleteRouteImport } from './routes/api.v1.requests.$id.photo-uploads.$uploadId.complete'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ActivateRoute = ActivateRouteImport.update({
+  id: '/activate',
+  path: '/activate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReportRoute = ReportRouteImport.update({
@@ -89,6 +98,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/admin/reports',
   path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiHealthRoute = ApiHealthRouteImport.update({
@@ -144,6 +158,11 @@ const ApiInternalMaintenanceRoute = ApiInternalMaintenanceRouteImport.update({
 const ApiV1ContractorsRoute = ApiV1ContractorsRouteImport.update({
   id: '/api/v1/contractors',
   path: '/api/v1/contractors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiV1UsersRoute = ApiV1UsersRouteImport.update({
+  id: '/api/v1/users',
+  path: '/api/v1/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContractorJobsIndexRoute = ContractorJobsIndexRouteImport.update({
@@ -251,6 +270,11 @@ const ApiV1RequestsIdTransitionRoute =
     path: '/transition',
     getParentRoute: () => ApiV1RequestsIdRoute,
   } as any)
+const ApiV1UsersIdInvitationsRoute = ApiV1UsersIdInvitationsRouteImport.update({
+  id: '/$id/invitations',
+  path: '/$id/invitations',
+  getParentRoute: () => ApiV1UsersRoute,
+} as any)
 const ApiV1PhotosPhotoIdAnalysisRetryRoute =
   ApiV1PhotosPhotoIdAnalysisRetryRouteImport.update({
     id: '/api/v1/photos/$photoId/analysis/retry',
@@ -266,12 +290,14 @@ const ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activate': typeof ActivateRoute
   '/report': typeof ReportRoute
   '/admin/analyses': typeof AdminAnalysesRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/health': typeof ApiHealthRoute
   '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
@@ -283,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
   '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
+  '/api/v1/users': typeof ApiV1UsersRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
@@ -304,17 +331,20 @@ export interface FileRoutesByFullPath {
   '/api/v1/requests/$id/photo-uploads': typeof ApiV1RequestsIdPhotoUploadsRouteWithChildren
   '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
   '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
+  '/api/v1/users/$id/invitations': typeof ApiV1UsersIdInvitationsRoute
   '/api/v1/photos/$photoId/analysis/retry': typeof ApiV1PhotosPhotoIdAnalysisRetryRoute
   '/api/v1/requests/$id/photo-uploads/$uploadId/complete': typeof ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activate': typeof ActivateRoute
   '/report': typeof ReportRoute
   '/admin/analyses': typeof AdminAnalysesRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/health': typeof ApiHealthRoute
   '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
@@ -326,6 +356,7 @@ export interface FileRoutesByTo {
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
   '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
+  '/api/v1/users': typeof ApiV1UsersRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests': typeof AdminRequestsIndexRoute
   '/contractor/jobs': typeof ContractorJobsIndexRoute
@@ -347,18 +378,21 @@ export interface FileRoutesByTo {
   '/api/v1/requests/$id/photo-uploads': typeof ApiV1RequestsIdPhotoUploadsRouteWithChildren
   '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
   '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
+  '/api/v1/users/$id/invitations': typeof ApiV1UsersIdInvitationsRoute
   '/api/v1/photos/$photoId/analysis/retry': typeof ApiV1PhotosPhotoIdAnalysisRetryRoute
   '/api/v1/requests/$id/photo-uploads/$uploadId/complete': typeof ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activate': typeof ActivateRoute
   '/report': typeof ReportRoute
   '/admin/analyses': typeof AdminAnalysesRoute
   '/admin/contractors': typeof AdminContractorsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/api/health': typeof ApiHealthRoute
   '/contractor/activate': typeof ContractorActivateRoute
   '/contractor/history': typeof ContractorHistoryRoute
@@ -370,6 +404,7 @@ export interface FileRoutesById {
   '/admin/requests/$id': typeof AdminRequestsIdRoute
   '/api/internal/maintenance': typeof ApiInternalMaintenanceRoute
   '/api/v1/contractors': typeof ApiV1ContractorsRouteWithChildren
+  '/api/v1/users': typeof ApiV1UsersRouteWithChildren
   '/contractor/jobs/$id': typeof ContractorJobsIdRoute
   '/admin/requests/': typeof AdminRequestsIndexRoute
   '/contractor/jobs/': typeof ContractorJobsIndexRoute
@@ -391,6 +426,7 @@ export interface FileRoutesById {
   '/api/v1/requests/$id/photo-uploads': typeof ApiV1RequestsIdPhotoUploadsRouteWithChildren
   '/api/v1/requests/$id/photos': typeof ApiV1RequestsIdPhotosRoute
   '/api/v1/requests/$id/transition': typeof ApiV1RequestsIdTransitionRoute
+  '/api/v1/users/$id/invitations': typeof ApiV1UsersIdInvitationsRoute
   '/api/v1/photos/$photoId/analysis/retry': typeof ApiV1PhotosPhotoIdAnalysisRetryRoute
   '/api/v1/requests/$id/photo-uploads/$uploadId/complete': typeof ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute
 }
@@ -398,12 +434,14 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/activate'
     | '/report'
     | '/admin/analyses'
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/admin/users'
     | '/api/health'
     | '/contractor/activate'
     | '/contractor/history'
@@ -415,6 +453,7 @@ export interface FileRouteTypes {
     | '/admin/requests/$id'
     | '/api/internal/maintenance'
     | '/api/v1/contractors'
+    | '/api/v1/users'
     | '/contractor/jobs/$id'
     | '/admin/requests/'
     | '/contractor/jobs/'
@@ -436,17 +475,20 @@ export interface FileRouteTypes {
     | '/api/v1/requests/$id/photo-uploads'
     | '/api/v1/requests/$id/photos'
     | '/api/v1/requests/$id/transition'
+    | '/api/v1/users/$id/invitations'
     | '/api/v1/photos/$photoId/analysis/retry'
     | '/api/v1/requests/$id/photo-uploads/$uploadId/complete'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/activate'
     | '/report'
     | '/admin/analyses'
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/admin/users'
     | '/api/health'
     | '/contractor/activate'
     | '/contractor/history'
@@ -458,6 +500,7 @@ export interface FileRouteTypes {
     | '/admin/requests/$id'
     | '/api/internal/maintenance'
     | '/api/v1/contractors'
+    | '/api/v1/users'
     | '/contractor/jobs/$id'
     | '/admin/requests'
     | '/contractor/jobs'
@@ -479,17 +522,20 @@ export interface FileRouteTypes {
     | '/api/v1/requests/$id/photo-uploads'
     | '/api/v1/requests/$id/photos'
     | '/api/v1/requests/$id/transition'
+    | '/api/v1/users/$id/invitations'
     | '/api/v1/photos/$photoId/analysis/retry'
     | '/api/v1/requests/$id/photo-uploads/$uploadId/complete'
   id:
     | '__root__'
     | '/'
+    | '/activate'
     | '/report'
     | '/admin/analyses'
     | '/admin/contractors'
     | '/admin/dashboard'
     | '/admin/login'
     | '/admin/reports'
+    | '/admin/users'
     | '/api/health'
     | '/contractor/activate'
     | '/contractor/history'
@@ -501,6 +547,7 @@ export interface FileRouteTypes {
     | '/admin/requests/$id'
     | '/api/internal/maintenance'
     | '/api/v1/contractors'
+    | '/api/v1/users'
     | '/contractor/jobs/$id'
     | '/admin/requests/'
     | '/contractor/jobs/'
@@ -522,18 +569,21 @@ export interface FileRouteTypes {
     | '/api/v1/requests/$id/photo-uploads'
     | '/api/v1/requests/$id/photos'
     | '/api/v1/requests/$id/transition'
+    | '/api/v1/users/$id/invitations'
     | '/api/v1/photos/$photoId/analysis/retry'
     | '/api/v1/requests/$id/photo-uploads/$uploadId/complete'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivateRoute: typeof ActivateRoute
   ReportRoute: typeof ReportRoute
   AdminAnalysesRoute: typeof AdminAnalysesRoute
   AdminContractorsRoute: typeof AdminContractorsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   ApiHealthRoute: typeof ApiHealthRoute
   ContractorActivateRoute: typeof ContractorActivateRoute
   ContractorHistoryRoute: typeof ContractorHistoryRoute
@@ -545,6 +595,7 @@ export interface RootRouteChildren {
   AdminRequestsIdRoute: typeof AdminRequestsIdRoute
   ApiInternalMaintenanceRoute: typeof ApiInternalMaintenanceRoute
   ApiV1ContractorsRoute: typeof ApiV1ContractorsRouteWithChildren
+  ApiV1UsersRoute: typeof ApiV1UsersRouteWithChildren
   ContractorJobsIdRoute: typeof ContractorJobsIdRoute
   AdminRequestsIndexRoute: typeof AdminRequestsIndexRoute
   ContractorJobsIndexRoute: typeof ContractorJobsIndexRoute
@@ -570,6 +621,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/activate': {
+      id: '/activate'
+      path: '/activate'
+      fullPath: '/activate'
+      preLoaderRoute: typeof ActivateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/report': {
@@ -619,6 +677,13 @@ declare module '@tanstack/react-router' {
       path: '/admin/reports'
       fullPath: '/admin/reports'
       preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/health': {
@@ -696,6 +761,13 @@ declare module '@tanstack/react-router' {
       path: '/api/v1/contractors'
       fullPath: '/api/v1/contractors'
       preLoaderRoute: typeof ApiV1ContractorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/v1/users': {
+      id: '/api/v1/users'
+      path: '/api/v1/users'
+      fullPath: '/api/v1/users'
+      preLoaderRoute: typeof ApiV1UsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contractor/jobs/': {
@@ -838,6 +910,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiV1RequestsIdTransitionRouteImport
       parentRoute: typeof ApiV1RequestsIdRoute
     }
+    '/api/v1/users/$id/invitations': {
+      id: '/api/v1/users/$id/invitations'
+      path: '/$id/invitations'
+      fullPath: '/api/v1/users/$id/invitations'
+      preLoaderRoute: typeof ApiV1UsersIdInvitationsRouteImport
+      parentRoute: typeof ApiV1UsersRoute
+    }
     '/api/v1/photos/$photoId/analysis/retry': {
       id: '/api/v1/photos/$photoId/analysis/retry'
       path: '/api/v1/photos/$photoId/analysis/retry'
@@ -865,6 +944,18 @@ const ApiV1ContractorsRouteChildren: ApiV1ContractorsRouteChildren = {
 
 const ApiV1ContractorsRouteWithChildren =
   ApiV1ContractorsRoute._addFileChildren(ApiV1ContractorsRouteChildren)
+
+interface ApiV1UsersRouteChildren {
+  ApiV1UsersIdInvitationsRoute: typeof ApiV1UsersIdInvitationsRoute
+}
+
+const ApiV1UsersRouteChildren: ApiV1UsersRouteChildren = {
+  ApiV1UsersIdInvitationsRoute: ApiV1UsersIdInvitationsRoute,
+}
+
+const ApiV1UsersRouteWithChildren = ApiV1UsersRoute._addFileChildren(
+  ApiV1UsersRouteChildren,
+)
 
 interface ApiV1RequestsIdPhotoUploadsRouteChildren {
   ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute: typeof ApiV1RequestsIdPhotoUploadsUploadIdCompleteRoute
@@ -904,12 +995,14 @@ const ApiV1RequestsIdRouteWithChildren = ApiV1RequestsIdRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivateRoute: ActivateRoute,
   ReportRoute: ReportRoute,
   AdminAnalysesRoute: AdminAnalysesRoute,
   AdminContractorsRoute: AdminContractorsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   ApiHealthRoute: ApiHealthRoute,
   ContractorActivateRoute: ContractorActivateRoute,
   ContractorHistoryRoute: ContractorHistoryRoute,
@@ -921,6 +1014,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRequestsIdRoute: AdminRequestsIdRoute,
   ApiInternalMaintenanceRoute: ApiInternalMaintenanceRoute,
   ApiV1ContractorsRoute: ApiV1ContractorsRouteWithChildren,
+  ApiV1UsersRoute: ApiV1UsersRouteWithChildren,
   ContractorJobsIdRoute: ContractorJobsIdRoute,
   AdminRequestsIndexRoute: AdminRequestsIndexRoute,
   ContractorJobsIndexRoute: ContractorJobsIndexRoute,
