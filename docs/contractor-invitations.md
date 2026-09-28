@@ -1,5 +1,7 @@
 # Invitations des prestataires — recette
 
+Les invitations administrateur et la page commune d’activation sont décrites dans le [guide utilisateurs](admin-user-invitations.md).
+
 ## Parcours
 
 Dans `/admin/contractors`, « Ajouter un prestataire » crée sa fiche et un compte responsable en attente. L’e-mail du responsable sert d’identifiant. Un lien valable 48 heures permet de choisir un mot de passe de 12 à 128 caractères. L’activation rend l’entreprise disponible pour l’attribution des demandes.
@@ -35,7 +37,7 @@ L’envoi a lieu après la transaction en base, avec un délai maximal de 10 sec
 
 Un échec ou une interruption conserve la fiche et le compte en attente. Le renvoi génère un nouveau lien et invalide l’ancien, même si le nouvel envoi échoue. Délai minimal : une minute entre invitations ; limite supplémentaire : cinq tentatives de renvoi par heure et par prestataire. Il n’y a pas de relance automatique ni de file QStash pour les e-mails dans cette version.
 
-La base ne conserve que l’empreinte du jeton. Le lien transporte le jeton dans le fragment de l’URL, absent des requêtes HTTP de navigation ; ouvrir le lien ne l’active pas. Le serveur consomme le jeton uniquement lors du choix du mot de passe. Ne pas copier les liens d’invitation dans les journaux ou les tickets. Le diagnostic serveur `contractor_invitation_delivery_failed` contient seulement l’identifiant utilisateur.
+La base ne conserve que l’empreinte du jeton. Le lien transporte le jeton dans le fragment de l’URL, absent des requêtes HTTP de navigation ; ouvrir le lien ne l’active pas. Le serveur consomme le jeton uniquement lors du choix du mot de passe. Ne pas copier les liens d’invitation dans les journaux ou les tickets. Le diagnostic serveur `user_invitation_delivery_failed` contient seulement l’identifiant utilisateur.
 
 ## Vérification avant utilisation
 

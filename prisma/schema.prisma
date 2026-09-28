@@ -67,7 +67,7 @@ model User {
   id              String           @id @default(cuid())
   emailNormalized String           @unique
   accountActivated Boolean          @default(true)
-  invitation      ContractorInvitation?
+  invitation      UserInvitation?
   passwordHash    String
   name            String
   role            UserRole
@@ -280,7 +280,8 @@ model RateBucket {
   @@index([expiresAt])
 }
 
-model ContractorInvitation {
+model UserInvitation {
+  @@map("ContractorInvitation")
   id           String   @id @default(cuid())
   userId       String   @unique
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)

@@ -5,6 +5,11 @@ type LoginInput = { email: string; password: string; role?: "ADMIN" | "CONTRACTO
 type LoginResponse = { session: Session; accessToken?: string };
 
 export const authApi = {
+  activate: (token: string, password: string) =>
+    apiRequest<{ activated: true; role: "ADMIN" | "CONTRACTOR" }>("/api/v1/auth/activate", {
+      method: "POST",
+      body: { token, password },
+    }),
   async login(input: LoginInput) {
     const result = await apiRequest<LoginResponse>("/api/v1/auth/login", {
       method: "POST",
