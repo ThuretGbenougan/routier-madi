@@ -1,0 +1,53 @@
+name: Windows desktop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [build/windows-recette]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      VITE_API_URL: https://routier-madi.vercel.app
+      VITE_YANDEX_MAPS_API_KEY: ${{ vars.VITE_YANDEX_MAPS_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: oven-sh/setup-bun@v2
+      - name: Select Rust stable
+        run: rustup default stable
+      - name: Check recipe API
+        shell: pwsh
+        run: |
+          $health = Invoke-RestMethod "$env:VITE_API_URL/api/health"
+          if ($health.status -ne "ok") { throw "Recipe API health check failed" }
+      - run: bun install --frozen-lockfile
+      - run: bun run prisma:generate
+      - run: bun run typecheck
+      - name: Build Windows installers
+        run: bun run tauri build --ci --target x86_64-pc-windows-msvc --bundles nsis,msi
+      - name: Prepare installers and checksums
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path windows-installers | Out-Null
+          $bundle = "src-tauri/target/x86_64-pc-windows-msvc/release/bundle"
+          Copy-Item "$bundle/nsis/*.exe" windows-installers
+          Copy-Item "$bundle/msi/*.msi" windows-installers
+          Get-ChildItem windows-installers -File | Get-FileHash -Algorithm SHA256 |
+            ForEach-Object { "$($_.Hash.ToLower())  $(Split-Path $_.Path -Leaf)" } |
+            Set-Content windows-installers/SHA256SUMS.txt
+          @{ commit = $env:GITHUB_SHA; apiUrl = $env:VITE_API_URL; environment = "recette"; architecture = "x86_64"; signed = $false } |
+            ConvertTo-Json | Set-Content windows-installers/build-info.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: voirie-connect-windows-x64-recette
+          path: windows-installers/
+          if-no-files-found: error
+          retention-days: 30

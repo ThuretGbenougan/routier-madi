@@ -32,5 +32,7 @@ jobs:
       - run: bun run test
       - run: bun run build
       - run: bun run desktop:build
+        env:
+          VITE_API_URL: https://routier-madi.vercel.app
       - run: bunx playwright install --with-deps chromium
       - run: bun run test:e2e

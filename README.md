@@ -29,19 +29,33 @@ npm run dev
 
 Le navigateur public reste l'application citoyenne et entreprise. Le client
 Tauri réutilise la même interface React, mais ouvre directement l'espace
-municipal (`/admin/login`, ou `/admin/dashboard` lorsqu'une session admin de
-démonstration existe). Il ne contient ni base locale, ni accès Prisma, ni clé
+municipal (`/admin/login`, ou `/admin/dashboard` lorsqu’une session administrateur
+est active). Il ne contient ni base locale, ni accès Prisma, ni clé
 du service ML.
 
 Configurez l'URL publique du backend centralisé dans `.env.local` :
 
 ```sh
-VITE_API_URL=https://platform.example.com
+VITE_API_URL=https://routier-madi.vercel.app
 ```
 
 `VITE_API_URL` est une URL publique, jamais un secret. Les identifiants de
 base de données, la clé API du service ML et les autres secrets restent côté
 serveur TanStack Start.
+
+Cette adresse correspond à la **recette** actuelle. Elle désigne la racine du
+site, sans `/api/v1` : le client ajoute lui-même les chemins API. Le build bureau
+charge les fichiers `.env` à la racine et refuse une URL absente, locale ou non
+HTTPS. L’adresse est intégrée à la compilation ; la changer nécessite un nouveau
+build. `PUBLIC_APP_URL` reste une variable serveur utilisée notamment pour les
+liens d’invitation. Les URL `localhost` de `tauri.conf.json` servent au développement.
+
+Le workflow GitHub Actions **Windows desktop** compile sur Windows les
+installateurs x64 `.exe` et `.msi`, puis les conserve dans l’artefact
+`voirie-connect-windows-x64-recette` pendant 30 jours, avec les empreintes SHA-256
+et l’URL embarquée. Il peut être lancé manuellement après fusion sur `main`.
+La branche `build/windows-recette` déclenche aussi le premier build à chaque push.
+Voir [le guide du build Windows](docs/windows-desktop.md).
 
 Commandes avec Bun :
 
