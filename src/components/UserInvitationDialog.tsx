@@ -49,8 +49,11 @@ export function UserInvitationDialog({
             language,
           });
       setOpen(false);
-      if (result.delivery === "ACCEPTED") toast.success(t("invite.sent"));
-      else toast.warning(t("invite.failed"));
+      if (result.delivery === "ACCEPTED") {
+        toast.success(t(user ? "invite.resent" : "invite.adminCreated"));
+      } else {
+        toast.warning(t(user ? "invite.failed" : "invite.adminCreatedUnconfirmed"));
+      }
     } catch (error) {
       setError(
         t(
