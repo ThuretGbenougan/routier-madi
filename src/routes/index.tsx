@@ -14,7 +14,7 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Signalez un nid-de-poule, un trottoir dégradé ou un problème d'écoulement en quelques minutes et suivez l'avancement des travaux.",
+          "Signalez un problème dans votre rue au service voirie et consultez l’avancement de votre demande avec votre numéro de suivi.",
       },
       { property: "og:title", content: "Signaler un problème de voirie — Ville de Valmont" },
       {
@@ -28,8 +28,16 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { t, lang } = useI18n();
-  const { data } = useQuery({ queryKey: ["public-stats"], queryFn: requestsApi.publicStats });
-  const statsData = data ?? { total: 0, inProgress: 0, closed: 0, averageDurationDays: 0 };
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ["public-stats"],
+    queryFn: requestsApi.publicStats,
+  });
+  const statsData = isError ? undefined : data;
+  const durationUnavailable =
+    statsData &&
+    (statsData.closed === 0 ||
+      !Number.isFinite(statsData.averageDurationDays) ||
+      statsData.averageDurationDays < 0);
 
   const steps = [
     {
@@ -50,12 +58,19 @@ function Index() {
   ];
 
   const stats = [
-    { value: String(statsData.total), label: t("home.stats.received") },
-    { value: String(statsData.inProgress), label: t("home.stats.inProgress") },
-    { value: String(statsData.closed), label: t("home.stats.closed") },
+    { value: statsData ? String(statsData.total) : "—", label: t("home.stats.received") },
+    { value: statsData ? String(statsData.inProgress) : "—", label: t("home.stats.inProgress") },
+    { value: statsData ? String(statsData.closed) : "—", label: t("home.stats.closed") },
     {
-      value: formatDuration(statsData.averageDurationDays, lang),
+      value: !statsData
+        ? "—"
+        : durationUnavailable
+          ? t("home.stats.unavailable")
+          : statsData.averageDurationDays < 1
+            ? t("home.stats.lessThanDay")
+            : formatDuration(statsData.averageDurationDays, lang),
       label: t("home.stats.avgDuration"),
+      compact: Boolean(durationUnavailable),
     },
   ];
 
@@ -74,14 +89,14 @@ function Index() {
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button asChild size="lg" className="h-12 text-base">
               <Link to="/report">
-                {t("action.report")}
+                {t("home.action.report")}
                 <ArrowRight className="size-4" aria-hidden />
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="h-12 text-base">
               <Link to="/track">
                 <Search className="size-4" aria-hidden />
-                {t("action.track")}
+                {t("home.action.track")}
               </Link>
             </Button>
           </div>
@@ -112,14 +127,32 @@ function Index() {
       <section className="border-y border-border bg-surface">
         <div className="mx-auto w-full max-w-5xl px-4 py-10">
           <h2 className="text-xl font-semibold">{t("home.stats.title")}</h2>
-          <dl className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {isPending && (
+            <p role="status" className="mt-3 text-sm text-muted-foreground">
+              {t("home.stats.loading")}
+            </p>
+          )}
+          {isError && (
+            <div role="alert" className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+              <p>{t("home.stats.error")}</p>
+              <Button variant="outline" size="sm" onClick={() => void refetch()}>
+                {t("home.stats.retry")}
+              </Button>
+            </div>
+          )}
+          <dl aria-busy={isPending} className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
             {stats.map((s) => (
               <div key={s.label} className="rounded-xl border border-border bg-background p-4">
                 <dt className="text-xs text-muted-foreground">{s.label}</dt>
-                <dd className="mt-1 text-2xl font-semibold">{s.value}</dd>
+                <dd
+                  className={`mt-1 font-semibold ${s.compact ? "text-base" : "text-xl sm:text-2xl"}`}
+                >
+                  {s.value}
+                </dd>
               </div>
             ))}
           </dl>
+          <p className="mt-3 text-xs text-muted-foreground">{t("home.stats.durationHelp")}</p>
         </div>
       </section>
 
@@ -130,7 +163,7 @@ function Index() {
             <p className="mt-1 text-sm text-muted-foreground">{t("home.help.text")}</p>
           </div>
           <Button asChild variant="outline">
-            <Link to="/track">{t("action.track")}</Link>
+            <Link to="/track">{t("home.action.track")}</Link>
           </Button>
         </div>
       </section>
