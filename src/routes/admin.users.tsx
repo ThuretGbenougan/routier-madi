@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { ContractorDetailsSheet } from "@/components/ContractorDetailsSheet";
+import { StatusBadge } from "@/components/StatusBadge";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AdminShell } from "@/components/layout/AdminShell";
@@ -97,37 +99,31 @@ function UsersPage() {
                         <td className="p-3">{t(`users.${user.role}`)}</td>
                         <td className="p-3">{user.contractor?.name ?? "—"}</td>
                         <td className="p-3">
-                          {t(
-                            !user.active
-                              ? "users.DISABLED"
-                              : user.accountActivated
-                                ? "users.ACTIVE"
-                                : "users.PENDING",
-                          )}
+                          <StatusBadge
+                            domain="account"
+                            status={
+                              !user.active
+                                ? "DISABLED"
+                                : user.accountActivated
+                                  ? "ACTIVE"
+                                  : "PENDING"
+                            }
+                          />
                         </td>
                         <td className="p-3">
-                          {!user.invitation ? (
-                            t("users.NONE")
-                          ) : (
-                            <>
-                              <p>
-                                {user.invitation.status === "CONSUMED"
-                                  ? t("users.CONSUMED")
-                                  : t(`invite.status.${user.invitation.status}`)}
-                              </p>
-                              {user.invitation.status !== "CONSUMED" && (
-                                <p className="text-xs text-muted-foreground">
-                                  {t(`invite.delivery.${user.invitation.delivery}`)}
-                                </p>
-                              )}
-                            </>
-                          )}
+                          <div className="flex flex-col items-start gap-2">
+                            <StatusBadge
+                              domain="invitation"
+                              status={user.invitation?.status ?? "NONE"}
+                            />
+                            {user.invitation && user.invitation.status !== "CONSUMED" && (
+                              <StatusBadge domain="delivery" status={user.invitation.delivery} />
+                            )}
+                          </div>
                         </td>
                         <td className="p-3">
                           {user.role === "CONTRACTOR" ? (
-                            <Link className="text-primary underline" to="/admin/contractors">
-                              {t("users.manage")}
-                            </Link>
+                            <ContractorDetailsSheet user={user} />
                           ) : (
                             user.active &&
                             !user.accountActivated && (

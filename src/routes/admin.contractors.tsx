@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/StatusBadge";
 import { useQuery } from "@tanstack/react-query";
 import { ContractorInvitationDialog } from "@/components/ContractorInvitationDialog";
 import { contractorsApi } from "@/lib/api/contractors-api";
@@ -96,14 +97,12 @@ function ContractorsPage() {
             </ul>
 
             <div className="mt-4 space-y-2 border-t border-border pt-4">
-              <p className="text-sm font-medium">
-                {t(`invite.status.${contractor.accessStatus ?? "NONE"}`)}
-              </p>
+              <StatusBadge domain="access" status={contractor.accessStatus ?? "NONE"} />
               {contractor.invitation && contractor.accessStatus !== "ACTIVE" && (
                 <>
-                  <p className="text-xs text-muted-foreground">
-                    {t(`invite.delivery.${contractor.invitation.delivery}`)}
-                  </p>
+                  <div>
+                    <StatusBadge domain="delivery" status={contractor.invitation.delivery} />
+                  </div>
                   <p className="text-xs text-muted-foreground">
                     {t("invite.expiry", {
                       date: formatDateTime(contractor.invitation.expiresAt, lang),
