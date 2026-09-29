@@ -57,8 +57,19 @@ export function ContractorInvitationDialog({
             language,
           });
       setOpen(false);
-      if (result.delivery === "ACCEPTED") toast.success(t("invite.sent"));
-      else toast.warning(t("invite.failed"));
+      if (result.delivery === "ACCEPTED") {
+        toast.success(
+          t(
+            contractor
+              ? contractor.invitation
+                ? "invite.resent"
+                : "invite.sent"
+              : "invite.contractorCreated",
+          ),
+        );
+      } else {
+        toast.warning(t(contractor ? "invite.failed" : "invite.contractorCreatedUnconfirmed"));
+      }
     } catch (error) {
       setError(
         t(

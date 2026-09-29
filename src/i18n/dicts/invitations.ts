@@ -19,9 +19,15 @@ export const invitations = {
     "invite.resendHelp":
       "Le nouveau lien remplacera le précédent. Aucun mot de passe ne sera envoyé par e-mail.",
     "invite.busy": "Envoi en cours…",
-    "invite.sent": "Invitation transmise à Brevo.",
-    "invite.failed":
-      "La fiche est enregistrée, mais l’envoi n’a pas pu être confirmé. Vous pouvez renvoyer l’invitation après une minute.",
+    "invite.sent": "Invitation envoyée par e-mail.",
+    "invite.resent": "Invitation renvoyée par e-mail.",
+    "invite.contractorCreated": "Prestataire ajouté. Invitation envoyée par e-mail.",
+    "invite.adminCreated": "Compte administrateur créé. Invitation envoyée par e-mail.",
+    "invite.contractorCreatedUnconfirmed":
+      "Prestataire ajouté, mais l’envoi de l’invitation n’a pas pu être confirmé. Réessayez dans une minute.",
+    "invite.adminCreatedUnconfirmed":
+      "Compte administrateur créé, mais l’envoi de l’invitation n’a pas pu être confirmé. Réessayez dans une minute.",
+    "invite.failed": "L’envoi de l’invitation n’a pas pu être confirmé. Réessayez dans une minute.",
     "invite.unconfigured":
       "L’envoi des invitations n’est pas encore configuré. Contactez l’administrateur technique.",
     "invite.duplicate":
@@ -41,7 +47,7 @@ export const invitations = {
     "invite.status.ACTIVE": "Compte activé",
     "invite.status.DISABLED": "Accès indisponible",
     "invite.delivery.PENDING": "Envoi non confirmé",
-    "invite.delivery.ACCEPTED": "Invitation transmise à Brevo",
+    "invite.delivery.ACCEPTED": "Invitation envoyée",
     "invite.delivery.FAILED": "Envoi non confirmé — renvoi possible",
     "invite.expiry": "Expiration du lien : {date}",
     "activate.title": "Activer mon compte",
@@ -77,9 +83,16 @@ export const invitations = {
     "invite.resendHelp":
       "Новая ссылка заменит предыдущую. Пароль не отправляется по электронной почте.",
     "invite.busy": "Отправка…",
-    "invite.sent": "Приглашение передано в Brevo.",
-    "invite.failed":
-      "Карточка сохранена, но отправка не подтверждена. Через минуту можно отправить приглашение повторно.",
+    "invite.sent": "Приглашение отправлено по электронной почте.",
+    "invite.resent": "Приглашение повторно отправлено по электронной почте.",
+    "invite.contractorCreated": "Подрядчик добавлен. Приглашение отправлено по электронной почте.",
+    "invite.adminCreated":
+      "Учётная запись администратора создана. Приглашение отправлено по электронной почте.",
+    "invite.contractorCreatedUnconfirmed":
+      "Подрядчик добавлен, но подтвердить отправку приглашения не удалось. Повторите попытку через минуту.",
+    "invite.adminCreatedUnconfirmed":
+      "Учётная запись администратора создана, но подтвердить отправку приглашения не удалось. Повторите попытку через минуту.",
+    "invite.failed": "Не удалось подтвердить отправку приглашения. Повторите попытку через минуту.",
     "invite.unconfigured":
       "Отправка приглашений ещё не настроена. Обратитесь к техническому администратору.",
     "invite.duplicate":
@@ -99,7 +112,7 @@ export const invitations = {
     "invite.status.ACTIVE": "Учётная запись активирована",
     "invite.status.DISABLED": "Доступ недоступен",
     "invite.delivery.PENDING": "Отправка не подтверждена",
-    "invite.delivery.ACCEPTED": "Приглашение передано в Brevo",
+    "invite.delivery.ACCEPTED": "Приглашение отправлено",
     "invite.delivery.FAILED": "Отправка не подтверждена — можно повторить",
     "invite.expiry": "Ссылка действует до: {date}",
     "activate.title": "Активировать учётную запись",
