@@ -33,6 +33,16 @@ jobs:
       - run: bun run typecheck
       - name: Build Windows installers
         run: bun run tauri build --ci --target x86_64-pc-windows-msvc --bundles nsis,msi
+      - name: Verify Windows GUI subsystem
+        shell: pwsh
+        run: |
+          $binary = "src-tauri/target/x86_64-pc-windows-msvc/release/routier-madi-desktop.exe"
+          $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $binary))
+          $peOffset = [BitConverter]::ToInt32($bytes, 0x3c)
+          if ([BitConverter]::ToUInt32($bytes, $peOffset) -ne 0x4550) { throw "Invalid PE signature" }
+          $subsystem = [BitConverter]::ToUInt16($bytes, $peOffset + 24 + 68)
+          if ($subsystem -ne 2) { throw "Expected Windows GUI subsystem (2), got $subsystem; console window would open" }
+          Write-Output "Windows GUI subsystem verified: no console allocated at application startup."
       - name: Prepare installers and checksums
         shell: pwsh
         run: |

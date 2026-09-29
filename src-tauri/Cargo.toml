@@ -1,6 +1,6 @@
 [package]
 name = "routier-madi-desktop"
-version = "0.1.0"
+version = "0.1.1"
 description = "Voirie Connect municipal desktop client"
 authors = ["Voirie Connect"]
 edition = "2021"
