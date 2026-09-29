@@ -81,6 +81,7 @@ export function ContractorInvitationDialog({
     } finally {
       setBusy(false);
       void queryClient.invalidateQueries({ queryKey: ["contractors"] });
+      void queryClient.invalidateQueries({ queryKey: ["users"] });
       void refreshApiState();
     }
   }
