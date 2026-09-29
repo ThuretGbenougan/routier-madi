@@ -29,6 +29,7 @@ export default defineConfig({
     tsconfigPaths(),
   ],
   root: "desktop",
+  publicDir: resolve(import.meta.dirname, "public"),
   resolve: {
     alias: {
       "/src": resolve(import.meta.dirname, "src"),

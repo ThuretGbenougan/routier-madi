@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { TrafficCone } from "lucide-react";
+import { BrandMark } from "@/components/BrandMark";
 import type { ReactNode } from "react";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 import { useI18n } from "@/i18n/LanguageProvider";
@@ -12,9 +12,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 border-b border-border bg-surface/95 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-5xl items-center justify-between gap-3 px-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <TrafficCone className="size-5" aria-hidden />
-            </span>
+            <BrandMark />
             <span className="leading-tight">
               <span className="block text-sm font-semibold">{t("app.name")}</span>
               <span className="block text-xs text-muted-foreground">{t("app.city")}</span>
