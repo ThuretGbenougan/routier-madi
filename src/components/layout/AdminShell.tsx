@@ -1,17 +1,10 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import {
-  BarChart3,
-  ClipboardList,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  TrafficCone,
-  Users,
-} from "lucide-react";
+import { BarChart3, ClipboardList, LayoutDashboard, LogOut, Menu, Users } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { BrandMark } from "@/components/BrandMark";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
@@ -86,9 +79,7 @@ export function AdminShell({
   const sidebar = (
     <div className="flex h-full flex-col bg-sidebar p-4 text-sidebar-foreground">
       <Link to="/admin/dashboard" className="mb-6 flex items-center gap-2.5">
-        <span className="flex size-9 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-          <TrafficCone className="size-5" aria-hidden />
-        </span>
+        <BrandMark />
         <span className="leading-tight">
           <span className="block text-sm font-semibold">{t("app.name")}</span>
           <span className="block text-xs text-sidebar-foreground/65">{t("app.city")}</span>

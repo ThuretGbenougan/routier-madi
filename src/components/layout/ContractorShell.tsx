@@ -3,6 +3,7 @@ import { History, LogOut, Wrench } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
+import { BrandMark } from "@/components/BrandMark";
 import { useI18n } from "@/i18n/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { logoutApiSession, useApiInitialized, useApiState } from "@/lib/api/app-state";
@@ -47,9 +48,7 @@ export function ContractorShell({
     <div className="flex min-h-screen flex-col bg-background pb-20 sm:pb-0">
       <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-4xl items-center gap-3 px-4 py-3">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Wrench className="size-4.5" aria-hidden />
-          </span>
+          <BrandMark />
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{company?.name ?? t("app.name")}</p>
             <p className="truncate text-xs text-muted-foreground">{session.name}</p>
